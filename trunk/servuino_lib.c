@@ -341,6 +341,7 @@ void stopEncoding()
 {
   status();
   closeSimFile();
+  printf("Ready! Servuino Encoding in file: data.su\n");
   exit(0);
 }
 
