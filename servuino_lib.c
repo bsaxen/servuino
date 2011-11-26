@@ -269,10 +269,10 @@ void readSketchInfo()
   char row[120],res[40],*p,*q,value[5];
   int pin;
 
-  in = fopen("sketch/sketch.pde","r");
+  in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      showError("Unable to open sketch",-1);
+      printf("Error: Unable to open sketch",-1);
     }
   else
     {
@@ -333,66 +333,10 @@ void readSketchInfo()
     }
   fclose(in);  
 }
-//====================================
-void readSketchName()
-//====================================
-{
-  FILE *in;
-  char row[80],junk[20],*p;
 
-  strcpy(sketch,"unknown");
-  in = fopen("sketch/sketch.pde","r");
-  if(in == NULL)
-    {
-      printf("Unable to open sketch\n");
-      exit(0);
-    }
-  else
-    {
-      while (fgets(row,80,in)!=NULL)
-	{
-	  if(p=strstr(row,"simuino:"))
-	    {
-	      p=p+9;
-	      sscanf(p,"%s",sketch);
-	    }
-	}
-    }
-  fclose(in);  
-}
-/* //==================================== */
-/* int __nsleep(const struct timespec *req, struct timespec *rem)   */
-/* //==================================== */
-/* {   */
-/*   struct timespec temp_rem;   */
-/*   if(nanosleep(req,rem)==-1)   */
-/*     __nsleep(rem,&temp_rem);   */
-/*   else   */
-/*     return 1;   */
-/* }   */
-
-/* //====================================    */
-/* int msleep(unsigned long milisec)   */
-/* //==================================== */
-/* {   */
-/*   struct timespec req={0},rem={0};   */
-/*   time_t sec=(int)(milisec/1000);   */
-/*   milisec=milisec-(sec*1000);   */
-/*   req.tv_sec=sec;   */
-/*   req.tv_nsec=milisec*1000000L;   */
-/*   __nsleep(&req,&rem);   */
-/*   return 1;   */
-/* }   */
-
-/* //==================================== */
-/* void iDelay(int ms) */
-/* //==================================== */
-/* { */
-/*   msleep(ms); */
-/* } */
 
 //====================================
-void stopSimulation()
+void stopEncoding()
 //====================================
 {
   status();
@@ -409,7 +353,7 @@ void passTime()
 
   timeFromStart++;
 
-  if(g_simulationLength < timeFromStart)stopSimulation();
+  if(g_simulationLength < timeFromStart)stopEncoding();
 
   i = timeFromStart;
 
@@ -473,7 +417,7 @@ void readScenario()
   int x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,temp;
   int i,state=0;
 
-  in = fopen("scenario/scenario.txt","r");
+  in = fopen("scenario.txt","r");
   if(in == NULL)
     {
       showError("Unable to open scenario",-1);

@@ -3,7 +3,7 @@ FILENAME="$1"
 echo "Simulation of $FILENAME"
 if [ -f $FILENAME ]; 
 then
-cp $1 sketch/sketch.pde
+cp $1 sketch.pde
 g++ -O2 -o servuino servuino.c -lncurses
 ./servuino $2
 else
