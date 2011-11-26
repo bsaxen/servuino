@@ -6,6 +6,8 @@ then
 cp $1 sketch.pde
 g++ -O2 -o servuino servuino.c -lncurses
 ./servuino $2
+cd ../termuino
+./termuino ../servuino/data.su
 else
 echo "Sketch does not exist" $1
 fi
