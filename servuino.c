@@ -65,15 +65,15 @@ void runEncoding(int n)
   boardInit();
   printf("Servuino Encoder Version 0.0.1\n");
   status();
+  fprintf(s_log,"# LOOP %d\n",g_nloop);
   setup();
-  while(g_go != NO)
+  while(1)
     {
       g_nloop++;
       status();
       fprintf(s_log,"# LOOP %d\n",g_nloop);
       loop();  
     }
-  printf("Simulation stopped after %d steps\n",n);
   return;
 }
 
