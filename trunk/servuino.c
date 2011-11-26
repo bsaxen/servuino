@@ -5,12 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include <string>
-//#include <time.h> 
 #include <math.h> 
-//#include <termios.h>
-//#include <unistd.h>
-//#include <ncurses.h>
 
 #define LOW    0
 #define HIGH   1
@@ -60,15 +55,15 @@ FILE *s_log;
 
 #include "servuino_lib.c"
 #include "arduino_lib.c"
-#include "sketch/sketch.pde"
+#include "sketch.pde"
 
 //====================================
-void runSimulation(int n)
+void runEncoding(int n)
 //====================================
 {
 
   boardInit();
-  printf("Start Simulation\n");
+  printf("Servuino Encoder Version 0.0.1\n");
   status();
   setup();
   while(g_go != NO)
@@ -83,15 +78,6 @@ void runSimulation(int n)
 }
 
 
-
-//====================================
-void showResult()
-//====================================
-{
-  printf("Simulation Result\n");
-  return;
-}
-
 //====================================
 int main(int argc, char *argv[])
 //====================================
@@ -100,10 +86,9 @@ int main(int argc, char *argv[])
   openSimFile();
   readSketchInfo();
   if(argc == 2) g_simulationLength = atoi(argv[1]);
-  runSimulation(g_simulationLength);
+  runEncoding(g_simulationLength);
   closeSimFile();
 
-  showResult();
 }
 
 
