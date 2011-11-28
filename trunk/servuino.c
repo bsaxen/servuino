@@ -61,9 +61,9 @@ FILE *s_log;
 void runEncoding(int n)
 //====================================
 {
-
   boardInit();
-  printf("Servuino Encoder Version 0.0.1\n");
+  readScenario();
+  printf("Servuino Encoder Version 0.0.2\n");
   status();
   fprintf(s_log,"# LOOP %d\n",g_nloop);
   setup();
@@ -82,6 +82,7 @@ void runEncoding(int n)
 int main(int argc, char *argv[])
 //====================================
 {
+
   g_go = YES;
   openSimFile();
   readSketchInfo();
@@ -92,3 +93,4 @@ int main(int argc, char *argv[])
 }
 
 
+ 

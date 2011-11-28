@@ -4,6 +4,32 @@
 //  2011-11-19
 //================================================
 
+//  digital_pins
+//           step 0  1  2  3  4  5  6  7  8  9 10 11 12 13
+//          --- -------------------------------------------
+// SCENDIGPIN 0   1  0  1  0  0  0  0  0  0  0  0  0  0  0
+// SCENDIGPIN 100 0  1  0  0  0  0  0  0  0  0  0  0  0  0
+// SCENDIGPIN 200 1  0  1  0  0  0  0  0  0  0  0  0  0  0
+// SCENDIGPIN 300 1  1  0  0  0  0  0  0  0  0  0  0  0  0
+//
+//  analog_pins
+//            step    0   1   2   3   4   5
+//            ------------------------------
+// SCENANAPIN   0    37   0   0   0   0  11 
+// SCENANAPIN 100    56   0   0   0   0  12 
+// SCENANAPIN 200     0   0   0   0   0  13 
+// SCENANAPIN 300   123   0   0   0   0  14 
+//
+//  interrupts
+//          step 0 1
+//         ----------
+// SCENINRPT 16  1 0
+// SCENINRPT 19  0 0
+// SCENINRPT 25  1 0
+// SCENINRPT 30  1 1
+// SCENINRPT 40  0 1
+// SCENINRPT 55  1 1
+//
 
 //================================================
 // Simuino Support Info
@@ -201,7 +227,7 @@ void turn_cw(int delta)
 //================================================
 {
   int i,steps = 0;
-  steps = map(delta,0,90,0,50);
+  steps = map(delta,0,90,0,500);
 
   Serial.print("Steps:");
   Serial.println(steps);
@@ -225,7 +251,7 @@ void turn_ccw(int delta)
 //================================================
 {
   int i,steps = 0;
-  steps = map(delta,0,90,0,50);
+  steps = map(delta,0,90,0,500);
 
   Serial.print("Steps:");
   Serial.println(steps);
