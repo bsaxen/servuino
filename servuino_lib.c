@@ -129,39 +129,46 @@ void closeSimFile()
 int getAnalogPinValue(int pin,int step)
 //====================================
 {  
-  int i;
+  int i,res=0;
+
   for (i=0;i<scenAnalog;i++)
   {
     if(step > s_analogStep[i] && step < s_analogStep[i+1])
-       return(s_analogPin[i][pin]);
+       res = s_analogPin[i][pin];
   }
-  if(step > s_analogStep[scenAnalog]) return(s_analogPin[scenAnalog][pin]);
+  if(step > s_analogStep[scenAnalog]) res = s_analogPin[scenAnalog][pin];
+
+  return(res);
 }  
 
 //====================================
 int getDigitalPinValue(int pin,int step)
 //====================================
 {  
-  int i;
+  int i,res=0;
   for (i=0;i<scenDigital;i++)
   {
     if(step > s_digitalStep[i] && step < s_digitalStep[i+1])
-       return(s_digitalPin[i][pin]);
+       res = s_digitalPin[i][pin];
   }
-  if(step > s_digitalStep[scenDigital]) return(s_digitalPin[scenDigital][pin]);
+  if(step > s_digitalStep[scenDigital]) res = s_digitalPin[scenDigital][pin];
+
+  return(res);
 }  
 
 //====================================
 int getInterruptValue(int pin,int step)
 //====================================
 {  
-  int i;
+  int i,res=0;
   for (i=0;i<scenInterrupt;i++)
   {
     if(step > s_interruptStep[i] && step < s_interruptStep[i+1])
-       return(s_interrupt[i][pin]);
+       res = s_interrupt[i][pin];
   }
-  if(step > s_interruptStep[scenInterrupt]) return(s_interrupt[scenInterrupt][pin]);
+  if(step > s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
+
+  return(res);
 }  
 
 
@@ -408,7 +415,6 @@ void passTime()
     }
 
 }
-
 //====================================
 void readScenario()
 //====================================
@@ -418,77 +424,70 @@ void readScenario()
   int x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,temp;
   int i,state=0;
 
-  in = fopen("scenario.txt","r");
+
+
+  in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      showError("Unable to open scenario",-1);
+      showError("Unable to open sketch for scenario reading",-1);
     }
   else
     {
       while (fgets(row,80,in)!=NULL)
 	{
-	  if(row[0] == '#')
-	    {	
-	      if(p=strstr(row,"start_interrupts"))  state = 1;
-	      if(p=strstr(row,"start_digital_pins"))state = 2;
-	      if(p=strstr(row,"start_analog_pins")) state = 3;
-	      if(p=strstr(row,"end_interrupts"))  state = 0;
-	      if(p=strstr(row,"end_digital_pins"))state = 0;
-	      if(p=strstr(row,"end_analog_pins")) state = 0;
+	  
+	  if(p=strstr(row,"SCENDIGPIN"))
+	    {
+	      sscanf(p,"%s%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",junk,&temp,&x0,&x1,&x2,&x3,&x4,&x5,&x6,&x7,&x8,&x9,&x9,&x10,&x11,&x12,&x13);
+	      scenDigital++;
+	      i = scenDigital;
+	      if(temp < s_digitalStep[i-1])
+		printf("Error:Scenario data not given in increasing order: Digatal Step %d\n",temp);
+	      s_digitalStep[i] = temp;
+	      s_digitalPin[i][0]= x0;
+	      s_digitalPin[i][1]= x1;
+	      s_digitalPin[i][2]= x2;
+	      s_digitalPin[i][3]= x3;
+	      s_digitalPin[i][4]= x4;
+	      s_digitalPin[i][5]= x5;
+	      s_digitalPin[i][6]= x6;
+	      s_digitalPin[i][7]= x7;
+	      s_digitalPin[i][8]= x8;
+	      s_digitalPin[i][9]= x9;
+	      s_digitalPin[i][10]= x10;
+	      s_digitalPin[i][11]= x11;
+	      s_digitalPin[i][12]= x12;
+	      s_digitalPin[i][13]= x13;
 	    }
-
-	  if(row[0] != '#')
-	    {	      
-	      if(state==1)//Interrupts
-		{
-		  sscanf(row,"%d%d%d",&temp,&x0,&x1);
-		      scenInterrupt++;
-	              i = scenInterrupt;
-                          s_interruptStep[i] = temp;
-			  s_interrupt[i][0]  = x0;
-			  s_interrupt[i][1]  = x1;
-		}
-	      if(state==2) // Digital Pins
-		{
-		  sscanf(row,"%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",&temp,&x0,&x1,&x2,&x3,&x4,&x5,&x6,&x7,&x8,&x9,&x9,&x10,&x11,&x12,&x13);
-		      scenDigital++;
-                      i = scenDigital;
-                          s_digitalStep[i] = temp;
-			  s_digitalPin[i][0]= x0;
-			  s_digitalPin[i][1]= x1;
-			  s_digitalPin[i][2]= x2;
-			  s_digitalPin[i][3]= x3;
-			  s_digitalPin[i][4]= x4;
-			  s_digitalPin[i][5]= x5;
-			  s_digitalPin[i][6]= x6;
-			  s_digitalPin[i][7]= x7;
-			  s_digitalPin[i][8]= x8;
-			  s_digitalPin[i][9]= x9;
-			  s_digitalPin[i][10]= x10;
-			  s_digitalPin[i][11]= x11;
-			  s_digitalPin[i][12]= x12;
-			  s_digitalPin[i][13]= x13;
-		}
-	      if(state==3) // Analog Pins
-		{
-		  sscanf(row,"%d%d%d%d%d%d%d",&temp,&x0,&x1,&x2,&x3,&x4,&x5);
-		      scenAnalog++;
-                      i = scenAnalog;
-                          s_analogStep[i] = temp;
-			  s_analogPin[i][0]= x0;
-			  s_analogPin[i][1]= x1;
-			  s_analogPin[i][2]= x2;
-			  s_analogPin[i][3]= x3;
-			  s_analogPin[i][4]= x4;
-			  s_analogPin[i][5]= x5;
-		}	      
+	  if(p=strstr(row,"SCENANAPIN"))
+	    {
+	      sscanf(p,"%s%d%d%d%d%d%d%d",junk,&temp,&x0,&x1,&x2,&x3,&x4,&x5);
+	      scenAnalog++;
+	      i = scenAnalog;
+	      if(temp < s_analogStep[i-1])
+		printf("Error:Scenario data not given in increasing order: Analog Step %d\n",temp);
+	      s_analogStep[i] = temp;
+	      s_analogPin[i][0]= x0;
+	      s_analogPin[i][1]= x1;
+	      s_analogPin[i][2]= x2;
+	      s_analogPin[i][3]= x3;
+	      s_analogPin[i][4]= x4;
+	      s_analogPin[i][5]= x5;
+	    }
+	  if(p=strstr(row,"SCENINRPT"))
+	    {
+	      sscanf(p,"%s%d%d%d",junk,&temp,&x0,&x1);
+	      scenInterrupt++;
+	      i = scenInterrupt;
+	      if(temp < s_interruptStep[i-1])
+		printf("Error:Scenario data not given in increasing order: Interrupt Step %d\n",temp);
+	      s_interruptStep[i] = temp;
+	      s_interrupt[i][0]  = x0;
+	      s_interrupt[i][1]  = x1;
 	    }
 	}
     }
-  fclose(in);
-  return;
 }
-
 
 //====================================
 // End of file

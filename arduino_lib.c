@@ -250,7 +250,6 @@ int analogRead(int pin)  // Values 0 to 1023
   passTime();
   value = getAnalogPinValue(pin,timeFromStart);
   c_analogPin[g_now][pin];
-
   if(value > 1023 || value < 0)
     {
       sprintf(temp,"%d Analog pin=%d value out of range = %d",timeFromStart,pin,value);
@@ -259,13 +258,10 @@ int analogRead(int pin)  // Values 0 to 1023
     }
   
   strcpy(temp,textAnalogRead[pin]);
-  if(confLogLev > 0)
-    {
-      if(strstr(temp,"void"))
-	wLog("analogRead",pin,value);
-      else
-	wLog(temp,pin,value);
-    }
+  if(strstr(temp,"void"))
+    wLog("analogRead",pin,value);
+  else
+    wLog(temp,pin,value);
   return(value); 
 }
 
@@ -294,15 +290,11 @@ void analogWrite(int pin,int value)
 	}
       
       c_digitalPin[g_now][pin] = value;
-
       strcpy(temp,textAnalogWrite[pin]);
-      if(confLogLev > 0)
-	{
-	  if(strstr(temp,"void"))
-	    wLog("analogWrite",pin,value);
-	  else
-	    wLog(temp,pin,value);
-	}
+      if(strstr(temp,"void"))
+	wLog("analogWrite",pin,value);
+      else
+	wLog(temp,pin,value); 
     }
   else
     {
