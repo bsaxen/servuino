@@ -227,36 +227,43 @@ void status()
 }
 
 //====================================
-void wLog(const char *p, int value1, int value2)
+void wLog0(const char *p)
 //====================================
 {
-  if(value1 == -1 && value2 == -1)
-    fprintf(s_log,"%3d %s\n",timeFromStart,p);
-
-  if(value1 > -1 && value2 == -1)
-    fprintf(s_log,"%3d %s %d\n",timeFromStart,p,value1);
-
-  if(value1 == -1 && value2 > -1)
-    fprintf(s_log,"%3d %s %d\n",timeFromStart,p,value2);
-
-  if(value1 > -1 && value2 > -1)
-    fprintf(s_log,"%3d %s %d %d\n",timeFromStart,p,value1,value2);
-
-
+  fprintf(s_log,"%d %s\n",timeFromStart,p);
   return;
 }
 
 //====================================
-void wLogChar(const char *p, const char *value1, int value2)
+void wLog1(const char *p, int value1)
 //====================================
 {
+  fprintf(s_log,"%d %s %d\n",timeFromStart,p,value1);
+  return;
+}
 
-  if(value2 == -1)
-    fprintf(s_log,"%3d %s '%s'\n",timeFromStart,p,value1);
+//====================================
+void wLog2(const char *p, int value1, int value2)
+//====================================
+{
+  fprintf(s_log,"%d %s %d %d\n",timeFromStart,p,value1,value2);
+  return;
+}
 
-  if(value2 > -1)
-    fprintf(s_log,"%3d %s '%s' %d\n",timeFromStart,p,value1,value2);
 
+//====================================
+void wLogChar1(const char *p, const char *value1)
+//====================================
+{
+  fprintf(s_log,"%3d %s '%s'\n",timeFromStart,p,value1);
+  return;
+}
+
+//====================================
+void wLogChar2(const char *p, const char *value1, int value2)
+//====================================
+{
+  fprintf(s_log,"%3d %s '%s' %d\n",timeFromStart,p,value1,value2);
   return;
 }
 
@@ -272,7 +279,7 @@ void showSerial(const char *m, int newLine)
       strcpy(stemp,"Serial");
       sprintf(stemp,"%s",m);
       printf("%s\n",m);
-      wLog(m,-1,-1);
+      wLog0(m);
     }
   else
     {
@@ -404,45 +411,45 @@ void passTime()
 
   //  if(interruptMode[0] == LOW && interrupt[i][0] == 0)
   //    {
-  //      if(confLogLev > 0)wLog("InterruptLOW",0,-1);
+  //      if(confLogLev > 0)wLog1("InterruptLOW",0);
   //      interrupt0();
   //    }
 
 
   if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
     {
-      if(confLogLev > 0)wLog("InterruptRISING",0,-1);
+      if(confLogLev > 0)wLog1("InterruptRISING",0);
       interrupt0();
     }
   
   if(interruptMode[0] == FALLING && ir0_1 == 0 && ir0_2 == 1)
     {
-      if(confLogLev > 0)wLog("InterruptFALLING",0,-1);
+      if(confLogLev > 0)wLog1("InterruptFALLING",0);
       interrupt0();
     }
 
   if(interruptMode[0] == CHANGE && ir0_1 != ir0_2)
     {
-      if(confLogLev > 0)wLog("InterruptCHANGE",0,-1);
+      if(confLogLev > 0)wLog1("InterruptCHANGE",0);
       interrupt0();
     }
 
 
   if(interruptMode[1] == RISING && ir1_1 == 1 && ir1_2 == 0)
     {
-      if(confLogLev > 0)wLog("InterruptRISING",1,-1);
+      if(confLogLev > 0)wLog1("InterruptRISING",1);
       interrupt1();
     }
   
   if(interruptMode[1] == FALLING && ir1_1 == 0 && ir1_2 == 1)
     {
-      if(confLogLev > 0)wLog("InterruptFALLING",1,-1);
+      if(confLogLev > 0)wLog1("InterruptFALLING",1);
       interrupt1();
     }
 
   if(interruptMode[1] == CHANGE && ir1_1 != ir1_2)
     {
-      if(confLogLev > 0)wLog("InterruptCHANGE",1,-1);
+      if(confLogLev > 0)wLog1("InterruptCHANGE",1);
       interrupt1();
     }
 

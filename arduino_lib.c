@@ -128,7 +128,7 @@ void unimplemented(const char *f)
 {
   char temp[200];
   sprintf(temp,"unimplemented: %s\n",f);
-  wLog(temp,-1,-1);
+  wLog0(temp);
 }
 
 //------ Digital I/O -----------------------
@@ -148,9 +148,9 @@ void pinMode(int pin,int mode)
 	  strcpy(temp,textPinModeIn[pin]);
 
 	  if(strstr(temp,"void"))
-	    wLog("pinMode IN",pin,-1);
+	    wLog1("pinMode IN",pin);
 	  else
-	    wLog(temp,pin,-1);
+	    wLog1(temp,pin);
 	}
 
       if(mode==OUTPUT)
@@ -158,16 +158,16 @@ void pinMode(int pin,int mode)
 	  strcpy(temp,textPinModeOut[pin]);
 
 	  if(strstr(temp,"void"))
-	    wLog("pinMode OUT",pin,-1);
+	    wLog1("pinMode OUT",pin);
 	  else
-	    wLog(temp,pin,-1);
+	    wLog1(temp,pin);
 	}
 
     }
   else
     {
       showError("Unknown Pin Mode",mode);
-      wLog("pinMode ",pin,-1);
+      wLog1("pinMode ",pin);
     }
 }
 
@@ -186,23 +186,23 @@ void digitalWrite(int pin,int value)
 	  strcpy(temp,textDigitalWriteHigh[pin]);
 
 	  if(strstr(temp,"void"))
-	    wLog("digitalWrite HIGH",pin,-1);
+	    wLog1("digitalWrite HIGH",pin);
 	  else
-	    wLog(temp,pin,-1);
+	    wLog1(temp,pin);
 	}
       if(value==LOW)
 	{
 	  strcpy(temp,textDigitalWriteLow[pin]);
 	  if(strstr(temp,"void"))
-	    wLog("digitalWrite LOW",pin,-1);
+	    wLog1("digitalWrite LOW",pin);
 	  else
-	    wLog(temp,pin,-1);
+	    wLog1(temp,pin);
 	}
     }
   else
     {
       showError("Wrong pin mode. Should be OUTPUT",pin);
-      wLog("digitalWrite",pin,-1);
+      wLog1("digitalWrite",pin);
     }
 }
 
@@ -221,14 +221,14 @@ int digitalRead(int pin)
       strcpy(temp,textDigitalRead[pin]);
       
       if(strstr(temp,"void"))
-	wLog("digitalRead",pin,value);
+	wLog2("digitalRead",pin,value);
       else
-	wLog(temp,pin,value);
+	wLog2(temp,pin,value);
     }
   else
     {
       showError("Wrong pin mode. Should be INPUT",pin);
-      wLog("digitalRead",pin,value);
+      wLog2("digitalRead",pin,value);
     }
   return(value);
 }
@@ -259,9 +259,9 @@ int analogRead(int pin)  // Values 0 to 1023
   
   strcpy(temp,textAnalogRead[pin]);
   if(strstr(temp,"void"))
-    wLog("analogRead",pin,value);
+    wLog2("analogRead",pin,value);
   else
-    wLog(temp,pin,value);
+    wLog2(temp,pin,value);
   return(value); 
 }
 
@@ -275,7 +275,7 @@ void analogWrite(int pin,int value)
   if(digitalMode[pin] != OUTPUT)
     {
       showError("Pin is not in OUPUT mode: ",pin);
-      wLog("analogWrite",pin,value);
+      wLog2("analogWrite",pin,value);
       return;
     }
 
@@ -292,14 +292,14 @@ void analogWrite(int pin,int value)
       c_digitalPin[g_now][pin] = value;
       strcpy(temp,textAnalogWrite[pin]);
       if(strstr(temp,"void"))
-	wLog("analogWrite",pin,value);
+	wLog2("analogWrite",pin,value);
       else
-	wLog(temp,pin,value); 
+	wLog2(temp,pin,value); 
     }
   else
     {
       showError("Pin is not of PWM type",pin);
-      wLog("analogWrite",pin,value);
+      wLog2("analogWrite",pin,value);
     }
   return;
 }
@@ -353,14 +353,14 @@ unsigned long micros()
 void delay(int ms)
 {
   passTime(); 
-  wLog("delay",ms,-1);
+  wLog1("delay",ms);
   //msleep(ms);
 }
 
 void delayMicroseconds(int us)
 {
   passTime();
-  wLog("delayMicroseconds",us,-1);
+  wLog1("delayMicroseconds",us);
   //msleep(us);
 }
 
@@ -488,7 +488,7 @@ void attachInterrupt(int interrupt,void(*func)(),int mode)
   if(interrupt != 0 && interrupt != 1)
     showError("Unsupported interrupt number",interrupt);
 
-  if(confLogLev > 0)wLog("attachInterrupt",interrupt,-1);
+  if(confLogLev > 0)wLog1("attachInterrupt",interrupt);
 
 }
 
@@ -508,7 +508,7 @@ void detachInterrupt(int interrupt)
   if(interrupt != 0 && interrupt != 1)
     showError("Unsupported interrupt number",interrupt);
     
-  if(confLogLev > 0)wLog("detachInterrupt",interrupt,-1);
+  if(confLogLev > 0)wLog1("detachInterrupt",interrupt);
 }
 
 //------ Interrupts ------------------------
@@ -545,7 +545,7 @@ void serial::begin(int baudRate)
 {
   passTime();
   baud = baudRate;
-  wLog("Serial:begin",baud,-1);
+  wLog1("Serial:begin",baud);
   digitalMode[0] = RX;
   digitalMode[1] = TX;
   serialMode = ON;
@@ -554,7 +554,7 @@ void serial::begin(int baudRate)
 void serial::end() 
 {
   passTime();
-  wLog("Serial:end",-1,-1);
+  wLog0("Serial:end");
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
   serialMode = OFF;
@@ -587,7 +587,7 @@ void serial::print(int x)
   passTime();
   //sprintf(stemp,"%d",x);
   //showSerial(stemp,0);
-  wLog("Serial:print(int)",x,-1);
+  wLog1("Serial:print(int)",x);
 }
 
 void serial::print(int x,int base) 
@@ -595,7 +595,7 @@ void serial::print(int x,int base)
   passTime();
   //sprintf(stemp,"%d",x);
   //showSerial(stemp,0);
-  wLog("Serial:print(int,int)",x,-1);
+  wLog1("Serial:print(int,int)",x);
 }
 
 void serial::print(const char *p) 
@@ -603,7 +603,7 @@ void serial::print(const char *p)
   passTime();
   //sprintf(stemp,"%s",p);
   //showSerial(stemp,0);
-  wLogChar("Serial:print(char)",p,-1);
+  wLogChar1("Serial:print(char)",p);
 }
 
 void serial::println(int x) 
@@ -611,7 +611,7 @@ void serial::println(int x)
   passTime();
   //sprintf(stemp,"%d",x);
   //showSerial(stemp,1);
-  wLog("Serial:println(int)",x,-1);
+  wLog1("Serial:println(int)",x);
 }
 
 void serial::println(const char *p) 
@@ -619,7 +619,7 @@ void serial::println(const char *p)
   passTime();
   //sprintf(stemp,"%s",p);
   //showSerial(stemp,1);
-  wLogChar("Serial:println(char)",p,-1);
+  wLogChar1("Serial:println(char)",p);
 }
 
 void serial::println(String p) 
@@ -635,6 +635,6 @@ void serial::write(char *p)
   passTime();
   //sprintf(stemp,"%s",p);
   //showSerial(stemp,1);
-  wLogChar("Serial:write(char)",p,-1);
+  wLogChar1("Serial:write(char)",p);
 }
 
