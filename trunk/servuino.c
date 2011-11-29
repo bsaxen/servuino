@@ -7,6 +7,10 @@
 #include <string.h>
 #include <math.h> 
 
+#define ANAPINS 6
+#define DIGPINS 14
+#define INTPINS 2
+
 #define LOW    0
 #define HIGH   1
 #define INPUT  1
@@ -63,7 +67,9 @@ void runEncoding(int n)
 {
   boardInit();
   readScenario();
-  printf("Servuino Encoder Version 0.0.2\n");
+  printf("Servuino Encoder Version 0.0.3\n");
+  fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
+  scenario();
   status();
   fprintf(s_log,"# LOOP %d\n",g_nloop);
   setup();
