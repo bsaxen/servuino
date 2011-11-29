@@ -14,21 +14,21 @@
 
 int   row,col;
 int   graph_x = 10,graph_y = 10;
-int   digPinPos[14];
-int   anaPinPos[6];
+int   digPinPos[DIGPINS];
+int   anaPinPos[ANAPINS];
 char  appName[80];
 
-int   c_analogPin[MEM_MAX][6];
-int   c_digitalPin[MEM_MAX][14];
+int   c_analogPin[MEM_MAX][ANAPINS];
+int   c_digitalPin[MEM_MAX][DIGPINS];
 
-int   s_analogPin[SCEN_MAX][6];
-int   s_digitalPin[SCEN_MAX][14];
-int   s_interrupt[SCEN_MAX][2];
+int   s_analogPin[SCEN_MAX][ANAPINS];
+int   s_digitalPin[SCEN_MAX][DIGPINS];
+int   s_interrupt[SCEN_MAX][INTPINS];
 int   s_analogStep[SCEN_MAX];
 int   s_digitalStep[SCEN_MAX];
 int   s_interruptStep[SCEN_MAX];
 
-int   interruptMode[2];
+int   interruptMode[INTPINS];
 int   digitalMode[100];
 int   paceMaker = 0;
 int   baud = 0;
@@ -40,13 +40,13 @@ int   serialSize = 1;
 int   serialMode = OFF;
 char  serialBuffer[100][100];
 int   rememberNewLine;
-char  textPinModeIn[14][LOG_TEXT_SIZE];
-char  textPinModeOut[14][LOG_TEXT_SIZE];
-char  textDigitalWriteLow[14][LOG_TEXT_SIZE];
-char  textDigitalWriteHigh[14][LOG_TEXT_SIZE];
-char  textAnalogWrite[14][LOG_TEXT_SIZE];
-char  textAnalogRead[14][LOG_TEXT_SIZE];
-char  textDigitalRead[14][LOG_TEXT_SIZE];
+char  textPinModeIn[DIGPINS][LOG_TEXT_SIZE];
+char  textPinModeOut[DIGPINS][LOG_TEXT_SIZE];
+char  textDigitalWriteLow[DIGPINS][LOG_TEXT_SIZE];
+char  textDigitalWriteHigh[DIGPINS][LOG_TEXT_SIZE];
+char  textAnalogWrite[DIGPINS][LOG_TEXT_SIZE];
+char  textAnalogRead[DIGPINS][LOG_TEXT_SIZE];
+char  textDigitalRead[DIGPINS][LOG_TEXT_SIZE];
 int   scenAnalog    = 0;
 int   scenDigital   = 0;
 int   scenInterrupt = 0;
@@ -70,7 +70,7 @@ void boardInit()
   int i,j;
 
   g_nloop = 0;
-  for(i=0;i<14;i++)
+  for(i=0;i<DIGPINS;i++)
     {
       digitalMode[i] = FREE;
       strcpy(textPinModeIn[i],"void");
@@ -84,7 +84,7 @@ void boardInit()
 
       strcpy(textDigitalRead[i],"void");
     }
-  for(i=0;i<14;i++)
+  for(i=0;i<DIGPINS;i++)
     {
       for(j=0;j<MEM_MAX;j++)
 	{
@@ -170,6 +170,38 @@ int getInterruptValue(int pin,int step)
 
   return(res);
 }  
+
+//====================================
+void scenario()
+//====================================
+{
+  int i,j;
+
+  for(i=1;i<=scenDigital;i++)
+  {
+     fprintf(s_log,"#// SCENDIGPIN %4d ",s_digitalStep[i]);
+     for(j=0;j<DIGPINS;j++)
+       fprintf(s_log,"%d ",s_digitalPin[i][j]);
+       fprintf(s_log,"\n");
+  }
+
+  for(i=1;i<=scenAnalog;i++)
+  {
+     fprintf(s_log,"#// SCENANAPIN %4d ",s_analogStep[i]);
+     for(j=0;j<ANAPINS;j++)
+       fprintf(s_log,"%4d ",s_analogPin[i][j]);
+       fprintf(s_log,"\n");
+  }
+
+  for(i=1;i<=scenInterrupt;i++)
+  {
+     fprintf(s_log,"#// SCENINRPT %4d ",s_interruptStep[i]);
+     for(j=0;j<INTPINS;j++)
+       fprintf(s_log,"%1d ",s_interrupt[i][j]);
+       fprintf(s_log,"\n");
+  }
+  return;
+}
 
 
 //====================================
@@ -433,12 +465,11 @@ void readScenario()
     }
   else
     {
-      while (fgets(row,80,in)!=NULL)
+      while (fgets(row,120,in)!=NULL)
 	{
-	  
 	  if(p=strstr(row,"SCENDIGPIN"))
 	    {
-	      sscanf(p,"%s%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",junk,&temp,&x0,&x1,&x2,&x3,&x4,&x5,&x6,&x7,&x8,&x9,&x9,&x10,&x11,&x12,&x13);
+	      sscanf(p,"%s%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",junk,&temp,&x0,&x1,&x2,&x3,&x4,&x5,&x6,&x7,&x8,&x9,&x10,&x11,&x12,&x13);
 	      scenDigital++;
 	      i = scenDigital;
 	      if(temp < s_digitalStep[i-1])
