@@ -318,7 +318,7 @@ void readSketchInfo()
   in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      printf("Error: Unable to open sketch",-1);
+      //printf("Error: Unable to open sketch",-1);
     }
   else
     {
@@ -387,7 +387,7 @@ void stopEncoding()
 {
   status();
   closeSimFile();
-  printf("Ready! Servuino Encoding in file: data.su\n");
+//  printf("Ready! Servuino Encoding in file: data.su\n");
   exit(0);
 }
 
