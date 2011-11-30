@@ -43,16 +43,16 @@ class String {
   void toUpperCase();
   void trim();
 
-/*   String& operator+ (const String& x, const String&  y) */
-/* { */
-/*   String result = *this;   */
-/*   //result += other;      */
-/*   return result;   */
-/* } */
+  /*   String& operator+ (const String& x, const String&  y) */
+  /* { */
+  /*   String result = *this;   */
+  /*   //result += other;      */
+     /*   return result;   */
+     /* } */
 
 
-  //String String::operator+(const String &other);
-};
+     //String String::operator+(const String &other);
+     };
 
 
 
@@ -166,8 +166,8 @@ void pinMode(int pin,int mode)
     }
   else
     {
-      showError("Unknown Pin Mode",mode);
-      wLog1("pinMode ",pin);
+      showError("pinMode:Unknown Pin Mode",mode);
+      //wLog1("pinMode ",pin);
     }
 }
 
@@ -175,10 +175,10 @@ void digitalWrite(int pin,int value)
 {
   char temp[80];
 
-  passTime();
 
   if(digitalMode[pin] == OUTPUT)
     {
+      passTime();
       c_digitalPin[g_now][pin] = value;
 
       if(value==HIGH)
@@ -201,8 +201,8 @@ void digitalWrite(int pin,int value)
     }
   else
     {
-      showError("Wrong pin mode. Should be OUTPUT",pin);
-      wLog1("digitalWrite",pin);
+      showError("DigitalWrite: Wrong pin mode. Should be OUTPUT",pin);
+      //wLog1("digitalWrite",pin);
     }
 }
 
@@ -211,10 +211,10 @@ int digitalRead(int pin)
   int value=0;
   char temp[80];
 
-  passTime();
+
   if(digitalMode[pin] == INPUT)
     {
-
+      passTime();
       value = getDigitalPinValue(pin,timeFromStart);
       c_digitalPin[g_now][pin] = value;
      
@@ -227,8 +227,8 @@ int digitalRead(int pin)
     }
   else
     {
-      showError("Wrong pin mode. Should be INPUT",pin);
-      wLog2("digitalRead",pin,value);
+      showError("DigitalRead: Wrong pin mode. Should be INPUT",pin);
+      //wLog2("digitalRead",pin,value);
     }
   return(value);
 }
@@ -270,18 +270,18 @@ void analogWrite(int pin,int value)
 {
   char temp[80];
 
-  passTime();
+
 
   if(digitalMode[pin] != OUTPUT)
     {
-      showError("Pin is not in OUPUT mode: ",pin);
-      wLog2("analogWrite",pin,value);
+      showError("AnalogWrite: Pin is not in OUPUT mode: ",pin);
+      //wLog2("analogWrite",pin,value);
       return;
     }
 
   if(pin==3 || pin==5 || pin==6 || pin==9 || pin==10 || pin==11)
     {
-
+      passTime();
       if(value > 256 || value < 0)
 	{
 	  sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",timeFromStart,pin,value);
@@ -298,8 +298,8 @@ void analogWrite(int pin,int value)
     }
   else
     {
-      showError("Pin is not of PWM type",pin);
-      wLog2("analogWrite",pin,value);
+      showError("analogWrite: Pin is not of PWM type",pin);
+      //wLog2("analogWrite",pin,value);
     }
   return;
 }
