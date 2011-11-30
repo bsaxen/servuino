@@ -46,7 +46,7 @@ char sketch[80];
 // Init
 
 int timeFromStart = 0;
-int g_simulationLength = 100;
+int g_simulationLength = 111;
 int g_go = NO;
 
 void (*interrupt0)();
@@ -67,7 +67,7 @@ void runEncoding(int n)
 {
   boardInit();
   readScenario();
-  printf("Servuino Encoder Version 0.0.3\n");
+  //printf("Servuino Encoder Version 0.0.4\n");
   fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
   scenario();
   status();
@@ -88,7 +88,6 @@ void runEncoding(int n)
 int main(int argc, char *argv[])
 //====================================
 {
-
   g_go = YES;
   openSimFile();
   readSketchInfo();
