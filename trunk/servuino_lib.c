@@ -101,9 +101,9 @@ void showError(const char *m, int value)
   error = 1;
 
   if(value == -1)
-    fprintf(s_log,"# ERROR %s",m);
+    fprintf(e_log,"ERROR %s\n",m);
   else
-    fprintf(s_log,"# ERROR %s %d",m,value);
+    fprintf(e_log,"ERROR %s %d\n",m,value);
 }
 
 //====================================
@@ -115,6 +115,9 @@ void openSimFile()
     {
       showError("Unable to open data.su",-1);
     }
+  e_log = fopen("data.error","w");
+  fprintf(e_log,"Servuino Error Log\n");
+
 }
 
 //====================================
@@ -122,6 +125,7 @@ void closeSimFile()
 //====================================
 {
   fclose(s_log);
+  fclose(e_log);
 }
 
 

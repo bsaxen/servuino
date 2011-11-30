@@ -54,7 +54,7 @@ void (*interrupt1)();
 
 void stepCommand();
 
-FILE *s_log;
+FILE *s_log,*e_log;
 
 
 #include "servuino_lib.c"
