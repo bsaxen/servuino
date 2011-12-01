@@ -259,7 +259,7 @@ void wLog2(const char *p, int value1, int value2)
 void wLogChar1(const char *p, const char *value1)
 //====================================
 {
-  fprintf(s_log,"%3d %s '%s'\n",timeFromStart,p,value1);
+  fprintf(s_log,"%d %s '%s'\n",timeFromStart,p,value1);
   return;
 }
 
@@ -267,7 +267,7 @@ void wLogChar1(const char *p, const char *value1)
 void wLogChar2(const char *p, const char *value1, int value2)
 //====================================
 {
-  fprintf(s_log,"%3d %s '%s' %d\n",timeFromStart,p,value1,value2);
+  fprintf(s_log,"%d %s '%s' %d\n",timeFromStart,p,value1,value2);
   return;
 }
 
