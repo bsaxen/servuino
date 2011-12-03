@@ -25,8 +25,6 @@
 #define CHANGE  1
 #define RISING  2
 #define FALLING 3
-#define STEP_MAX  100
-#define LOOP_MAX  200
 
 #define DP 5
 #define AP 15
@@ -41,7 +39,7 @@
 #define NO     2
 
 
-char sketch[80];
+char sketch[120];
 
 // Init
 
@@ -55,6 +53,54 @@ void (*interrupt1)();
 void stepCommand();
 
 FILE *s_log,*e_log;
+
+#define FREE   0
+#define RX     3
+#define TX     4
+
+#define SCEN_MAX  100
+#define LOG_MAX   200
+#define LOG_TEXT_SIZE 120
+
+int   row,col;
+int   graph_x = 10,graph_y = 10;
+
+char  appName[120];
+
+int   anaPinPos[ANAPINS];
+int   c_analogPin[ANAPINS];
+int   s_analogPin[SCEN_MAX][ANAPINS];
+int   s_analogStep[SCEN_MAX];
+
+int   digPinPos[DIGPINS];
+int   c_digitalPin[DIGPINS];
+int   s_digitalPin[SCEN_MAX][DIGPINS];
+int   s_digitalStep[SCEN_MAX];
+int   digitalMode[DIGPINS];
+
+int   s_interrupt[SCEN_MAX][INTPINS];
+int   s_interruptStep[SCEN_MAX];
+int   interruptMode[INTPINS];
+int   attached[INTPINS];
+
+int   paceMaker = 0;
+int   baud = 0;
+int   error = 0;
+int   logging = YES;
+int   serialSize = 1;
+int   serialMode = OFF;
+int   scenAnalog    = 0;
+int   scenDigital   = 0;
+int   scenInterrupt = 0;
+
+int   conn;
+
+// Configuration default values
+
+int   confLogLev  =   0;
+
+int g_nloop = 0;
+
 
 
 #include "servuino_lib.c"

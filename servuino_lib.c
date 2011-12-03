@@ -2,95 +2,53 @@
 //  Developed by Benny Saxen, ADCAJO
 //================================================
 
-
-#define FREE   0
-#define RX     3
-#define TX     4
-
-#define SCEN_MAX  100
-#define LOG_MAX   200
-#define MEM_MAX   2
-#define LOG_TEXT_SIZE 120
-
-int   row,col;
-int   graph_x = 10,graph_y = 10;
-int   digPinPos[DIGPINS];
-int   anaPinPos[ANAPINS];
-char  appName[80];
-
-int   c_analogPin[MEM_MAX][ANAPINS];
-int   c_digitalPin[MEM_MAX][DIGPINS];
-
-int   s_analogPin[SCEN_MAX][ANAPINS];
-int   s_digitalPin[SCEN_MAX][DIGPINS];
-int   s_interrupt[SCEN_MAX][INTPINS];
-int   s_analogStep[SCEN_MAX];
-int   s_digitalStep[SCEN_MAX];
-int   s_interruptStep[SCEN_MAX];
-
-int   interruptMode[INTPINS];
-int   digitalMode[100];
-int   paceMaker = 0;
-int   baud = 0;
-int   error = 0;
-int   logging = YES;
-char  logBuffer[LOG_MAX][100];
-int   logSize = 1;
-int   serialSize = 1;
-int   serialMode = OFF;
-char  serialBuffer[100][100];
-int   rememberNewLine;
-char  textPinModeIn[DIGPINS][LOG_TEXT_SIZE];
-char  textPinModeOut[DIGPINS][LOG_TEXT_SIZE];
-char  textDigitalWriteLow[DIGPINS][LOG_TEXT_SIZE];
-char  textDigitalWriteHigh[DIGPINS][LOG_TEXT_SIZE];
-char  textAnalogWrite[DIGPINS][LOG_TEXT_SIZE];
-char  textAnalogRead[DIGPINS][LOG_TEXT_SIZE];
-char  textDigitalRead[DIGPINS][LOG_TEXT_SIZE];
-int   scenAnalog    = 0;
-int   scenDigital   = 0;
-int   scenInterrupt = 0;
-
-int   conn;
-
-// Configuration default values
-int   confDelay   = 100;
-int   confLogLev  =   1;
-int   confLogFile =   0;
-
-
-int g_now  = 0;
-int g_prev = 1;
-int g_nloop = 0;
-
 //====================================
 void boardInit()
 //====================================
 {
   int i,j;
 
+
+
+
+
   g_nloop = 0;
+
+  for(i=0;i<ANAPINS;i++)
+    {
+      anaPinPos[i] = 0;
+      c_analogPin[i]= 0;
+      for(j=0;j<SCEN_MAX;j++)
+	{
+	  s_analogPin[j][i] = 0;
+	} 
+    }
+  
   for(i=0;i<DIGPINS;i++)
     {
       digitalMode[i] = FREE;
-      strcpy(textPinModeIn[i],"void");
-      strcpy(textPinModeOut[i],"void");
-
-      strcpy(textDigitalWriteLow[i],"void");
-      strcpy(textDigitalWriteHigh[i],"void");
-
-      strcpy(textAnalogWrite[i],"void");
-      strcpy(textAnalogRead[i],"void");
-
-      strcpy(textDigitalRead[i],"void");
-    }
-  for(i=0;i<DIGPINS;i++)
-    {
-      for(j=0;j<MEM_MAX;j++)
+      digPinPos[i] = 0;
+      c_digitalPin[i] = 0;
+      for(j=0;j<SCEN_MAX;j++)
 	{
-          s_analogPin[j][i]   = 0;
-          s_digitalPin[j][i]  = 0;
+	  s_digitalPin[j][i] = 0;
 	}
+    }
+
+  for(i=0;i<INTPINS;i++)
+    {
+      for(j=0;j<SCEN_MAX;j++)
+	{
+	  s_interrupt[j][i] = 0;
+	}
+      interruptMode[i] = 0;
+    }
+
+  for(i=0;i<SCEN_MAX;i++)
+    {
+      s_interruptStep[i] = 0;
+      s_digitalStep[i] = 0;
+      s_analogStep[i] = 0;
     }
 }
 
@@ -115,6 +73,8 @@ void openSimFile()
     {
       showError("Unable to open data.su",-1);
     }
+  fprintf(s_log,"# Servuino simulation data\n");
+
   e_log = fopen("data.error","w");
   fprintf(e_log,"Servuino Error Log\n");
 
@@ -167,7 +127,7 @@ int getInterruptValue(int pin,int step)
   int i,res=0;
   for (i=0;i<scenInterrupt;i++)
   {
-    if(step > s_interruptStep[i] && step < s_interruptStep[i+1])
+    if(step >= s_interruptStep[i] && step < s_interruptStep[i+1])
        res = s_interrupt[i][pin];
   }
   if(step > s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
@@ -219,12 +179,12 @@ void status()
   for(i=0;i<13;i++)fprintf(s_log,"%3d ",digitalMode[i]);
   fprintf(s_log,"\n");
   fprintf(s_log,"# DIG_PIN_VAL: ");
-  for(i=0;i<13;i++)fprintf(s_log,"%3d ",c_digitalPin[g_now][i]);
+  for(i=0;i<13;i++)fprintf(s_log,"%3d ",c_digitalPin[i]);
   fprintf(s_log,"\n");
 
 
   fprintf(s_log,"# ANA_PIN_VAL: ");
-  for(i=0;i<6;i++) fprintf(s_log,"%3d ",c_analogPin[g_now][i]);
+  for(i=0;i<6;i++) fprintf(s_log,"%3d ",c_analogPin[i]);
   fprintf(s_log,"\n");
 
   return;
@@ -234,7 +194,8 @@ void status()
 void wLog0(const char *p)
 //====================================
 {
-  fprintf(s_log,"%d %s\n",timeFromStart,p);
+  fprintf(s_log,"+ %d %s\n",timeFromStart,p);
+  //printf("+ %d %s\n",timeFromStart,p);
   return;
 }
 
@@ -242,7 +203,8 @@ void wLog0(const char *p)
 void wLog1(const char *p, int value1)
 //====================================
 {
-  fprintf(s_log,"%d %s %d\n",timeFromStart,p,value1);
+  fprintf(s_log,"+ %d %s %d\n",timeFromStart,p,value1);
+  //printf("+ %d %s %d\n",timeFromStart,p,value1);
   return;
 }
 
@@ -250,7 +212,8 @@ void wLog1(const char *p, int value1)
 void wLog2(const char *p, int value1, int value2)
 //====================================
 {
-  fprintf(s_log,"%d %s %d %d\n",timeFromStart,p,value1,value2);
+  fprintf(s_log,"+ %d %s %d %d\n",timeFromStart,p,value1,value2);
+  //printf("+ %d %s %d %d\n",timeFromStart,p,value1,value2);
   return;
 }
 
@@ -259,7 +222,8 @@ void wLog2(const char *p, int value1, int value2)
 void wLogChar1(const char *p, const char *value1)
 //====================================
 {
-  fprintf(s_log,"%d %s '%s'\n",timeFromStart,p,value1);
+  fprintf(s_log,"+ %d %s '%s'\n",timeFromStart,p,value1);
+  //printf("+ %d %s '%s'\n",timeFromStart,p,value1);
   return;
 }
 
@@ -267,7 +231,8 @@ void wLogChar1(const char *p, const char *value1)
 void wLogChar2(const char *p, const char *value1, int value2)
 //====================================
 {
-  fprintf(s_log,"%d %s '%s' %d\n",timeFromStart,p,value1,value2);
+  fprintf(s_log,"+ %d %s '%s' %d\n",timeFromStart,p,value1,value2);
+  //printf("+ %d %s '%s' %d\n",timeFromStart,p,value1,value2);
   return;
 }
 
@@ -336,48 +301,6 @@ void readSketchInfo()
 		  q = strstr(p,":");q++;
 		  sscanf(q,"%s",appName);
 		}
-	      if(p=strstr(row,"PINMODE_IN:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textPinModeIn[pin],res);
-		}
-	      if(p=strstr(row,"PINMODE_OUT:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textPinModeOut[pin],res);
-		}
-	      if(p=strstr(row,"DIGITALWRITE_LOW:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textDigitalWriteLow[pin],res);
-		}
-	      if(p=strstr(row,"DIGITALWRITE_HIGH:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textDigitalWriteHigh[pin],res);
-		}
-	      if(p=strstr(row,"ANALOGREAD:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textAnalogRead[pin],res);
-		}
-	      if(p=strstr(row,"DIGITALREAD:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textDigitalRead[pin],res);
-		}
-	      if(p=strstr(row,"ANALOGWRITE:"))
-		{
-		  fprintf(s_log,"#%s",row);
-		  pin = wCustomLog(p,res);
-		  strcpy(textAnalogWrite[pin],res);
-		}
 	    }
 	}
     }
@@ -399,12 +322,17 @@ void stopEncoding()
 void passTime()
 //====================================
 {
-  int i,ir0_1,ir0_2,ir1_1,ir1_2;
-
-
   timeFromStart++;
-
+  //printf("time: %d\n",timeFromStart);
   if(g_simulationLength < timeFromStart)stopEncoding();
+  return;
+}
+
+//====================================
+void interruptNow()
+//====================================
+{
+  int i,ir0_1,ir0_2,ir1_1,ir1_2;
 
   i = timeFromStart;
 
@@ -420,43 +348,56 @@ void passTime()
   //    }
 
 
-  if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
+    
+
+  if(attached[0] == YES)
     {
-      if(confLogLev > 0)wLog1("InterruptRISING",0);
-      interrupt0();
+      if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
+	{
+	  passTime();
+	  wLog1("interruptRISING",0);
+	  interrupt0();
+	}
+      
+      if(interruptMode[0] == FALLING && ir0_1 == 0 && ir0_2 == 1)
+	{
+	  passTime();
+	  wLog1("interruptFALLING",0);
+	  interrupt0();
+	}
+      
+      if(interruptMode[0] == CHANGE && ir0_1 != ir0_2)
+	{
+	  passTime();
+	  wLog1("interruptCHANGE",0);
+	  interrupt0();
+	}
     }
   
-  if(interruptMode[0] == FALLING && ir0_1 == 0 && ir0_2 == 1)
+  if(attached[1] == YES)
     {
-      if(confLogLev > 0)wLog1("InterruptFALLING",0);
-      interrupt0();
+      printf("%d check interrupt 1 %d %d    %d %d\n",i,ir1_1,ir1_2,RISING,interruptMode[1]);
+      if(interruptMode[1] == RISING && ir1_1 == 1 && ir1_2 == 0)
+	{
+	  passTime();
+	  wLog1("interruptRISING",1);
+	  interrupt1();
+	}
+      
+      if(interruptMode[1] == FALLING && ir1_1 == 0 && ir1_2 == 1)
+	{
+	  passTime();
+	  wLog1("interruptFALLING",1);
+	  interrupt1();
+	}
+      
+      if(interruptMode[1] == CHANGE && ir1_1 != ir1_2)
+	{
+	  passTime();
+	  wLog1("interruptCHANGE",1);
+	  interrupt1();
+	}
     }
-
-  if(interruptMode[0] == CHANGE && ir0_1 != ir0_2)
-    {
-      if(confLogLev > 0)wLog1("InterruptCHANGE",0);
-      interrupt0();
-    }
-
-
-  if(interruptMode[1] == RISING && ir1_1 == 1 && ir1_2 == 0)
-    {
-      if(confLogLev > 0)wLog1("InterruptRISING",1);
-      interrupt1();
-    }
-  
-  if(interruptMode[1] == FALLING && ir1_1 == 0 && ir1_2 == 1)
-    {
-      if(confLogLev > 0)wLog1("InterruptFALLING",1);
-      interrupt1();
-    }
-
-  if(interruptMode[1] == CHANGE && ir1_1 != ir1_2)
-    {
-      if(confLogLev > 0)wLog1("InterruptCHANGE",1);
-      interrupt1();
-    }
-
 }
 //====================================
 void readScenario()

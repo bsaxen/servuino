@@ -127,8 +127,10 @@ void unimplemented(const char *f)
 //====================================
 {
   char temp[200];
+  passTime();
   sprintf(temp,"unimplemented: %s\n",f);
   wLog0(temp);
+  interruptNow();
 }
 
 //------ Digital I/O -----------------------
@@ -138,36 +140,26 @@ void pinMode(int pin,int mode)
   char temp[80];
   
 
-  passTime();
+
   if(mode == INPUT || mode == OUTPUT)
     {
+      passTime();
       digitalMode[pin] = mode;
 
       if(mode==INPUT)
 	{
-	  strcpy(temp,textPinModeIn[pin]);
-
-	  if(strstr(temp,"void"))
-	    wLog1("pinMode IN",pin);
-	  else
-	    wLog1(temp,pin);
+	  wLog1("pinMode IN",pin);
 	}
 
       if(mode==OUTPUT)
 	{
-	  strcpy(temp,textPinModeOut[pin]);
-
-	  if(strstr(temp,"void"))
-	    wLog1("pinMode OUT",pin);
-	  else
-	    wLog1(temp,pin);
+	  wLog1("pinMode OUT",pin);
 	}
-
+      interruptNow();
     }
   else
     {
       showError("pinMode:Unknown Pin Mode",mode);
-      //wLog1("pinMode ",pin);
     }
 }
 
@@ -175,34 +167,24 @@ void digitalWrite(int pin,int value)
 {
   char temp[80];
 
-
   if(digitalMode[pin] == OUTPUT)
     {
       passTime();
-      c_digitalPin[g_now][pin] = value;
+      c_digitalPin[pin] = value;
 
       if(value==HIGH)
 	{
-	  strcpy(temp,textDigitalWriteHigh[pin]);
-
-	  if(strstr(temp,"void"))
-	    wLog1("digitalWrite HIGH",pin);
-	  else
-	    wLog1(temp,pin);
+	  wLog1("digitalWrite HIGH",pin);
 	}
       if(value==LOW)
 	{
-	  strcpy(temp,textDigitalWriteLow[pin]);
-	  if(strstr(temp,"void"))
-	    wLog1("digitalWrite LOW",pin);
-	  else
-	    wLog1(temp,pin);
+	  wLog1("digitalWrite LOW",pin);
 	}
+      interruptNow();
     }
   else
     {
       showError("DigitalWrite: Wrong pin mode. Should be OUTPUT",pin);
-      //wLog1("digitalWrite",pin);
     }
 }
 
@@ -216,19 +198,13 @@ int digitalRead(int pin)
     {
       passTime();
       value = getDigitalPinValue(pin,timeFromStart);
-      c_digitalPin[g_now][pin] = value;
-     
-      strcpy(temp,textDigitalRead[pin]);
-      
-      if(strstr(temp,"void"))
-	wLog2("digitalRead",pin,value);
-      else
-	wLog2(temp,pin,value);
+      c_digitalPin[pin] = value;
+      wLog2("digitalRead",pin,value);
+      interruptNow();
     }
   else
     {
       showError("DigitalRead: Wrong pin mode. Should be INPUT",pin);
-      //wLog2("digitalRead",pin,value);
     }
   return(value);
 }
@@ -249,7 +225,7 @@ int analogRead(int pin)  // Values 0 to 1023
 
   passTime();
   value = getAnalogPinValue(pin,timeFromStart);
-  c_analogPin[g_now][pin];
+  c_analogPin[pin] = value;
   if(value > 1023 || value < 0)
     {
       sprintf(temp,"%d Analog pin=%d value out of range = %d",timeFromStart,pin,value);
@@ -257,11 +233,8 @@ int analogRead(int pin)  // Values 0 to 1023
       value = 0;
     }
   
-  strcpy(temp,textAnalogRead[pin]);
-  if(strstr(temp,"void"))
-    wLog2("analogRead",pin,value);
-  else
-    wLog2(temp,pin,value);
+  wLog2("analogRead",pin,value);
+  interruptNow();
   return(value); 
 }
 
@@ -270,12 +243,9 @@ void analogWrite(int pin,int value)
 {
   char temp[80];
 
-
-
   if(digitalMode[pin] != OUTPUT)
     {
       showError("AnalogWrite: Pin is not in OUPUT mode: ",pin);
-      //wLog2("analogWrite",pin,value);
       return;
     }
 
@@ -289,17 +259,14 @@ void analogWrite(int pin,int value)
 	  value = 0;
 	}
       
-      c_digitalPin[g_now][pin] = value;
-      strcpy(temp,textAnalogWrite[pin]);
-      if(strstr(temp,"void"))
-	wLog2("analogWrite",pin,value);
-      else
-	wLog2(temp,pin,value); 
+      c_digitalPin[pin] = value;
+
+      wLog2("analogWrite",pin,value);
+      interruptNow();
     }
   else
     {
       showError("analogWrite: Pin is not of PWM type",pin);
-      //wLog2("analogWrite",pin,value);
     }
   return;
 }
@@ -354,6 +321,7 @@ void delay(int ms)
 {
   passTime(); 
   wLog1("delay",ms);
+  interruptNow();
   //msleep(ms);
 }
 
@@ -361,6 +329,7 @@ void delayMicroseconds(int us)
 {
   passTime();
   wLog1("delayMicroseconds",us);
+  interruptNow();
   //msleep(us);
 }
 
@@ -476,6 +445,8 @@ void attachInterrupt(int interrupt,void(*func)(),int mode)
   passTime();
   interruptMode[interrupt] = mode;
 
+  attached[interrupt] = YES;
+
   if(interrupt == 0)
     {
       interrupt0 = func;
@@ -488,8 +459,8 @@ void attachInterrupt(int interrupt,void(*func)(),int mode)
   if(interrupt != 0 && interrupt != 1)
     showError("Unsupported interrupt number",interrupt);
 
-  if(confLogLev > 0)wLog1("attachInterrupt",interrupt);
-
+  wLog1("attachInterrupt",interrupt);
+  interruptNow();
 }
 
 //---------------------------------------------------
@@ -508,7 +479,8 @@ void detachInterrupt(int interrupt)
   if(interrupt != 0 && interrupt != 1)
     showError("Unsupported interrupt number",interrupt);
     
-  if(confLogLev > 0)wLog1("detachInterrupt",interrupt);
+  wLog1("detachInterrupt",interrupt);
+  interruptNow();
 }
 
 //------ Interrupts ------------------------
@@ -549,6 +521,7 @@ void serial::begin(int baudRate)
   digitalMode[0] = RX;
   digitalMode[1] = TX;
   serialMode = ON;
+  interruptNow();
 }
 
 void serial::end() 
@@ -558,6 +531,7 @@ void serial::end()
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
   serialMode = OFF;
+  interruptNow();
 }
 
 int serial::available()  // returns the number of bytes available to read
@@ -585,56 +559,49 @@ void serial::flush()
 void serial::print(int x) 
 {
   passTime();
-  //sprintf(stemp,"%d",x);
-  //showSerial(stemp,0);
   wLog1("Serial:print(int)",x);
+  interruptNow();
 }
 
 void serial::print(int x,int base) 
 {
   passTime();
-  //sprintf(stemp,"%d",x);
-  //showSerial(stemp,0);
   wLog1("Serial:print(int,int)",x);
+  interruptNow();
 }
 
 void serial::print(const char *p) 
 {
   passTime();
-  //sprintf(stemp,"%s",p);
-  //showSerial(stemp,0);
   wLogChar1("Serial:print(char)",p);
+  interruptNow();
 }
 
 void serial::println(int x) 
 {
   passTime();
-  //sprintf(stemp,"%d",x);
-  //showSerial(stemp,1);
   wLog1("Serial:println(int)",x);
+  interruptNow();
 }
 
 void serial::println(const char *p) 
 {
   passTime();
-  //sprintf(stemp,"%s",p);
-  //showSerial(stemp,1);
   wLogChar1("Serial:println(char)",p);
+  interruptNow();
 }
 
 void serial::println(String p) 
 {
   passTime();
-  //sprintf(stemp,"%s",p);
-  //showSerial(stemp,1);
   //wLogChar("Serial:println(char)",p,-1);
+  interruptNow();
 }
 
 void serial::write(char *p) 
 {
   passTime();
-  //sprintf(stemp,"%s",p);
-  //showSerial(stemp,1);
   wLogChar1("Serial:write(char)",p);
+  interruptNow();
 }
 
