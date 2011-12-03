@@ -132,6 +132,8 @@ int getInterruptValue(int pin,int step)
   }
   if(step > s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
 
+  //printf("Benny: pin=%d step=%d res=%d\n",pin,step,res);
+
   return(res);
 }  
 
@@ -352,6 +354,7 @@ void interruptNow()
 
   if(attached[0] == YES)
     {
+      printf("%d check interrupt 0 %d %d    %d %d\n",i,ir0_1,ir0_2,RISING,interruptMode[0]);
       if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
 	{
 	  passTime();

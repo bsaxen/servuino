@@ -320,7 +320,7 @@ unsigned long micros()
 void delay(int ms)
 {
   passTime(); 
-  wLog1("delay",ms);
+  wLog1("delay()",ms);
   interruptNow();
   //msleep(ms);
 }
