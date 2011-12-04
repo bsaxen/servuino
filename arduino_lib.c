@@ -134,13 +134,12 @@ void unimplemented(const char *f)
 }
 
 //------ Digital I/O -----------------------
-
+//=====================================
 void pinMode(int pin,int mode)
+//=====================================
 {
   char temp[80];
   
-
-
   if(mode == INPUT || mode == OUTPUT)
     {
       passTime();
@@ -159,11 +158,12 @@ void pinMode(int pin,int mode)
     }
   else
     {
-      showError("pinMode:Unknown Pin Mode",mode);
+      mLog1("pinMode:Unknown Pin Mode",pin);
     }
 }
-
+//=====================================
 void digitalWrite(int pin,int value)
+//=====================================
 {
   char temp[80];
 
@@ -184,34 +184,48 @@ void digitalWrite(int pin,int value)
     }
   else
     {
-      showError("DigitalWrite: Wrong pin mode. Should be OUTPUT",pin);
+      mLog1("digitalWrite Wrong Pin Mode ",pin);
     }
 }
-
+//=====================================
 int digitalRead(int pin)
+//=====================================
 {
-  int value=0;
+  int value=0,x;
   char temp[80];
 
 
   if(digitalMode[pin] == INPUT)
     {
       passTime();
+
       value = getDigitalPinValue(pin,timeFromStart);
       c_digitalPin[pin] = value;
+
+      x = stepAtReadD[0];
+      x++;
+      stepAtReadD[0] = x;
+      if(x < MAX_READ)
+	{
+	  stepAtReadD[x]  = timeFromStart;
+	  valueAtReadD[x] = value;
+	  pinAtReadD[x]   = pin;
+	}
+
       wLog2("digitalRead",pin,value);
       interruptNow();
     }
   else
     {
-      showError("DigitalRead: Wrong pin mode. Should be INPUT",pin);
+      mLog1("digitalRead: Wrong pin mode",pin);
     }
   return(value);
 }
 
 //------ Analog I/O ------------------------
-
+//=====================================
 void analogReference(char type[])
+//=====================================
 {
   unimplemented("analogReference()");
   //DEFAULT, INTERNAL, INTERNAL1V1, INTERNAL2V56, or EXTERNAL
@@ -220,7 +234,7 @@ void analogReference(char type[])
 int analogRead(int pin)  // Values 0 to 1023
 {
 
-  int value;
+  int value,x;
   char temp[80];
 
   passTime();
@@ -229,24 +243,34 @@ int analogRead(int pin)  // Values 0 to 1023
   if(value > 1023 || value < 0)
     {
       sprintf(temp,"%d Analog pin=%d value out of range = %d",timeFromStart,pin,value);
-      showError(temp,-1);
+      mLog0(temp);
       value = 0;
+    }
+  
+  x = stepAtReadA[0];
+  x++;
+  stepAtReadA[0] = x;
+  if(x < MAX_READ)
+    {
+      stepAtReadA[x]  = timeFromStart;
+      valueAtReadA[x] = value;
+      pinAtReadA[x]   = pin;
     }
   
   wLog2("analogRead",pin,value);
   interruptNow();
   return(value); 
 }
-
+//=====================================
 void analogWrite(int pin,int value) 
+//=====================================
 // Values 0 to 255   PWM: only pin 3,5,6,9,10,11
 {
   char temp[80];
 
   if(digitalMode[pin] != OUTPUT)
     {
-      showError("AnalogWrite: Pin is not in OUPUT mode: ",pin);
-      return;
+      mLog1("AnalogWrite: Pin is not in OUPUT mode: ",pin);
     }
 
   if(pin==3 || pin==5 || pin==6 || pin==9 || pin==10 || pin==11)
@@ -255,7 +279,7 @@ void analogWrite(int pin,int value)
       if(value > 256 || value < 0)
 	{
 	  sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",timeFromStart,pin,value);
-	  showError(temp,-1);
+	  wLog0(temp);
 	  value = 0;
 	}
       
@@ -266,7 +290,7 @@ void analogWrite(int pin,int value)
     }
   else
     {
-      showError("analogWrite: Pin is not of PWM type",pin);
+      mLog1("analogWrite: Pin is not of PWM type",pin);
     }
   return;
 }
@@ -328,7 +352,7 @@ void delay(int ms)
 void delayMicroseconds(int us)
 {
   passTime();
-  wLog1("delayMicroseconds",us);
+  wLog1("delayMicroseconds()",us);
   interruptNow();
   //msleep(us);
 }
@@ -457,7 +481,7 @@ void attachInterrupt(int interrupt,void(*func)(),int mode)
     }
 
   if(interrupt != 0 && interrupt != 1)
-    showError("Unsupported interrupt number",interrupt);
+    mLog1("Unsupported interrupt number",interrupt);
 
   wLog1("attachInterrupt",interrupt);
   interruptNow();
@@ -477,7 +501,7 @@ void detachInterrupt(int interrupt)
     }
   
   if(interrupt != 0 && interrupt != 1)
-    showError("Unsupported interrupt number",interrupt);
+    mLog1("Unsupported interrupt number",interrupt);
     
   wLog1("detachInterrupt",interrupt);
   interruptNow();
