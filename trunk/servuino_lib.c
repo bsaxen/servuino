@@ -8,11 +8,17 @@ void boardInit()
 {
   int i,j;
 
-
-
-
-
   g_nloop = 0;
+
+  for(i=0;i<MAX_READ;i++)
+    {
+      stepAtReadA[i]  = 0;
+      stepAtReadD[i]  = 0;
+      valueAtReadA[i] = 0;
+      valueAtReadD[i] = 0;
+      pinAtReadA[i]   = 0;
+      pinAtReadD[i]   = 0;
+    }
 
   for(i=0;i<ANAPINS;i++)
     {
@@ -50,18 +56,7 @@ void boardInit()
       s_digitalStep[i] = 0;
       s_analogStep[i] = 0;
     }
-}
 
-//====================================
-void showError(const char *m, int value)
-//====================================
-{
-  error = 1;
-
-  if(value == -1)
-    fprintf(e_log,"ERROR %s\n",m);
-  else
-    fprintf(e_log,"ERROR %s %d\n",m,value);
 }
 
 //====================================
@@ -71,7 +66,7 @@ void openSimFile()
   s_log = fopen("data.su","w");
   if(s_log == NULL)
     {
-      showError("Unable to open data.su",-1);
+      printf("Unable to open data.su\n");
     }
   fprintf(s_log,"# Servuino simulation data\n");
 
@@ -97,10 +92,10 @@ int getAnalogPinValue(int pin,int step)
 
   for (i=0;i<scenAnalog;i++)
   {
-    if(step > s_analogStep[i] && step < s_analogStep[i+1])
+    if(step >= s_analogStep[i] && step < s_analogStep[i+1])
        res = s_analogPin[i][pin];
   }
-  if(step > s_analogStep[scenAnalog]) res = s_analogPin[scenAnalog][pin];
+  if(step >= s_analogStep[scenAnalog]) res = s_analogPin[scenAnalog][pin];
 
   return(res);
 }  
@@ -112,10 +107,10 @@ int getDigitalPinValue(int pin,int step)
   int i,res=0;
   for (i=0;i<scenDigital;i++)
   {
-    if(step > s_digitalStep[i] && step < s_digitalStep[i+1])
+    if(step >= s_digitalStep[i] && step < s_digitalStep[i+1])
        res = s_digitalPin[i][pin];
   }
-  if(step > s_digitalStep[scenDigital]) res = s_digitalPin[scenDigital][pin];
+  if(step >= s_digitalStep[scenDigital]) res = s_digitalPin[scenDigital][pin];
 
   return(res);
 }  
@@ -130,9 +125,7 @@ int getInterruptValue(int pin,int step)
     if(step >= s_interruptStep[i] && step < s_interruptStep[i+1])
        res = s_interrupt[i][pin];
   }
-  if(step > s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
-
-  //printf("Benny: pin=%d step=%d res=%d\n",pin,step,res);
+  if(step >= s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
 
   return(res);
 }  
@@ -171,6 +164,42 @@ void scenario()
 
 
 //====================================
+void dumpReadStatistics()
+//====================================
+{
+  int i,j;
+  
+      for(j=1;j<stepAtReadA[0];j++)
+	{
+	  fprintf(s_log,"// SCENANAPIN %d ",stepAtReadA[j]);
+	  for(i=0;i<ANAPINS;i++)
+	    {
+	      if(pinAtReadA[j]== i)
+		fprintf(s_log,"%4d ",valueAtReadA[j]);
+	      else
+		fprintf(s_log,"%4d ",0);
+	    }
+	  fprintf(s_log,"\n");
+	}
+   
+      for(j=1;j<stepAtReadD[0];j++)
+	{
+	  fprintf(s_log,"// SCENDIGPIN %d ",stepAtReadD[j]);
+	  for(i=0;i<DIGPINS;i++)
+	    {
+	      if(pinAtReadD[j]== i)
+		fprintf(s_log,"%4d ",valueAtReadD[j]);
+	      else
+		fprintf(s_log,"%4d ",0);
+	    }
+	  fprintf(s_log,"\n");
+	}
+
+  
+  return;
+}
+
+//====================================
 void status()
 //====================================
 {
@@ -189,6 +218,44 @@ void status()
   for(i=0;i<6;i++) fprintf(s_log,"%3d ",c_analogPin[i]);
   fprintf(s_log,"\n");
 
+  return;
+}
+//====================================
+void mLine()
+//====================================
+{
+  char line[120];
+  
+  strcpy(line,"--------------------");
+  fprintf(s_log,"= %d %s\n",timeFromStart,line);
+  //printf("+ %d %s\n",timeFromStart,line);
+  return;
+}
+//====================================
+void mLineText(const char *t)
+//====================================
+{
+  char line[120];
+  
+  sprintf(line,"------ %s ------",t);
+  fprintf(s_log,"= %d %s\n",timeFromStart,line);
+  //printf("+ %d %s\n",timeFromStart,line);
+  return;
+}
+//====================================
+void mLog0(const char *p)
+//====================================
+{
+  fprintf(s_log,"= %d %s\n",timeFromStart,p);
+  //printf("+ %d %s\n",timeFromStart,p);
+  return;
+}
+//====================================
+void mLog1(const char *p, int value1)
+//====================================
+{
+  fprintf(s_log,"= %d %s %d\n",timeFromStart,p,value1);
+  //printf("= %d %s %d\n",timeFromStart,p,value1);
   return;
 }
 
@@ -254,7 +321,7 @@ void showSerial(const char *m, int newLine)
     }
   else
     {
-      showError("Serial output without Serial.begin",timeFromStart);
+      mLog1("Serial output without Serial.begin",timeFromStart);
     }
 }
 
@@ -315,6 +382,7 @@ void stopEncoding()
 //====================================
 {
   status();
+  dumpReadStatistics();
   closeSimFile();
 //  printf("Ready! Servuino Encoding in file: data.su\n");
   exit(0);
@@ -354,51 +422,63 @@ void interruptNow()
 
   if(attached[0] == YES)
     {
-      printf("%d check interrupt 0 %d %d    %d %d\n",i,ir0_1,ir0_2,RISING,interruptMode[0]);
+      //printf("%d check interrupt 0 %d %d    %d %d\n",i,ir0_1,ir0_2,RISING,interruptMode[0]);
       if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
 	{
 	  passTime();
 	  wLog1("interruptRISING",0);
+          mLineText("interrupt in");
 	  interrupt0();
+          mLineText("interrupt out");
 	}
       
       if(interruptMode[0] == FALLING && ir0_1 == 0 && ir0_2 == 1)
 	{
 	  passTime();
 	  wLog1("interruptFALLING",0);
+          mLineText("interrupt in");
 	  interrupt0();
+          mLineText("interrupt out");
 	}
       
       if(interruptMode[0] == CHANGE && ir0_1 != ir0_2)
 	{
 	  passTime();
 	  wLog1("interruptCHANGE",0);
+          mLineText("interrupt in");
 	  interrupt0();
+          mLineText("interrupt out");
 	}
     }
   
   if(attached[1] == YES)
     {
-      printf("%d check interrupt 1 %d %d    %d %d\n",i,ir1_1,ir1_2,RISING,interruptMode[1]);
+      //printf("%d check interrupt 1 %d %d    %d %d\n",i,ir1_1,ir1_2,RISING,interruptMode[1]);
       if(interruptMode[1] == RISING && ir1_1 == 1 && ir1_2 == 0)
 	{
 	  passTime();
 	  wLog1("interruptRISING",1);
+          mLineText("interrupt in");
 	  interrupt1();
+          mLineText("interrupt out");
 	}
       
       if(interruptMode[1] == FALLING && ir1_1 == 0 && ir1_2 == 1)
 	{
 	  passTime();
 	  wLog1("interruptFALLING",1);
+          mLineText("interrupt in");
 	  interrupt1();
+          mLineText("interrupt out");
 	}
       
       if(interruptMode[1] == CHANGE && ir1_1 != ir1_2)
 	{
 	  passTime();
 	  wLog1("interruptCHANGE",1);
+          mLineText("interrupt in");
 	  interrupt1();
+          mLineText("interrupt out");
 	}
     }
 }
@@ -416,7 +496,7 @@ void readScenario()
   in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      showError("Unable to open sketch for scenario reading",-1);
+      mLog0("Unable to open sketch for scenario reading\n");
     }
   else
     {
