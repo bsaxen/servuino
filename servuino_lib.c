@@ -22,8 +22,8 @@ void boardInit()
 
   for(i=0;i<ANAPINS;i++)
     {
-      anaPinPos[i] = 0;
-      c_analogPin[i]= 0;
+      anaPinPos[i]   = 0;
+      c_analogPin[i] = 0;
       for(j=0;j<SCEN_MAX;j++)
 	{
 	  s_analogPin[j][i] = 0;
@@ -32,8 +32,8 @@ void boardInit()
   
   for(i=0;i<DIGPINS;i++)
     {
-      digitalMode[i] = FREE;
-      digPinPos[i] = 0;
+      digitalMode[i]  = FREE;
+      digPinPos[i]    = 0;
       c_digitalPin[i] = 0;
       for(j=0;j<SCEN_MAX;j++)
 	{
@@ -43,18 +43,20 @@ void boardInit()
 
   for(i=0;i<INTPINS;i++)
     {
+      interruptMode[i] = 0;
+      intPinPos[i]     = 0;
+      c_intPin[i]      = 0;
       for(j=0;j<SCEN_MAX;j++)
 	{
 	  s_interrupt[j][i] = 0;
 	}
-      interruptMode[i] = 0;
     }
 
   for(i=0;i<SCEN_MAX;i++)
     {
       s_interruptStep[i] = 0;
-      s_digitalStep[i] = 0;
-      s_analogStep[i] = 0;
+      s_digitalStep[i]   = 0;
+      s_analogStep[i]    = 0;
     }
 
 }
@@ -91,10 +93,10 @@ int getAnalogPinValue(int pin,int step)
   int i,res=0;
 
   for (i=0;i<scenAnalog;i++)
-  {
-    if(step >= s_analogStep[i] && step < s_analogStep[i+1])
-       res = s_analogPin[i][pin];
-  }
+    {
+      if(step >= s_analogStep[i] && step < s_analogStep[i+1])
+	res = s_analogPin[i][pin];
+    }
   if(step >= s_analogStep[scenAnalog]) res = s_analogPin[scenAnalog][pin];
 
   return(res);
@@ -106,10 +108,10 @@ int getDigitalPinValue(int pin,int step)
 {  
   int i,res=0;
   for (i=0;i<scenDigital;i++)
-  {
-    if(step >= s_digitalStep[i] && step < s_digitalStep[i+1])
-       res = s_digitalPin[i][pin];
-  }
+    {
+      if(step >= s_digitalStep[i] && step < s_digitalStep[i+1])
+	res = s_digitalPin[i][pin];
+    }
   if(step >= s_digitalStep[scenDigital]) res = s_digitalPin[scenDigital][pin];
 
   return(res);
@@ -121,10 +123,10 @@ int getInterruptValue(int pin,int step)
 {  
   int i,res=0;
   for (i=0;i<scenInterrupt;i++)
-  {
-    if(step >= s_interruptStep[i] && step < s_interruptStep[i+1])
-       res = s_interrupt[i][pin];
-  }
+    {
+      if(step >= s_interruptStep[i] && step < s_interruptStep[i+1])
+	res = s_interrupt[i][pin];
+    }
   if(step >= s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
 
   return(res);
@@ -137,28 +139,28 @@ void scenario()
   int i,j;
 
   for(i=1;i<=scenDigital;i++)
-  {
-     fprintf(s_log,"#// SCENDIGPIN %4d ",s_digitalStep[i]);
-     for(j=0;j<DIGPINS;j++)
-       fprintf(s_log,"%d ",s_digitalPin[i][j]);
-       fprintf(s_log,"\n");
-  }
+    {
+      fprintf(s_log,"#// SCENDIGPIN %4d ",s_digitalStep[i]);
+      for(j=0;j<DIGPINS;j++)
+	fprintf(s_log,"%d ",s_digitalPin[i][j]);
+      fprintf(s_log,"\n");
+    }
 
   for(i=1;i<=scenAnalog;i++)
-  {
-     fprintf(s_log,"#// SCENANAPIN %4d ",s_analogStep[i]);
-     for(j=0;j<ANAPINS;j++)
-       fprintf(s_log,"%4d ",s_analogPin[i][j]);
-       fprintf(s_log,"\n");
-  }
+    {
+      fprintf(s_log,"#// SCENANAPIN %4d ",s_analogStep[i]);
+      for(j=0;j<ANAPINS;j++)
+	fprintf(s_log,"%4d ",s_analogPin[i][j]);
+      fprintf(s_log,"\n");
+    }
 
   for(i=1;i<=scenInterrupt;i++)
-  {
-     fprintf(s_log,"#// SCENINRPT %4d ",s_interruptStep[i]);
-     for(j=0;j<INTPINS;j++)
-       fprintf(s_log,"%1d ",s_interrupt[i][j]);
-       fprintf(s_log,"\n");
-  }
+    {
+      fprintf(s_log,"#// SCENINRPT %4d ",s_interruptStep[i]);
+      for(j=0;j<INTPINS;j++)
+	fprintf(s_log,"%1d ",s_interrupt[i][j]);
+      fprintf(s_log,"\n");
+    }
   return;
 }
 
@@ -168,34 +170,40 @@ void dumpReadStatistics()
 //====================================
 {
   int i,j;
-  
-      for(j=1;j<stepAtReadA[0];j++)
-	{
-	  fprintf(s_log,"// SCENANAPIN %d ",stepAtReadA[j]);
-	  for(i=0;i<ANAPINS;i++)
-	    {
-	      if(pinAtReadA[j]== i)
-		fprintf(s_log,"%4d ",valueAtReadA[j]);
-	      else
-		fprintf(s_log,"%4d ",0);
-	    }
-	  fprintf(s_log,"\n");
-	}
-   
-      for(j=1;j<stepAtReadD[0];j++)
-	{
-	  fprintf(s_log,"// SCENDIGPIN %d ",stepAtReadD[j]);
-	  for(i=0;i<DIGPINS;i++)
-	    {
-	      if(pinAtReadD[j]== i)
-		fprintf(s_log,"%4d ",valueAtReadD[j]);
-	      else
-		fprintf(s_log,"%4d ",0);
-	    }
-	  fprintf(s_log,"\n");
-	}
+  FILE *out;
 
+  out = fopen("data.scen","w");
+  if(out == NULL)
+    {
+      printf("Unable to open data.scen\n");
+    }
   
+  for(j=1;j<stepAtReadA[0];j++)
+    {
+      fprintf(out,"// SCENANAPIN %d ",stepAtReadA[j]);
+      for(i=0;i<ANAPINS;i++)
+	{
+	  if(pinAtReadA[j]== i)
+	    fprintf(out,"%4d ",valueAtReadA[j]);
+	  else
+	    fprintf(out,"%4d ",0);
+	}
+      fprintf(out,"\n");
+    }
+   
+  for(j=1;j<stepAtReadD[0];j++)
+    {
+      fprintf(out,"// SCENDIGPIN %d ",stepAtReadD[j]);
+      for(i=0;i<DIGPINS;i++)
+	{
+	  if(pinAtReadD[j]== i)
+	    fprintf(out,"%4d ",valueAtReadD[j]);
+	  else
+	    fprintf(out,"%4d ",0);
+	}
+      fprintf(out,"\n");
+    }
+  fclose(out);
   return;
 }
 
@@ -384,7 +392,6 @@ void stopEncoding()
   status();
   dumpReadStatistics();
   closeSimFile();
-//  printf("Ready! Servuino Encoding in file: data.su\n");
   exit(0);
 }
 
@@ -393,7 +400,6 @@ void passTime()
 //====================================
 {
   timeFromStart++;
-  //printf("time: %d\n",timeFromStart);
   if(g_simulationLength < timeFromStart)stopEncoding();
   return;
 }
@@ -493,7 +499,9 @@ void readScenario()
 
 
 
-  in = fopen("sketch.pde","r");
+  if(g_scenSource == 0)in = fopen("sketch.pde","r");
+  if(g_scenSource == 1)in = fopen("data.scen","r");
+
   if(in == NULL)
     {
       mLog0("Unable to open sketch for scenario reading\n");

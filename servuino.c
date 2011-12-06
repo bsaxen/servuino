@@ -100,6 +100,8 @@ int   s_digitalPin[SCEN_MAX][DIGPINS];
 int   s_digitalStep[SCEN_MAX];
 int   digitalMode[DIGPINS];
 
+int   intPinPos[INTPINS];
+int   c_intPin[INTPINS];
 int   s_interrupt[SCEN_MAX][INTPINS];
 int   s_interruptStep[SCEN_MAX];
 int   interruptMode[INTPINS];
@@ -129,6 +131,11 @@ int   conn;
 int   confLogLev  =   0;
 
 int g_nloop = 0;
+int g_scenSource = 0;
+int g_pinType    = 0;
+int g_pinNo      = 0;
+int g_pinValue   = 0;
+int g_pinStep    = 0;
 
 FILE *s_log,*e_log;
 
@@ -142,6 +149,7 @@ void runEncoding(int n)
 {
   boardInit();
   readScenario();
+
   fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
   scenario();
   status();
@@ -167,10 +175,23 @@ int main(int argc, char *argv[])
   g_go = YES;
   openSimFile();
   readSketchInfo();
-  if(argc == 2) g_simulationLength = atoi(argv[1]);
+  if(argc == 3)
+    {
+      g_simulationLength = atoi(argv[1]);
+      g_scenSource = atoi(argv[2]);
+    }
+  if(argc == 7)
+    {
+      // steps, source, pintype, pinno, pinvalue, pinstep
+      g_simulationLength = atoi(argv[1]);
+      g_scenSource =  atoi(argv[2]);
+      g_pinType    =  atoi(argv[3]);
+      g_pinNo      =  atoi(argv[4]);
+      g_pinValue   =  atoi(argv[5]);
+      g_pinStep    =  atoi(argv[6]);
+    }
   runEncoding(g_simulationLength);
   closeSimFile();
-
 }
 
 
