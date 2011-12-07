@@ -12,7 +12,8 @@
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. 
+*/
 
 //====================================
 void boardInit()
@@ -260,7 +261,6 @@ void mLine()
   
   strcpy(line,"--------------------");
   fprintf(s_log,"= %d %s\n",timeFromStart,line);
-  //printf("+ %d %s\n",timeFromStart,line);
   return;
 }
 //====================================
@@ -271,7 +271,6 @@ void mLineText(const char *t)
   
   sprintf(line,"------ %s ------",t);
   fprintf(s_log,"= %d %s\n",timeFromStart,line);
-  //printf("+ %d %s\n",timeFromStart,line);
   return;
 }
 //====================================
@@ -279,7 +278,6 @@ void mLog0(const char *p)
 //====================================
 {
   fprintf(s_log,"= %d %s\n",timeFromStart,p);
-  //printf("+ %d %s\n",timeFromStart,p);
   return;
 }
 //====================================
@@ -287,7 +285,6 @@ void mLog1(const char *p, int value1)
 //====================================
 {
   fprintf(s_log,"= %d %s %d\n",timeFromStart,p,value1);
-  //printf("= %d %s %d\n",timeFromStart,p,value1);
   return;
 }
 
@@ -296,7 +293,6 @@ void wLog0(const char *p)
 //====================================
 {
   fprintf(s_log,"+ %d %s\n",timeFromStart,p);
-  //printf("+ %d %s\n",timeFromStart,p);
   return;
 }
 
@@ -305,7 +301,6 @@ void wLog1(const char *p, int value1)
 //====================================
 {
   fprintf(s_log,"+ %d %s %d\n",timeFromStart,p,value1);
-  //printf("+ %d %s %d\n",timeFromStart,p,value1);
   return;
 }
 
@@ -314,7 +309,6 @@ void wLog2(const char *p, int value1, int value2)
 //====================================
 {
   fprintf(s_log,"+ %d %s %d %d\n",timeFromStart,p,value1,value2);
-  //printf("+ %d %s %d %d\n",timeFromStart,p,value1,value2);
   return;
 }
 
@@ -324,7 +318,6 @@ void wLogChar1(const char *p, const char *value1)
 //====================================
 {
   fprintf(s_log,"+ %d %s '%s'\n",timeFromStart,p,value1);
-  //printf("+ %d %s '%s'\n",timeFromStart,p,value1);
   return;
 }
 
@@ -333,7 +326,6 @@ void wLogChar2(const char *p, const char *value1, int value2)
 //====================================
 {
   fprintf(s_log,"+ %d %s '%s' %d\n",timeFromStart,p,value1,value2);
-  //printf("+ %d %s '%s' %d\n",timeFromStart,p,value1,value2);
   return;
 }
 
@@ -388,7 +380,7 @@ void readSketchInfo()
   in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      //printf("Error: Unable to open sketch",-1);
+      errorLog("Error: Unable to open sketch");
     }
   else
     {
