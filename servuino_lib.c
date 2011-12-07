@@ -113,9 +113,9 @@ int getAnalogPinValue(int pin,int step)
   int i,res=0;
 
   if (step == g_pinStep && pin == g_pinNo && g_pinType == ANA)
-  {
-    return(g_pinValue);
-  }
+    {
+      return(g_pinValue);
+    }
 
   for (i=0;i<scenAnalog;i++)
     {
