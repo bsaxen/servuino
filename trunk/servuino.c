@@ -1,7 +1,18 @@
-//================================================
-//  Servuino 
-//  Developed by Benny Saxen, ADCAJO
-//================================================
+/*  Servuino is a Arduino Simulator Engine
+    Copyright (C) 2011  Benny Saxen
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -50,11 +61,8 @@
 #define RISING  2
 #define FALLING 3
 
-#define DP 5
-#define AP 15
-#define RF 0
-#define ER 1
-#define SR 20
+#define ANA    1
+#define DIG    2
 
 #define ON     1
 #define OFF    0
@@ -174,14 +182,23 @@ int main(int argc, char *argv[])
 {
   g_go = YES;
   openSimFile();
-  readSketchInfo();
+  if(argc == 1)
+    {
+      readSketchInfo();
+      g_simulationLength = 499;
+      g_scenSource = 0;
+      runEncoding(g_simulationLength);
+    }
   if(argc == 3)
     {
+      readSketchInfo();
       g_simulationLength = atoi(argv[1]);
       g_scenSource = atoi(argv[2]);
+      runEncoding(g_simulationLength);
     }
-  if(argc == 7)
+  else if(argc == 7)
     {
+      readSketchInfo();
       // steps, source, pintype, pinno, pinvalue, pinstep
       g_simulationLength = atoi(argv[1]);
       g_scenSource =  atoi(argv[2]);
@@ -189,8 +206,11 @@ int main(int argc, char *argv[])
       g_pinNo      =  atoi(argv[4]);
       g_pinValue   =  atoi(argv[5]);
       g_pinStep    =  atoi(argv[6]);
+      runEncoding(g_simulationLength);
     }
-  runEncoding(g_simulationLength);
+  else
+    errorLog("Servuino not executed");
+
   closeSimFile();
 }
 
