@@ -22,7 +22,7 @@
 #define TOTAL_PINS 20
 #define ANAPINS 6
 #define DIGPINS 14
-#define INTPINS 2
+#define INTPINS 6
 
 #define D00  0
 #define D01  1
@@ -80,6 +80,13 @@
 #define LOG_TEXT_SIZE 120
 #define MAX_READ 100
 
+#define IR0  2
+#define IR1  3
+#define IR2 21
+#define IR3 20
+#define IR4 19
+#define IR5 18
+
 char sketch[120];
 
 // Init
@@ -88,8 +95,15 @@ int timeFromStart = 0;
 int g_simulationLength = 111;
 int g_go = NO;
 
+char interruptType[5][80];
+void (*interrupt[6])();
 void (*interrupt0)();
 void (*interrupt1)();
+void (*interrupt2)();
+void (*interrupt3)();
+void (*interrupt4)();
+void (*interrupt5)();
+int  pinToInterrupt[INTPINS];
 
 void stepCommand();
 
@@ -115,6 +129,7 @@ int   s_interrupt[SCEN_MAX][INTPINS];
 int   s_interruptStep[SCEN_MAX];
 int   interruptMode[INTPINS];
 int   attached[INTPINS];
+int   inrpt[INTPINS]; // Interrupt No -> Pin No
 
 int   stepAtReadD[MAX_READ];
 int   stepAtReadA[MAX_READ];
@@ -146,6 +161,12 @@ int g_pinNo      = 0;
 int g_pinValue   = 0;
 int g_pinStep    = 0;
 
+int preValueA[ANAPINS];
+int preValueD[DIGPINS];
+int curValueA[ANAPINS];
+int curValueD[DIGPINS];
+
+
 FILE *s_log,*e_log;
 
 #include "servuino_lib.c"
@@ -156,6 +177,18 @@ FILE *s_log,*e_log;
 void runEncoding(int n)
 //====================================
 {
+  strcpy(interruptType[LOW],"interruptLOW");
+  strcpy(interruptType[FALLING],"interruptFALLING");
+  strcpy(interruptType[RISING],"interruptRISING");
+  strcpy(interruptType[CHANGE],"interruptCHANGE");
+
+  inrpt[0] = IR0;
+  inrpt[1] = IR1;
+  inrpt[2] = IR2;
+  inrpt[3] = IR3;
+  inrpt[4] = IR4;
+  inrpt[5] = IR5;
+
   boardInit();
   readScenario();
 

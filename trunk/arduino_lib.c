@@ -26,8 +26,6 @@
   
 char  stemp[80];
 
-
-
 //------ String Class ---------------------
 class String {
 
@@ -202,15 +200,18 @@ void digitalWrite(int pin,int value)
 int digitalRead(int pin)
 //=====================================
 {
-  int value=0,x;
+  int value=0,x,ir;
   char temp[80];
 
+  ir = pinToInterrupt[pin];
 
-  if(digitalMode[pin] == INPUT)
+  if(digitalMode[pin] == INPUT || attached[ir] = YES)
     {
       passTime();
 
       value = getDigitalPinValue(pin,timeFromStart);
+      preValueD[pin] = curValueD[pin];
+      curValueD[pin] = value;
       c_digitalPin[pin] = value;
 
       x = stepAtReadD[0];
@@ -250,6 +251,8 @@ int analogRead(int pin)  // Values 0 to 1023
 
   passTime();
   value = getAnalogPinValue(pin,timeFromStart);
+  preValueA[pin] = curValueA[pin];
+  curValueA[pin] = value;
   c_analogPin[pin] = value;
   if(value > 1023 || value < 0)
     {
@@ -475,14 +478,17 @@ unsigned char bit(unsigned char x)
 //------ External Interrupts ---------------
 
 
-void attachInterrupt(int interrupt,void(*func)(),int mode)
+void attachInterrupt(int ir,void(*func)(),int mode)
 {
   passTime();
-  interruptMode[interrupt] = mode;
+  interruptMode[ir] = mode;
 
-  attached[interrupt] = YES;
+  attached[ir] = YES;
 
-  if(interrupt == 0)
+  if(ir>=0 && ir <=5)
+     interrupt[ir] = func;
+
+/*  if(interrupt == 0)
     {
       interrupt0 = func;
     }
@@ -490,11 +496,31 @@ void attachInterrupt(int interrupt,void(*func)(),int mode)
     {
       interrupt1 = func;
     }
+  if(interrupt == 2)
+    {
+      interrupt2 = func;
+    }
+  if(interrupt == 3)
+    {
+      interrupt3 = func;
+    }
+  if(interrupt == 4)
+    {
+      interrupt4 = func;
+    }
+  if(interrupt == 5)
+    {
+      interrupt5 = func;
+    }
+*/
 
-  if(interrupt != 0 && interrupt != 1)
-    mLog1("Unsupported interrupt number",interrupt);
+  if(ir < 0 || ir > 5)
+    mLog1("Unsupported interrupt number",ir);
 
-  wLog1("attachInterrupt",interrupt);
+  if(mode==LOW)wLog2("attachInterruptLOW",ir,mode);
+  if(mode==RISING)wLog2("attachInterruptRISING",ir,mode);
+  if(mode==FALLING)wLog2("attachInterruptFALLING",ir,mode);
+  if(mode==CHANGE)wLog2("attachInterruptCHANGE",ir,mode);
   interruptNow();
 }
 
