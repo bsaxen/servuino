@@ -426,24 +426,63 @@ void interruptNow()
 //====================================
 {
   int i,ir0_1,ir0_2,ir1_1,ir1_2;
+  int ir,ir_1,ir_2;
+//  i = timeFromStart;
 
-  i = timeFromStart;
+//  ir0_1 = getInterruptValue(0,i);
+//  ir0_2 = getInterruptValue(0,i-1);
+//  ir1_1 = getInterruptValue(1,i);
+//  ir1_2 = getInterruptValue(1,i-1);
+  
 
-  ir0_1 = getInterruptValue(0,i);
-  ir0_2 = getInterruptValue(0,i-1);
-  ir1_1 = getInterruptValue(1,i);
-  ir1_2 = getInterruptValue(1,i-1);
-
-  //  if(interruptMode[0] == LOW && interrupt[i][0] == 0)
+//  if(interruptMode[0] == LOW && interrupt[i][0] == 0)
   //    {
   //      if(confLogLev > 0)wLog1("InterruptLOW",0);
   //      interrupt0();
   //    }
 
 
-    
+  for(ir=0;ir<=5;ir++)
+  {
+    if(attached[ir] == YES)
+    {
+      i = inrpt[ir];
+      ir_1 = curValueD[i];
+      ir_2 = preValueD[i];
 
-  if(attached[0] == YES)
+      printf("%d check interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",timeFromStart,ir,i,ir_1,ir_2,interruptMode[ir]);
+      if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
+        {
+      printf("RISING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
+          passTime();
+          wLog1(interruptType[RISING],0);
+          mLineText("interrupt in");
+          interrupt[ir];
+          mLineText("interrupt out");
+        }
+      if(interruptMode[ir] == FALLING && ir_1 == 0 && ir_2 == 1)
+        {
+      printf("FALLING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
+          passTime();
+          wLog1(interruptType[FALLING],0);
+          mLineText("interrupt in");
+          interrupt[ir];
+          mLineText("interrupt out");
+        }
+
+      if(interruptMode[ir] == CHANGE && ir_1 != ir_2)
+        {
+      printf("CHANGE interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
+          passTime();
+          wLog1(interruptType[CHANGE],0);
+          mLineText("interrupt in");
+          interrupt[ir];
+          mLineText("interrupt out");
+        }
+    }
+  }  
+
+/*  if(attached[0] == YES)
     {
       //printf("%d check interrupt 0 %d %d    %d %d\n",i,ir0_1,ir0_2,RISING,interruptMode[0]);
       if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
@@ -504,6 +543,7 @@ void interruptNow()
           mLineText("interrupt out");
 	}
     }
+*/
 }
 //====================================
 void readScenario()
