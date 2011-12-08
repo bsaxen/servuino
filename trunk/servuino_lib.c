@@ -405,6 +405,7 @@ void readSketchInfo()
 void stopEncoding()
 //====================================
 {
+  fprintf(s_log,"# ENDOFSIM\n");
   status();
   dumpReadStatistics();
   closeSimFile();
