@@ -148,6 +148,8 @@ void pinMode(int pin,int mode)
 //=====================================
 {
   char temp[80];
+
+  currentPin = pin;
   
   if(mode == INPUT || mode == OUTPUT)
     {
@@ -163,12 +165,12 @@ void pinMode(int pin,int mode)
 	{
 	  wLog1("pinMode OUT",pin);
 	}
-      interruptNow();
+
     }
   else
-    {
-      mLog1("pinMode:Unknown Pin Mode",pin);
-    }
+    errorLog("pinMode:Unknown Pin Mode",pin);
+
+  interruptNow();
 }
 //=====================================
 void digitalWrite(int pin,int value)
@@ -176,9 +178,11 @@ void digitalWrite(int pin,int value)
 {
   char temp[80];
 
+  currentPin = pin;
+
+  passTime();
   if(digitalMode[pin] == OUTPUT)
     {
-      passTime();
       c_digitalPin[pin] = value;
 
       if(value==HIGH)
@@ -193,44 +197,39 @@ void digitalWrite(int pin,int value)
     }
   else
     {
-      mLog1("digitalWrite Wrong Pin Mode ",pin);
+      errorLog("digitalWrite Wrong Pin Mode ",pin);
     }
+  interruptNow();
 }
 //=====================================
 int digitalRead(int pin)
 //=====================================
 {
-  int value=0,x,ir;
+  int value=0,x;
   char temp[80];
 
-  ir = pinToInterrupt[pin];
+  currentPin = pin;
 
-  if(digitalMode[pin] == INPUT || attached[ir] = YES)
+  passTime();
+  if(digitalMode[pin] == INPUT )
     {
-      passTime();
-
-      value = getDigitalPinValue(pin,timeFromStart);
-      preValueD[pin] = curValueD[pin];
-      curValueD[pin] = value;
-      c_digitalPin[pin] = value;
-
-      x = stepAtReadD[0];
-      x++;
-      stepAtReadD[0] = x;
-      if(x < MAX_READ)
+      if(pin > 0 && pin < g_nDigitalPins)
 	{
-	  stepAtReadD[x]  = timeFromStart;
-	  valueAtReadD[x] = value;
-	  pinAtReadD[x]   = pin;
+	  value = getDigitalPinValue(pin,timeFromStart);
+	  preValueD[pin] = curValueD[pin];
+	  curValueD[pin] = value;
+	  c_digitalPin[pin] = value;
+	  
+	  regDigRead(pin,value,timeFromStart);
 	}
-
-      wLog2("digitalRead",pin,value);
-      interruptNow();
+      else
+	errorLog("digitalRead Pin number out of range",pin);
     }
   else
-    {
-      mLog1("digitalRead: Wrong pin mode",pin);
-    }
+    errorLog("digitalRead: Wrong pin mode",pin);
+  
+  wLog2("digitalRead",pin,value);
+  interruptNow();
   return(value);
 }
 
@@ -249,27 +248,26 @@ int analogRead(int pin)  // Values 0 to 1023
   int value,x;
   char temp[80];
 
+  currentPin = pin;
   passTime();
-  value = getAnalogPinValue(pin,timeFromStart);
-  preValueA[pin] = curValueA[pin];
-  curValueA[pin] = value;
-  c_analogPin[pin] = value;
-  if(value > 1023 || value < 0)
+
+  if(pin > 0 && pin < g_nAnalogPins)
     {
-      sprintf(temp,"%d Analog pin=%d value out of range = %d",timeFromStart,pin,value);
-      mLog0(temp);
-      value = 0;
+      value = getAnalogPinValue(pin,timeFromStart);
+      preValueA[pin] = curValueA[pin];
+      curValueA[pin] = value;
+      c_analogPin[pin] = value;
+      if(value > 1023 || value < 0)
+	{
+	  sprintf(temp,"%d Analog pin=%d value out of range = %d",timeFromStart,pin,value);
+	  errorLog(temp,0);
+	  value = 0;
+	}
     }
+  else
+    errorLog("analogRead Pin number out of range",pin);
   
-  x = stepAtReadA[0];
-  x++;
-  stepAtReadA[0] = x;
-  if(x < MAX_READ)
-    {
-      stepAtReadA[x]  = timeFromStart;
-      valueAtReadA[x] = value;
-      pinAtReadA[x]   = pin;
-    }
+  regAnaRead(pin,value);
   
   wLog2("analogRead",pin,value);
   interruptNow();
@@ -282,6 +280,7 @@ void analogWrite(int pin,int value)
 {
   char temp[80];
 
+  currentPin = pin;
   if(digitalMode[pin] != OUTPUT)
     {
       mLog1("AnalogWrite: Pin is not in OUPUT mode: ",pin);
@@ -298,30 +297,32 @@ void analogWrite(int pin,int value)
 	}
       
       c_digitalPin[pin] = value;
-
-      wLog2("analogWrite",pin,value);
-      interruptNow();
     }
   else
     {
-      mLog1("analogWrite: Pin is not of PWM type",pin);
+      errorLog("analogWrite: Pin is not of PWM type",pin);
     }
+  wLog2("analogWrite",pin,value);
+  interruptNow();
   return;
 }
 
 //------ Advanced I/O ----------------------
 void tone(int pin, unsigned int freq)
 {
+  currentPin = pin;
   unimplemented("tone()");
 }
 
 void tone(int pin, unsigned int freq, unsigned long duration)
 {
+  currentPin = pin;
   unimplemented("tone()");
 }
 
 void noTone(int pin)
 {
+  currentPin = pin;
   unimplemented("noTone()");
 }
 
@@ -333,11 +334,13 @@ void shiftOut(int dataPin, int clockPin, int bitOrder, int value)
 
 unsigned long pulseIn(int pin, int value)
 {
+  currentPin = pin;
   unimplemented("pulseIn()");
 }
 
 unsigned long pulseIn(int pin, int value, unsigned long timeout)
 {
+  currentPin = pin;
   unimplemented("pulseIn()");
 }
 
@@ -480,39 +483,20 @@ unsigned char bit(unsigned char x)
 
 void attachInterrupt(int ir,void(*func)(),int mode)
 {
+  int pin;
+
   passTime();
   interruptMode[ir] = mode;
 
   attached[ir] = YES;
+  mLog1("Interrupt number",ir);
 
   if(ir>=0 && ir <=5)
      interrupt[ir] = func;
+  
+  pin = inrpt[ir];
+  digitalMode[pin] == INTERRUPT;
 
-/*  if(interrupt == 0)
-    {
-      interrupt0 = func;
-    }
-  if(interrupt == 1)
-    {
-      interrupt1 = func;
-    }
-  if(interrupt == 2)
-    {
-      interrupt2 = func;
-    }
-  if(interrupt == 3)
-    {
-      interrupt3 = func;
-    }
-  if(interrupt == 4)
-    {
-      interrupt4 = func;
-    }
-  if(interrupt == 5)
-    {
-      interrupt5 = func;
-    }
-*/
 
   if(ir < 0 || ir > 5)
     mLog1("Unsupported interrupt number",ir);

@@ -86,8 +86,6 @@ void openSimFile()
   fprintf(s_log,"# Servuino simulation data\n");
 
   e_log = fopen("data.error","w");
-  fprintf(e_log,"Servuino Error Log\n");
-
 }
 
 //====================================
@@ -99,10 +97,10 @@ void closeSimFile()
 }
 
 //====================================
-void errorLog(const char msg[])
+void errorLog(const char msg[], int x)
 //====================================
 {
-  fprintf(e_log,"Error: %s\n",msg);
+  fprintf(e_log,"ServuinoERROR: %s %d\n",msg,x);
   return;
 }
 
@@ -112,11 +110,13 @@ int getAnalogPinValue(int pin,int step)
 {  
   int i,res=0;
 
+  // User inserted
   if (step == g_pinStep && pin == g_pinNo && g_pinType == ANA)
     {
       return(g_pinValue);
     }
 
+  // Based on sketch
   for (i=0;i<scenAnalog;i++)
     {
       if(step >= s_analogStep[i] && step < s_analogStep[i+1])
@@ -132,30 +132,37 @@ int getDigitalPinValue(int pin,int step)
 //====================================
 {  
   int i,res=0;
+
+  // User inserted
+  if (step == g_pinStep-1 && pin == g_pinNo && g_pinType == DIG)
+    {
+      return(g_pinValue);
+    }
+
+  // Based on Sketch
   for (i=0;i<scenDigital;i++)
     {
       if(step >= s_digitalStep[i] && step < s_digitalStep[i+1])
 	res = s_digitalPin[i][pin];
     }
   if(step >= s_digitalStep[scenDigital]) res = s_digitalPin[scenDigital][pin];
-
   return(res);
 }  
 
-//====================================
-int getInterruptValue(int pin,int step)
-//====================================
-{  
-  int i,res=0;
-  for (i=0;i<scenInterrupt;i++)
-    {
-      if(step >= s_interruptStep[i] && step < s_interruptStep[i+1])
-	res = s_interrupt[i][pin];
-    }
-  if(step >= s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin];
+/* //==================================== */
+/* int getInterruptValue(int pin,int step) */
+/* //==================================== */
+/* {   */
+/*   int i,res=0; */
+/*   for (i=0;i<scenInterrupt;i++) */
+/*     { */
+/*       if(step >= s_interruptStep[i] && step < s_interruptStep[i+1]) */
+/* 	res = s_interrupt[i][pin]; */
+/*     } */
+/*   if(step >= s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin]; */
 
-  return(res);
-}  
+/*   return(res); */
+/* }   */
 
 //====================================
 void scenario()
@@ -179,13 +186,6 @@ void scenario()
       fprintf(s_log,"\n");
     }
 
-  for(i=1;i<=scenInterrupt;i++)
-    {
-      fprintf(s_log,"#// SCENINRPT %4d ",s_interruptStep[i]);
-      for(j=0;j<INTPINS;j++)
-	fprintf(s_log,"%1d ",s_interrupt[i][j]);
-      fprintf(s_log,"\n");
-    }
   return;
 }
 
@@ -200,10 +200,12 @@ void dumpReadStatistics()
   out = fopen("data.scen","w");
   if(out == NULL)
     {
-      printf("Unable to open data.scen\n");
+      fprintf(e_log,"Unable to open data.scen\n");
     }
-  
-  for(j=1;j<stepAtReadA[0];j++)
+
+
+  // Based on reads  
+  for(j=1;j<=stepAtReadA[0];j++)
     {
       fprintf(out,"// SCENANAPIN %d ",stepAtReadA[j]);
       for(i=0;i<ANAPINS;i++)
@@ -215,8 +217,19 @@ void dumpReadStatistics()
 	}
       fprintf(out,"\n");
     }
-   
-  for(j=1;j<stepAtReadD[0];j++)
+
+
+  // Based on sketch
+
+/*   for(i=1;i<=scenDigital;i++) */
+/*     { */
+/*       fprintf(out,"// SCENDIGPIN %4d ",s_digitalStep[i]); */
+/*       for(j=0;j<DIGPINS;j++) */
+/* 	fprintf(out,"%d ",s_digitalPin[i][j]); */
+/*       fprintf(out,"\n"); */
+/*     } */
+
+  for(j=1;j<=stepAtReadD[0];j++)
     {
       fprintf(out,"// SCENDIGPIN %d ",stepAtReadD[j]);
       for(i=0;i<DIGPINS;i++)
@@ -340,7 +353,7 @@ void showSerial(const char *m, int newLine)
     {
       strcpy(stemp,"Serial");
       sprintf(stemp,"%s",m);
-      printf("%s\n",m);
+      //printf("%s\n",m);
       wLog0(m);
     }
   else
@@ -380,7 +393,7 @@ void readSketchInfo()
   in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      errorLog("Error: Unable to open sketch");
+      errorLog("Error: Unable to open sketch",timeFromStart);
     }
   else
     {
@@ -422,128 +435,111 @@ void passTime()
 }
 
 //====================================
+void regAnaRead(int pin, int value)
+//====================================
+{
+  int x;
+  x = stepAtReadA[0];
+  x++;
+  stepAtReadA[0] = x;
+  if(x < MAX_READ)
+    {
+      stepAtReadA[x]  = timeFromStart;
+      valueAtReadA[x] = value;
+      pinAtReadA[x]   = pin;
+    }
+  else
+    errorLog("Number of analog events in scenario out of range",x);
+}
+
+//====================================
+void regDigRead(int pin, int value,int step)
+//====================================
+{
+  int x;
+  char temp[300];
+  x = stepAtReadD[0];
+  x++;
+  stepAtReadD[0] = x;
+  if(x < MAX_READ)
+    {
+      stepAtReadD[x]  = step;
+      valueAtReadD[x] = value;
+      pinAtReadD[x]   = pin;
+      //sprintf(temp,"regDigRead: x=%d step=%d pin=%d value=%d\n",x,step,pin,value);
+      //errorLog(temp);
+    }
+  else
+    errorLog("Number of digital events in scenario out of range",x);
+}
+
+
+//====================================
 void interruptNow()
 //====================================
 {
   int i,ir0_1,ir0_2,ir1_1,ir1_2;
-  int ir,ir_1,ir_2;
-//  i = timeFromStart;
+  int ir,ir_1,ir_2,pin;
+  i = timeFromStart;
 
-//  ir0_1 = getInterruptValue(0,i);
-//  ir0_2 = getInterruptValue(0,i-1);
-//  ir1_1 = getInterruptValue(1,i);
-//  ir1_2 = getInterruptValue(1,i-1);
-  
-
-//  if(interruptMode[0] == LOW && interrupt[i][0] == 0)
-  //    {
-  //      if(confLogLev > 0)wLog1("InterruptLOW",0);
-  //      interrupt0();
-  //    }
+  // Trigger interrupt if any
+  //if(g_pinNo == currentPin && timeFromStart == g_pinStep && g_pinType == DIG)
+  //  {
+  //
+  //  }
 
 
-  for(ir=0;ir<=5;ir++)
-  {
-    if(attached[ir] == YES)
-    {
-      i = inrpt[ir];
-      ir_1 = curValueD[i];
-      ir_2 = preValueD[i];
-
-      printf("%d check interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",timeFromStart,ir,i,ir_1,ir_2,interruptMode[ir]);
-      if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
-        {
-      printf("RISING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
-          passTime();
-          wLog1(interruptType[RISING],0);
-          mLineText("interrupt in");
-          interrupt[ir];
-          mLineText("interrupt out");
-        }
-      if(interruptMode[ir] == FALLING && ir_1 == 0 && ir_2 == 1)
-        {
-      printf("FALLING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
-          passTime();
-          wLog1(interruptType[FALLING],0);
-          mLineText("interrupt in");
-          interrupt[ir];
-          mLineText("interrupt out");
-        }
-
-      if(interruptMode[ir] == CHANGE && ir_1 != ir_2)
-        {
-      printf("CHANGE interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
-          passTime();
-          wLog1(interruptType[CHANGE],0);
-          mLineText("interrupt in");
-          interrupt[ir];
-          mLineText("interrupt out");
-        }
-    }
-  }  
-
-/*  if(attached[0] == YES)
-    {
-      //printf("%d check interrupt 0 %d %d    %d %d\n",i,ir0_1,ir0_2,RISING,interruptMode[0]);
-      if(interruptMode[0] == RISING && ir0_1 == 1 && ir0_2 == 0)
+      //printf("interrupt now %d %d\n",i,g_pinStep);
+      for(ir=0;ir<=5;ir++)
 	{
-	  passTime();
-	  wLog1("interruptRISING",0);
-          mLineText("interrupt in");
-	  interrupt0();
-          mLineText("interrupt out");
-	}
-      
-      if(interruptMode[0] == FALLING && ir0_1 == 0 && ir0_2 == 1)
-	{
-	  passTime();
-	  wLog1("interruptFALLING",0);
-          mLineText("interrupt in");
-	  interrupt0();
-          mLineText("interrupt out");
-	}
-      
-      if(interruptMode[0] == CHANGE && ir0_1 != ir0_2)
-	{
-	  passTime();
-	  wLog1("interruptCHANGE",0);
-          mLineText("interrupt in");
-	  interrupt0();
-          mLineText("interrupt out");
-	}
-    }
-  
-  if(attached[1] == YES)
-    {
-      //printf("%d check interrupt 1 %d %d    %d %d\n",i,ir1_1,ir1_2,RISING,interruptMode[1]);
-      if(interruptMode[1] == RISING && ir1_1 == 1 && ir1_2 == 0)
-	{
-	  passTime();
-	  wLog1("interruptRISING",1);
-          mLineText("interrupt in");
-	  interrupt1();
-          mLineText("interrupt out");
-	}
-      
-      if(interruptMode[1] == FALLING && ir1_1 == 0 && ir1_2 == 1)
-	{
-	  passTime();
-	  wLog1("interruptFALLING",1);
-          mLineText("interrupt in");
-	  interrupt1();
-          mLineText("interrupt out");
-	}
-      
-      if(interruptMode[1] == CHANGE && ir1_1 != ir1_2)
-	{
-	  passTime();
-	  wLog1("interruptCHANGE",1);
-          mLineText("interrupt in");
-	  interrupt1();
-          mLineText("interrupt out");
-	}
-    }
-*/
+	  if(attached[ir] == YES)
+	    {
+	      pin = inrpt[ir];
+	      ir_1 = getDigitalPinValue(pin,i);
+	      ir_2 = getDigitalPinValue(pin,i-1);
+	      //regDigRead(pin,ir_1,i);
+	      //printf("ir=%d pin %d 1=%d 2=%d\n",ir,pin,ir_1,ir_2);
+
+	      //printf("%d check interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",timeFromStart,ir,i,ir_1,ir_2,interruptMode[ir]);
+	      if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
+		{
+		  passTime();
+		  //regDigRead(pin,ir_2,timeFromStart-1);
+		  regDigRead(pin,ir_1,timeFromStart);
+		  //printf("RISING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
+		  //passTime();	
+		  wLog1(interruptType[RISING],ir);
+		  mLineText("interrupt in");
+		  interrupt[ir]();
+		  mLineText("interrupt out");
+		}
+	      if(interruptMode[ir] == FALLING && ir_1 == 0 && ir_2 == 1)
+		{
+		  passTime();
+		  //regDigRead(pin,ir_2,timeFromStart-1);
+		  regDigRead(pin,ir_1,timeFromStart);
+		  //printf("FALLING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
+		  //passTime();
+		  wLog1(interruptType[FALLING],ir);
+		  mLineText("interrupt in");
+		  interrupt[ir]();
+		  mLineText("interrupt out");
+		}
+
+	      if(interruptMode[ir] == CHANGE && ir_1 != ir_2)
+		{
+		  passTime();
+		  //regDigRead(pin,ir_2,timeFromStart-1);
+		  regDigRead(pin,ir_1,timeFromStart);
+		  //printf("CHANGE interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
+		  //passTime();
+		  wLog1(interruptType[CHANGE],ir);
+		  mLineText("interrupt in");
+		  interrupt[ir]();
+		  mLineText("interrupt out");
+		}
+	    }
+	} 
 }
 //====================================
 void readScenario()
@@ -573,7 +569,7 @@ void readScenario()
 	      scenDigital++;
 	      i = scenDigital;
 	      if(temp < s_digitalStep[i-1])
-		printf("Error:Scenario data not given in increasing order: Digatal Step %d\n",temp);
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Digatal Step %d\n",temp);
 	      s_digitalStep[i] = temp;
 	      s_digitalPin[i][0]= x0;
 	      s_digitalPin[i][1]= x1;
@@ -596,7 +592,7 @@ void readScenario()
 	      scenAnalog++;
 	      i = scenAnalog;
 	      if(temp < s_analogStep[i-1])
-		printf("Error:Scenario data not given in increasing order: Analog Step %d\n",temp);
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Analog Step %d\n",temp);
 	      s_analogStep[i] = temp;
 	      s_analogPin[i][0]= x0;
 	      s_analogPin[i][1]= x1;
@@ -611,7 +607,7 @@ void readScenario()
 	      scenInterrupt++;
 	      i = scenInterrupt;
 	      if(temp < s_interruptStep[i-1])
-		printf("Error:Scenario data not given in increasing order: Interrupt Step %d\n",temp);
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Interrupt Step %d\n",temp);
 	      s_interruptStep[i] = temp;
 	      s_interrupt[i][0]  = x0;
 	      s_interrupt[i][1]  = x1;
