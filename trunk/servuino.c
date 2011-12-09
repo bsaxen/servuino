@@ -51,6 +51,7 @@
 #define HIGH   1
 #define INPUT  1
 #define OUTPUT 2
+#define INTERRUPT 3
 
 #define BYTE   1
 #define BIN    2
@@ -78,7 +79,7 @@
 #define SCEN_MAX  100
 #define LOG_MAX   200
 #define LOG_TEXT_SIZE 120
-#define MAX_READ 100
+#define MAX_READ 900
 
 #define IR0  2
 #define IR1  3
@@ -161,14 +162,19 @@ int g_pinNo      = 0;
 int g_pinValue   = 0;
 int g_pinStep    = 0;
 
+int g_nAnalogPins = 6;
+int g_nDigitalPins = 14;
+
 int preValueA[ANAPINS];
 int preValueD[DIGPINS];
 int curValueA[ANAPINS];
 int curValueD[DIGPINS];
 
+int currentPin = 0;
 
 FILE *s_log,*e_log;
 
+#include "servuino.h"
 #include "servuino_lib.c"
 #include "arduino_lib.c"
 #include "sketch.pde"
@@ -233,7 +239,7 @@ int main(int argc, char *argv[])
   else if(argc == 7)
     {
       readSketchInfo();
-      // steps, source, pintype, pinno, pinvalue, pinstep
+      // steps, source, pintype, pinno, pinvalue, pinstep, action
       g_simulationLength = atoi(argv[1]);
       g_scenSource =  atoi(argv[2]);
       g_pinType    =  atoi(argv[3]);
@@ -243,7 +249,7 @@ int main(int argc, char *argv[])
       runEncoding(g_simulationLength);
     }
   else
-    errorLog("Servuino not executed");
+    errorLog("Servuino not executed",0);
 
   closeSimFile();
 }
