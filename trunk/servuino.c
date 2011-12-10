@@ -59,6 +59,9 @@
 #define DEC    4
 #define HEX    5
 
+#define ADD 10
+#define DELETE 20
+
 #define CHANGE  1
 #define RISING  2
 #define FALLING 3
@@ -76,7 +79,8 @@
 #define RX     3
 #define TX     4
 
-#define SCEN_MAX  100
+#define SCEN_MAX  2000
+#define MAX_LOOPS 1000
 #define LOG_MAX   200
 #define LOG_TEXT_SIZE 120
 #define MAX_READ 900
@@ -92,7 +96,7 @@ char sketch[120];
 
 // Init
 
-int timeFromStart = 0;
+int currentStep = 0;
 int g_simulationLength = 111;
 int g_go = NO;
 
@@ -116,12 +120,12 @@ char  appName[120];
 int   anaPinPos[ANAPINS];
 int   c_analogPin[ANAPINS];
 int   s_analogPin[SCEN_MAX][ANAPINS];
-int   s_analogStep[SCEN_MAX];
+int   s_analogStep[SCEN_MAX][ANAPINS];
 
 int   digPinPos[DIGPINS];
 int   c_digitalPin[DIGPINS];
 int   s_digitalPin[SCEN_MAX][DIGPINS];
-int   s_digitalStep[SCEN_MAX];
+int   s_digitalStep[SCEN_MAX][DIGPINS];
 int   digitalMode[DIGPINS];
 
 int   intPinPos[INTPINS];
@@ -161,7 +165,10 @@ int g_pinType    = 0;
 int g_pinNo      = 0;
 int g_pinValue   = 0;
 int g_pinStep    = 0;
+int g_action     = 0;
 
+int g_allowInterrupt = YES;
+int g_interpolation = NO;
 int g_nAnalogPins = 6;
 int g_nDigitalPins = 14;
 
@@ -183,6 +190,7 @@ FILE *s_log,*e_log;
 void runEncoding(int n)
 //====================================
 {
+  int i;
   strcpy(interruptType[LOW],"interruptLOW");
   strcpy(interruptType[FALLING],"interruptFALLING");
   strcpy(interruptType[RISING],"interruptRISING");
@@ -195,23 +203,19 @@ void runEncoding(int n)
   inrpt[4] = IR4;
   inrpt[5] = IR5;
 
-  boardInit();
-  readScenario();
-
   fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
-  scenario();
-  status();
   fprintf(s_log,"# LOOP %d\n",g_nloop);
   setup();
   mLineText("Start Looping");
-  while(1)
+
+  for(i=0;i<MAX_LOOPS;i++)  
     {
       g_nloop++;
-      status();
       fprintf(s_log,"# LOOP %d\n",g_nloop);
       loop();  
       mLineText("loop shift");
     }
+  stopEncoding();
   return;
 }
 
@@ -220,8 +224,13 @@ void runEncoding(int n)
 int main(int argc, char *argv[])
 //====================================
 {
+  int x;
   g_go = YES;
   openSimFile();
+
+  boardInit();
+  readScenario();
+
   if(argc == 1)
     {
       readSketchInfo();
@@ -236,16 +245,33 @@ int main(int argc, char *argv[])
       g_scenSource = atoi(argv[2]);
       runEncoding(g_simulationLength);
     }
-  else if(argc == 7)
+  else if(argc == 8)
     {
       readSketchInfo();
-      // steps, source, pintype, pinno, pinvalue, pinstep, action
+      // steps, source, pintype, pinno, pinvalue, pinstep,action
       g_simulationLength = atoi(argv[1]);
       g_scenSource =  atoi(argv[2]);
       g_pinType    =  atoi(argv[3]);
       g_pinNo      =  atoi(argv[4]);
       g_pinValue   =  atoi(argv[5]);
       g_pinStep    =  atoi(argv[6]);
+      g_action     =  atoi(argv[7]);
+
+      readScenario();// read from data.scen
+
+      if(g_pinType == DIG)
+	{ 
+	  if(g_action == ADD)x = insDigitalPinValue(g_pinNo,g_pinStep,g_pinValue);
+	  if(g_action == DELETE)x = delDigitalPinValue(g_pinNo,g_pinStep);
+
+	}
+      if(g_pinType == ANA)
+	{ 
+	  if(g_action == ADD)x = insAnalogPinValue(g_pinNo,g_pinStep,g_pinValue);
+	  if(g_action == DELETE)x = delAnalogPinValue(g_pinNo,g_pinStep);
+
+	}
+
       runEncoding(g_simulationLength);
     }
   else
@@ -253,6 +279,6 @@ int main(int argc, char *argv[])
 
   closeSimFile();
 }
-
+ 
 
  

@@ -39,7 +39,8 @@ void boardInit()
       c_analogPin[i] = 0;
       for(j=0;j<SCEN_MAX;j++)
 	{
-	  s_analogPin[j][i] = 0;
+	  s_analogPin[j][i]  = 0;
+	  s_analogStep[j][i] = 0;
 	} 
     }
   
@@ -50,7 +51,8 @@ void boardInit()
       c_digitalPin[i] = 0;
       for(j=0;j<SCEN_MAX;j++)
 	{
-	  s_digitalPin[j][i] = 0;
+	  s_digitalPin[j][i]  = 0;
+	  s_digitalStep[j][i] = 0;
 	}
     }
 
@@ -68,8 +70,7 @@ void boardInit()
   for(i=0;i<SCEN_MAX;i++)
     {
       s_interruptStep[i] = 0;
-      s_digitalStep[i]   = 0;
-      s_analogStep[i]    = 0;
+
     }
 
 }
@@ -108,21 +109,28 @@ void errorLog(const char msg[], int x)
 int getAnalogPinValue(int pin,int step)
 //====================================
 {  
-  int i,res=0;
+  int i,res=0,limit;
 
-  // User inserted
-  if (step == g_pinStep && pin == g_pinNo && g_pinType == ANA)
+  if(g_interpolation == YES)
     {
-      return(g_pinValue);
+      limit = s_analogStep[0][pin];
+      for (i=0;i<limit;i++)
+	{
+	  if(step >= s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
+	    res = s_analogPin[i][pin];
+	}
+      if(step >= s_analogStep[limit][pin]) res = s_analogPin[limit][pin];
     }
-
-  // Based on sketch
-  for (i=0;i<scenAnalog;i++)
+  else
     {
-      if(step >= s_analogStep[i] && step < s_analogStep[i+1])
-	res = s_analogPin[i][pin];
+      limit = s_analogStep[0][pin];
+      for (i=0;i<limit;i++)
+	{
+	  if(step >= s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
+	    res = s_analogPin[i][pin];
+	}
+      if(step >= s_analogStep[limit][pin]) res = s_analogPin[limit][pin];
     }
-  if(step >= s_analogStep[scenAnalog]) res = s_analogPin[scenAnalog][pin];
 
   return(res);
 }  
@@ -131,70 +139,161 @@ int getAnalogPinValue(int pin,int step)
 int getDigitalPinValue(int pin,int step)
 //====================================
 {  
-  int i,res=0;
+  int i,res=0,limit;
 
-  // User inserted
-  if (step == g_pinStep-1 && pin == g_pinNo && g_pinType == DIG)
-    {
-      return(g_pinValue);
-    }
 
-  // Based on Sketch
-  for (i=0;i<scenDigital;i++)
+  limit = s_digitalStep[0][pin];
+
+  for (i=0;i<limit;i++)
     {
-      if(step >= s_digitalStep[i] && step < s_digitalStep[i+1])
+      if(step >= s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
 	res = s_digitalPin[i][pin];
     }
-  if(step >= s_digitalStep[scenDigital]) res = s_digitalPin[scenDigital][pin];
+  if(step >= s_digitalStep[limit][pin]) res = s_digitalPin[limit][pin];
   return(res);
 }  
 
-/* //==================================== */
-/* int getInterruptValue(int pin,int step) */
-/* //==================================== */
-/* {   */
-/*   int i,res=0; */
-/*   for (i=0;i<scenInterrupt;i++) */
-/*     { */
-/*       if(step >= s_interruptStep[i] && step < s_interruptStep[i+1]) */
-/* 	res = s_interrupt[i][pin]; */
-/*     } */
-/*   if(step >= s_interruptStep[scenInterrupt]) res = s_interrupt[scenInterrupt][pin]; */
-
-/*   return(res); */
-/* }   */
-
 //====================================
-void scenario()
+int insDigitalPinValue(int pin,int step, int value)
 //====================================
-{
-  int i,j;
+{  
+  int i,limit,hit=0;
 
-  for(i=1;i<=scenDigital;i++)
+  limit = s_digitalStep[0][pin];
+
+  for (i=1;i<limit;i++)
     {
-      fprintf(s_log,"#// SCENDIGPIN %4d ",s_digitalStep[i]);
-      for(j=0;j<DIGPINS;j++)
-	fprintf(s_log,"%d ",s_digitalPin[i][j]);
-      fprintf(s_log,"\n");
+      if(step > s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
+	{
+	  hit = i+1;
+	}
+      if(step == s_digitalStep[i][pin])
+	{
+	  hit = 0;
+	  s_digitalPin[i][pin]  = value;
+	  s_digitalStep[i][pin] = step;
+	}
+    }
+  if(step > s_digitalStep[limit][pin])hit = limit+1;
+
+
+  if(hit > 0)
+    {
+      s_digitalStep[0][pin]++;
+      limit = s_digitalStep[0][pin];
+      for(i=limit;i>=hit;i--)
+	{
+	  s_digitalPin[i][pin]  = s_digitalPin[i-1][pin];
+	  s_digitalStep[i][pin] = s_digitalStep[i-1][pin];
+	}
+      s_digitalPin[hit][pin]  = value;
+      s_digitalStep[hit][pin] = step;
+    }
+  return(hit);
+}  
+
+//====================================
+int insAnalogPinValue(int pin,int step, int value)
+//====================================
+{  
+  int i,limit,hit=0;
+
+  limit = s_analogStep[0][pin];
+
+  for (i=1;i<limit;i++)
+    {
+      if(step > s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
+	{
+	  hit = i+1;
+	}
+      if(step == s_analogStep[i][pin])
+	{
+	  hit = 0;
+	  s_analogPin[i][pin]  = value;
+	  s_analogStep[i][pin] = step;
+	}
+    }
+  if(step > s_analogStep[limit][pin])hit = limit+1;
+
+
+  if(hit > 0)
+    {
+      s_analogStep[0][pin]++;
+      limit = s_analogStep[0][pin];
+      for(i=limit;i>=hit;i--)
+	{
+	  s_analogPin[i][pin]  = s_analogPin[i-1][pin];
+	  s_analogStep[i][pin] = s_analogStep[i-1][pin];
+	}
+      s_analogPin[hit][pin]  = value;
+      s_analogStep[hit][pin] = step;
     }
 
-  for(i=1;i<=scenAnalog;i++)
+  return(hit);
+}  
+
+//====================================
+int delDigitalPinValue(int pin,int step)
+//====================================
+{  
+  int i,limit,hit=0;
+
+  limit = s_digitalStep[0][pin];
+  for (i=1;i<=limit;i++)
     {
-      fprintf(s_log,"#// SCENANAPIN %4d ",s_analogStep[i]);
-      for(j=0;j<ANAPINS;j++)
-	fprintf(s_log,"%4d ",s_analogPin[i][j]);
-      fprintf(s_log,"\n");
+      if(step == s_digitalStep[i][pin])
+	{
+	  hit = i;
+	}
     }
 
-  return;
-}
+  if(hit > 0)
+    {
+      s_digitalStep[0][pin]--;
+      for(i=hit;i<limit;i++)
+	{
+	  s_digitalPin[i][pin]  = s_digitalPin[i+1][pin];
+	  s_digitalStep[i][pin] = s_digitalStep[i+1][pin];
+	}
+    }
+
+  return(hit);
+}  
+
+//====================================
+int delAnalogPinValue(int pin,int step)
+//====================================
+{  
+  int i,limit,hit=0;
+
+  limit = s_analogStep[0][pin];
+  for (i=1;i<=limit;i++)
+    {
+      if(step == s_analogStep[i][pin])
+	{
+	  hit = i;
+	}
+    }
+
+  if(hit > 0)
+    {
+      s_analogStep[0][pin]--;
+      for(i=hit;i<limit;i++)
+	{
+	  s_analogPin[i][pin]  = s_analogPin[i+1][pin];
+	  s_analogStep[i][pin] = s_analogStep[i+1][pin];
+	}
+    }
+
+  return(hit);
+}  
 
 
 //====================================
-void dumpReadStatistics()
+void saveScenario()
 //====================================
 {
-  int i,j;
+  int i,j,k;
   FILE *out;
 
   out = fopen("data.scen","w");
@@ -202,45 +301,23 @@ void dumpReadStatistics()
     {
       fprintf(e_log,"Unable to open data.scen\n");
     }
-
-
-  // Based on reads  
-  for(j=1;j<=stepAtReadA[0];j++)
+  
+  for(i=0;i<DIGPINS;i++)
     {
-      fprintf(out,"// SCENANAPIN %d ",stepAtReadA[j]);
-      for(i=0;i<ANAPINS;i++)
+      for(k=1;k<=s_digitalStep[0][i];k++)
 	{
-	  if(pinAtReadA[j]== i)
-	    fprintf(out,"%4d ",valueAtReadA[j]);
-	  else
-	    fprintf(out,"%4d ",0);
+	  fprintf(out,"// SCENDIGPIN %d %d %d\n",i,s_digitalStep[k][i],s_digitalPin[k][i]);
 	}
-      fprintf(out,"\n");
     }
-
-
-  // Based on sketch
-
-/*   for(i=1;i<=scenDigital;i++) */
-/*     { */
-/*       fprintf(out,"// SCENDIGPIN %4d ",s_digitalStep[i]); */
-/*       for(j=0;j<DIGPINS;j++) */
-/* 	fprintf(out,"%d ",s_digitalPin[i][j]); */
-/*       fprintf(out,"\n"); */
-/*     } */
-
-  for(j=1;j<=stepAtReadD[0];j++)
+  
+  for(i=0;i<ANAPINS;i++)
     {
-      fprintf(out,"// SCENDIGPIN %d ",stepAtReadD[j]);
-      for(i=0;i<DIGPINS;i++)
+      for(k=1;k<=s_analogStep[0][i];k++)
 	{
-	  if(pinAtReadD[j]== i)
-	    fprintf(out,"%4d ",valueAtReadD[j]);
-	  else
-	    fprintf(out,"%4d ",0);
+	  fprintf(out,"// SCENANAPIN %d %d %d\n",i,s_analogStep[k][i],s_analogPin[k][i]);
 	}
-      fprintf(out,"\n");
     }
+  
   fclose(out);
   return;
 }
@@ -267,13 +344,21 @@ void status()
   return;
 }
 //====================================
+void iLog1(const char *p, int value1)
+//====================================
+{
+  fprintf(s_log,"* %d %s %d\n",currentStep,p,value1);
+  return;
+}
+
+//====================================
 void mLine()
 //====================================
 {
   char line[120];
   
   strcpy(line,"--------------------");
-  fprintf(s_log,"= %d %s\n",timeFromStart,line);
+  fprintf(s_log,"= %d %s\n",currentStep,line);
   return;
 }
 //====================================
@@ -283,21 +368,21 @@ void mLineText(const char *t)
   char line[120];
   
   sprintf(line,"------ %s ------",t);
-  fprintf(s_log,"= %d %s\n",timeFromStart,line);
+  fprintf(s_log,"= %d %s\n",currentStep,line);
   return;
 }
 //====================================
 void mLog0(const char *p)
 //====================================
 {
-  fprintf(s_log,"= %d %s\n",timeFromStart,p);
+  fprintf(s_log,"= %d %s\n",currentStep,p);
   return;
 }
 //====================================
 void mLog1(const char *p, int value1)
 //====================================
 {
-  fprintf(s_log,"= %d %s %d\n",timeFromStart,p,value1);
+  fprintf(s_log,"= %d %s %d\n",currentStep,p,value1);
   return;
 }
 
@@ -305,7 +390,7 @@ void mLog1(const char *p, int value1)
 void wLog0(const char *p)
 //====================================
 {
-  fprintf(s_log,"+ %d %s\n",timeFromStart,p);
+  fprintf(s_log,"+ %d %s\n",currentStep,p);
   return;
 }
 
@@ -313,7 +398,7 @@ void wLog0(const char *p)
 void wLog1(const char *p, int value1)
 //====================================
 {
-  fprintf(s_log,"+ %d %s %d\n",timeFromStart,p,value1);
+  fprintf(s_log,"+ %d %s %d\n",currentStep,p,value1);
   return;
 }
 
@@ -321,7 +406,7 @@ void wLog1(const char *p, int value1)
 void wLog2(const char *p, int value1, int value2)
 //====================================
 {
-  fprintf(s_log,"+ %d %s %d %d\n",timeFromStart,p,value1,value2);
+  fprintf(s_log,"+ %d %s %d %d\n",currentStep,p,value1,value2);
   return;
 }
 
@@ -330,7 +415,7 @@ void wLog2(const char *p, int value1, int value2)
 void wLogChar1(const char *p, const char *value1)
 //====================================
 {
-  fprintf(s_log,"+ %d %s '%s'\n",timeFromStart,p,value1);
+  fprintf(s_log,"+ %d %s '%s'\n",currentStep,p,value1);
   return;
 }
 
@@ -338,7 +423,7 @@ void wLogChar1(const char *p, const char *value1)
 void wLogChar2(const char *p, const char *value1, int value2)
 //====================================
 {
-  fprintf(s_log,"+ %d %s '%s' %d\n",timeFromStart,p,value1,value2);
+  fprintf(s_log,"+ %d %s '%s' %d\n",currentStep,p,value1,value2);
   return;
 }
 
@@ -358,7 +443,7 @@ void showSerial(const char *m, int newLine)
     }
   else
     {
-      mLog1("Serial output without Serial.begin",timeFromStart);
+      mLog1("Serial output without Serial.begin",currentStep);
     }
 }
 
@@ -393,7 +478,7 @@ void readSketchInfo()
   in = fopen("sketch.pde","r");
   if(in == NULL)
     {
-      errorLog("Error: Unable to open sketch",timeFromStart);
+      errorLog("Error: Unable to open sketch",currentStep);
     }
   else
     {
@@ -419,18 +504,28 @@ void stopEncoding()
 //====================================
 {
   fprintf(s_log,"# ENDOFSIM\n");
-  status();
-  dumpReadStatistics();
+  //status();
+  saveScenario();
   closeSimFile();
   exit(0);
 }
-
+//====================================
+void savePinStatus()
+//====================================
+{
+  int i;
+  for(i=0;i<DIGPINS;i++)
+    s_digitalPin[currentStep][i] = c_digitalPin[i];
+  for(i=0;i<ANAPINS;i++)
+    s_analogPin[currentStep][i]  = c_analogPin[i];
+}
 //====================================
 void passTime()
 //====================================
 {
-  timeFromStart++;
-  if(g_simulationLength < timeFromStart)stopEncoding();
+  //savePinStatus();
+  currentStep++;
+  if(g_simulationLength < currentStep)stopEncoding();
   return;
 }
 
@@ -444,7 +539,7 @@ void regAnaRead(int pin, int value)
   stepAtReadA[0] = x;
   if(x < MAX_READ)
     {
-      stepAtReadA[x]  = timeFromStart;
+      stepAtReadA[x]  = currentStep;
       valueAtReadA[x] = value;
       pinAtReadA[x]   = pin;
     }
@@ -466,151 +561,107 @@ void regDigRead(int pin, int value,int step)
       stepAtReadD[x]  = step;
       valueAtReadD[x] = value;
       pinAtReadD[x]   = pin;
-      //sprintf(temp,"regDigRead: x=%d step=%d pin=%d value=%d\n",x,step,pin,value);
-      //errorLog(temp);
     }
   else
     errorLog("Number of digital events in scenario out of range",x);
 }
+//====================================
+void doInterrupt(int pin,int ir, int irType,int value)
+//====================================
+{
+  if(g_allowInterrupt == NO)
+    {
+      errorLog("Try to interrupt within an interrupt",currentStep);
+      return;
+    }
 
+  mLog1(interruptType[irType],ir);
+  mLineText("interrupt in");
+  g_allowInterrupt = NO;
+  interrupt[ir]();  
+  g_allowInterrupt = YES;
+  mLineText("interrupt out");
+}
 
 //====================================
 void interruptNow()
 //====================================
 {
-  int i,ir0_1,ir0_2,ir1_1,ir1_2;
-  int ir,ir_1,ir_2,pin;
-  i = timeFromStart;
+  int ir,ir_1,ir_2,pin,extTrigged = NO;
 
-  // Trigger interrupt if any
-  //if(g_pinNo == currentPin && timeFromStart == g_pinStep && g_pinType == DIG)
-  //  {
-  //
-  //  }
-
-
-      //printf("interrupt now %d %d\n",i,g_pinStep);
-      for(ir=0;ir<=5;ir++)
+  for(ir=0;ir<=5;ir++)
+    {
+      if(attached[ir] == YES)
 	{
-	  if(attached[ir] == YES)
+	  pin = inrpt[ir];
+
+	  ir_1 = getDigitalPinValue(pin,currentStep);
+	  ir_2 = getDigitalPinValue(pin,currentStep-1);
+	      //}
+	  
+	  if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
 	    {
-	      pin = inrpt[ir];
-	      ir_1 = getDigitalPinValue(pin,i);
-	      ir_2 = getDigitalPinValue(pin,i-1);
-	      //regDigRead(pin,ir_1,i);
-	      //printf("ir=%d pin %d 1=%d 2=%d\n",ir,pin,ir_1,ir_2);
-
-	      //printf("%d check interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",timeFromStart,ir,i,ir_1,ir_2,interruptMode[ir]);
-	      if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
-		{
-		  passTime();
-		  //regDigRead(pin,ir_2,timeFromStart-1);
-		  regDigRead(pin,ir_1,timeFromStart);
-		  //printf("RISING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
-		  //passTime();	
-		  wLog1(interruptType[RISING],ir);
-		  mLineText("interrupt in");
-		  interrupt[ir]();
-		  mLineText("interrupt out");
-		}
-	      if(interruptMode[ir] == FALLING && ir_1 == 0 && ir_2 == 1)
-		{
-		  passTime();
-		  //regDigRead(pin,ir_2,timeFromStart-1);
-		  regDigRead(pin,ir_1,timeFromStart);
-		  //printf("FALLING interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
-		  //passTime();
-		  wLog1(interruptType[FALLING],ir);
-		  mLineText("interrupt in");
-		  interrupt[ir]();
-		  mLineText("interrupt out");
-		}
-
-	      if(interruptMode[ir] == CHANGE && ir_1 != ir_2)
-		{
-		  passTime();
-		  //regDigRead(pin,ir_2,timeFromStart-1);
-		  regDigRead(pin,ir_1,timeFromStart);
-		  //printf("CHANGE interrupt=%d pin=%d cur=%d prev=%d mode=%d\n",ir,i,ir_1,ir_2,interruptMode[ir]);
-		  //passTime();
-		  wLog1(interruptType[CHANGE],ir);
-		  mLineText("interrupt in");
-		  interrupt[ir]();
-		  mLineText("interrupt out");
-		}
+	      doInterrupt(pin,ir,RISING,1);
 	    }
-	} 
+	  if(interruptMode[ir] == FALLING && ir_1 == 0 && ir_2 == 1)
+	    {
+	      doInterrupt(pin,ir,FALLING,0);
+	    }
+	  if(interruptMode[ir] == CHANGE && ir_1 != ir_2)
+	    {
+	      doInterrupt(pin,ir,CHANGE,ir_1);
+	    }
+	}
+    } 
 }
 //====================================
 void readScenario()
 //====================================
 {
   FILE *in;
-  char row[120],*p,scenType[200], junk[20];
-  int x0,x1,x2,x3,x4,x5,x6,x7,x8,x9,x10,x11,x12,x13,temp;
-  int i,state=0;
-
-
+  char row[120],*p, junk[20];
+  int pin,step,value,i;
+  int tmp=0,dCount[DIGPINS],aCount[ANAPINS];
 
   if(g_scenSource == 0)in = fopen("sketch.pde","r");
   if(g_scenSource == 1)in = fopen("data.scen","r");
 
+  for(i=0;i<DIGPINS;i++)dCount[i] = 0;
+  for(i=0;i<ANAPINS;i++)aCount[i] = 0;
+
   if(in == NULL)
     {
-      mLog0("Unable to open sketch for scenario reading\n");
+      errorLog("Unable to open sketch for scenario reading",0);
     }
   else
     {
       while (fgets(row,120,in)!=NULL)
 	{
+	  if(p=strstr(row,"SCENLENGTH"))
+	    {
+	      sscanf(p,"%s%d",junk,&g_simulationLength);
+	    }
 	  if(p=strstr(row,"SCENDIGPIN"))
 	    {
-	      sscanf(p,"%s%d%d%d%d%d%d%d%d%d%d%d%d%d%d%d",junk,&temp,&x0,&x1,&x2,&x3,&x4,&x5,&x6,&x7,&x8,&x9,&x10,&x11,&x12,&x13);
-	      scenDigital++;
-	      i = scenDigital;
-	      if(temp < s_digitalStep[i-1])
-		fprintf(e_log,"Error:Scenario data not given in increasing order: Digatal Step %d\n",temp);
-	      s_digitalStep[i] = temp;
-	      s_digitalPin[i][0]= x0;
-	      s_digitalPin[i][1]= x1;
-	      s_digitalPin[i][2]= x2;
-	      s_digitalPin[i][3]= x3;
-	      s_digitalPin[i][4]= x4;
-	      s_digitalPin[i][5]= x5;
-	      s_digitalPin[i][6]= x6;
-	      s_digitalPin[i][7]= x7;
-	      s_digitalPin[i][8]= x8;
-	      s_digitalPin[i][9]= x9;
-	      s_digitalPin[i][10]= x10;
-	      s_digitalPin[i][11]= x11;
-	      s_digitalPin[i][12]= x12;
-	      s_digitalPin[i][13]= x13;
+	      sscanf(p,"%s%d%d%d",junk,&pin,&step,&value);
+	      dCount[pin]++;
+	      tmp = dCount[pin];
+	      if(step < s_digitalStep[tmp-1][pin])
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Digatal Step %d\n",step);
+	      s_digitalStep[tmp][pin]  = step;
+	      s_digitalPin[tmp][pin]   = value;
+	      s_digitalStep[0][pin]    = tmp;
 	    }
 	  if(p=strstr(row,"SCENANAPIN"))
 	    {
-	      sscanf(p,"%s%d%d%d%d%d%d%d",junk,&temp,&x0,&x1,&x2,&x3,&x4,&x5);
-	      scenAnalog++;
-	      i = scenAnalog;
-	      if(temp < s_analogStep[i-1])
-		fprintf(e_log,"Error:Scenario data not given in increasing order: Analog Step %d\n",temp);
-	      s_analogStep[i] = temp;
-	      s_analogPin[i][0]= x0;
-	      s_analogPin[i][1]= x1;
-	      s_analogPin[i][2]= x2;
-	      s_analogPin[i][3]= x3;
-	      s_analogPin[i][4]= x4;
-	      s_analogPin[i][5]= x5;
-	    }
-	  if(p=strstr(row,"SCENINRPT"))
-	    {
-	      sscanf(p,"%s%d%d%d",junk,&temp,&x0,&x1);
-	      scenInterrupt++;
-	      i = scenInterrupt;
-	      if(temp < s_interruptStep[i-1])
-		fprintf(e_log,"Error:Scenario data not given in increasing order: Interrupt Step %d\n",temp);
-	      s_interruptStep[i] = temp;
-	      s_interrupt[i][0]  = x0;
-	      s_interrupt[i][1]  = x1;
+	      sscanf(p,"%s%d%d%d",junk,&pin,&step,&value);
+	      aCount[pin]++;
+	      tmp = aCount[pin];
+	      if(step < s_analogStep[tmp-1][pin])
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Analog Step %d\n",step);
+	      s_analogStep[tmp][pin]   = step;
+	      s_analogPin[tmp][pin]    = value;
+	      s_analogStep[0][pin]     = tmp;
 	    }
 	}
     }
