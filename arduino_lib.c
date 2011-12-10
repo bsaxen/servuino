@@ -52,18 +52,7 @@ class String {
   void toUpperCase();
   void trim();
 
-  /*   String& operator+ (const String& x, const String&  y) */
-  /* { */
-  /*   String result = *this;   */
-  /*   //result += other;      */
-     /*   return result;   */
-     /* } */
-
-
-     //String String::operator+(const String &other);
-     };
-
-
+};
 
 String::String(const char *p) 
 {
@@ -151,9 +140,10 @@ void pinMode(int pin,int mode)
 
   currentPin = pin;
   
+  passTime();
   if(mode == INPUT || mode == OUTPUT)
     {
-      passTime();
+
       digitalMode[pin] = mode;
 
       if(mode==INPUT)
@@ -183,8 +173,6 @@ void digitalWrite(int pin,int value)
   passTime();
   if(digitalMode[pin] == OUTPUT)
     {
-      c_digitalPin[pin] = value;
-
       if(value==HIGH)
 	{
 	  wLog1("digitalWrite HIGH",pin);
@@ -193,7 +181,6 @@ void digitalWrite(int pin,int value)
 	{
 	  wLog1("digitalWrite LOW",pin);
 	}
-      interruptNow();
     }
   else
     {
@@ -215,12 +202,7 @@ int digitalRead(int pin)
     {
       if(pin > 0 && pin < g_nDigitalPins)
 	{
-	  value = getDigitalPinValue(pin,timeFromStart);
-	  preValueD[pin] = curValueD[pin];
-	  curValueD[pin] = value;
-	  c_digitalPin[pin] = value;
-	  
-	  regDigRead(pin,value,timeFromStart);
+	  value = getDigitalPinValue(pin,currentStep);
 	}
       else
 	errorLog("digitalRead Pin number out of range",pin);
@@ -253,21 +235,17 @@ int analogRead(int pin)  // Values 0 to 1023
 
   if(pin > 0 && pin < g_nAnalogPins)
     {
-      value = getAnalogPinValue(pin,timeFromStart);
-      preValueA[pin] = curValueA[pin];
-      curValueA[pin] = value;
-      c_analogPin[pin] = value;
+      value = getAnalogPinValue(pin,currentStep);
       if(value > 1023 || value < 0)
 	{
-	  sprintf(temp,"%d Analog pin=%d value out of range = %d",timeFromStart,pin,value);
+	  sprintf(temp,"%d Analog pin=%d value out of range = %d",currentStep,pin,value);
 	  errorLog(temp,0);
 	  value = 0;
 	}
+
     }
   else
     errorLog("analogRead Pin number out of range",pin);
-  
-  regAnaRead(pin,value);
   
   wLog2("analogRead",pin,value);
   interruptNow();
@@ -280,6 +258,7 @@ void analogWrite(int pin,int value)
 {
   char temp[80];
 
+  passTime();
   currentPin = pin;
   if(digitalMode[pin] != OUTPUT)
     {
@@ -288,15 +267,13 @@ void analogWrite(int pin,int value)
 
   if(pin==3 || pin==5 || pin==6 || pin==9 || pin==10 || pin==11)
     {
-      passTime();
+
       if(value > 256 || value < 0)
 	{
-	  sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",timeFromStart,pin,value);
+	  sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",currentStep,pin,value);
 	  wLog0(temp);
 	  value = 0;
 	}
-      
-      c_digitalPin[pin] = value;
     }
   else
     {
@@ -349,13 +326,13 @@ unsigned long pulseIn(int pin, int value, unsigned long timeout)
 unsigned long millis()
 {
   //unimplemented("millis()");
-  return(timeFromStart*100);
+  return(currentStep*100);
 }
 
 unsigned long micros()
 {
   //unimplemented("micros()");
-  return(timeFromStart*100000);
+  return(currentStep*100000);
 }
 
 void delay(int ms)
