@@ -19,78 +19,7 @@
 #include <string.h>
 #include <math.h> 
 
-#define TOTAL_PINS 20
-#define ANAPINS 6
-#define DIGPINS 14
-#define INTPINS 6
-
-#define D00  0
-#define D01  1
-#define D02  2
-#define D03  3
-#define D04  4
-#define D05  5
-#define D06  6
-#define D07  7
-#define D08  8
-#define D09  9
-#define D10  10
-#define D11  11
-#define D12  12
-#define D13  13
-
-#define A00  14
-#define A01  15
-#define A02  16
-#define A03  17
-#define A04  18
-#define A05  19
-
-
-#define LOW    0
-#define HIGH   1
-#define INPUT  1
-#define OUTPUT 2
-#define INTERRUPT 3
-
-#define BYTE   1
-#define BIN    2
-#define OCT    3
-#define DEC    4
-#define HEX    5
-
-#define ADD 10
-#define DELETE 20
-
-#define CHANGE  1
-#define RISING  2
-#define FALLING 3
-
-#define ANA    1
-#define DIG    2
-
-#define ON     1
-#define OFF    0
-
-#define YES    1
-#define NO     2
-
-#define FREE   0
-#define RX     3
-#define TX     4
-
-#define SCEN_MAX  2000
-#define MAX_LOOPS 1000
-#define LOG_MAX   200
-#define LOG_TEXT_SIZE 120
-#define MAX_READ 900
-
-#define IR0  2
-#define IR1  3
-#define IR2 21
-#define IR3 20
-#define IR4 19
-#define IR5 18
+#include "common.h"
 
 char sketch[120];
 
@@ -181,6 +110,7 @@ int currentPin = 0;
 
 FILE *s_log,*e_log;
 
+#include "common_lib.c"
 #include "servuino.h"
 #include "servuino_lib.c"
 #include "arduino_lib.c"
@@ -228,6 +158,7 @@ int main(int argc, char *argv[])
   g_go = YES;
   openSimFile();
 
+  setRange(UNO);
   boardInit();
   readScenario();
 
@@ -258,6 +189,8 @@ int main(int argc, char *argv[])
       g_action     =  atoi(argv[7]);
 
       readScenario();// read from data.scen
+
+      max_steps = g_simulationLength;
 
       if(g_pinType == DIG)
 	{ 
