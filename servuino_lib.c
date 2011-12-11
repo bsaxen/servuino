@@ -34,7 +34,7 @@ void boardInit()
       pinAtReadD[i]   = 0;
     }
 
-  for(i=0;i<ANAPINS;i++)
+  for(i=0;i<=max_anaPin;i++)
     {
       anaPinPos[i]   = 0;
       c_analogPin[i] = 0;
@@ -45,7 +45,7 @@ void boardInit()
 	} 
     }
   
-  for(i=0;i<DIGPINS;i++)
+  for(i=0;i<=max_digPin;i++)
     {
       digitalMode[i]  = FREE;
       digPinPos[i]    = 0;
@@ -57,22 +57,22 @@ void boardInit()
 	}
     }
 
-  for(i=0;i<INTPINS;i++)
+  for(i=0;i<max_irPin;i++)
     {
       interruptMode[i] = 0;
       intPinPos[i]     = 0;
       c_intPin[i]      = 0;
-      for(j=0;j<SCEN_MAX;j++)
-	{
-	  s_interrupt[j][i] = 0;
-	}
+/*       for(j=0;j<SCEN_MAX;j++) */
+/* 	{ */
+/* 	  s_interrupt[j][i] = 0; */
+/* 	} */
     }
 
-  for(i=0;i<SCEN_MAX;i++)
-    {
-      s_interruptStep[i] = 0;
+/*   for(i=0;i<SCEN_MAX;i++) */
+/*     { */
+/*       s_interruptStep[i] = 0; */
 
-    }
+/*     } */
 
 }
 
@@ -303,7 +303,7 @@ void saveScenario()
       fprintf(e_log,"Unable to open data.scen\n");
     }
   
-  for(i=0;i<DIGPINS;i++)
+  for(i=0;i<=max_digPin;i++)
     {
       for(k=1;k<=s_digitalStep[0][i];k++)
 	{
@@ -311,7 +311,7 @@ void saveScenario()
 	}
     }
   
-  for(i=0;i<ANAPINS;i++)
+  for(i=0;i<=max_anaPin;i++)
     {
       for(k=1;k<=s_analogStep[0][i];k++)
 	{
@@ -493,6 +493,12 @@ void readSketchInfo()
 		  q = strstr(p,":");q++;
 		  sscanf(q,"%s",appName);
 		}
+	      if(p=strstr(row,"BOARD_TYPE"))
+		{
+		  fprintf(s_log,"#%s",row);
+		  if(strstr(row,"UNO") != NULL) boardType = UNO;
+		  if(strstr(row,"MEGA")!= NULL) boardType = MEGA;
+		}
 	    }
 	}
     }
@@ -515,9 +521,9 @@ void savePinStatus()
 //====================================
 {
   int i;
-  for(i=0;i<DIGPINS;i++)
+  for(i=0;i<=max_digPin;i++)
     s_digitalPin[currentStep][i] = c_digitalPin[i];
-  for(i=0;i<ANAPINS;i++)
+  for(i=0;i<=max_anaPin;i++)
     s_analogPin[currentStep][i]  = c_analogPin[i];
 }
 //====================================
@@ -621,13 +627,13 @@ void readScenario()
   FILE *in;
   char row[120],*p, junk[20];
   int pin,step,value,i;
-  int tmp=0,dCount[DIGPINS],aCount[ANAPINS];
+  int tmp=0,dCount[MAX_PIN_DIGITAL_MEGA],aCount[MAX_PIN_ANALOG_MEGA];
 
   if(g_scenSource == 0)in = fopen("sketch.pde","r");
   if(g_scenSource == 1)in = fopen("data.scen","r");
 
-  for(i=0;i<DIGPINS;i++)dCount[i] = 0;
-  for(i=0;i<ANAPINS;i++)aCount[i] = 0;
+  for(i=0;i<=max_digPin;i++)dCount[i] = 0;
+  for(i=0;i<=max_anaPin;i++)aCount[i] = 0;
 
   if(in == NULL)
     {

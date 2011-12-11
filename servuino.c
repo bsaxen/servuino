@@ -37,7 +37,7 @@ void (*interrupt2)();
 void (*interrupt3)();
 void (*interrupt4)();
 void (*interrupt5)();
-int  pinToInterrupt[INTPINS];
+//int  pinToInterrupt[INTPINS];
 
 void stepCommand();
 
@@ -46,24 +46,23 @@ int   graph_x = 10,graph_y = 10;
 
 char  appName[120];
 
-int   anaPinPos[ANAPINS];
-int   c_analogPin[ANAPINS];
-int   s_analogPin[SCEN_MAX][ANAPINS];
-int   s_analogStep[SCEN_MAX][ANAPINS];
+int   anaPinPos[MAX_PIN_ANALOG_MEGA];
+int   c_analogPin[MAX_PIN_ANALOG_MEGA];
+int   s_analogPin[SCEN_MAX][MAX_PIN_ANALOG_MEGA];
+int   s_analogStep[SCEN_MAX][MAX_PIN_ANALOG_MEGA];
 
-int   digPinPos[DIGPINS];
-int   c_digitalPin[DIGPINS];
-int   s_digitalPin[SCEN_MAX][DIGPINS];
-int   s_digitalStep[SCEN_MAX][DIGPINS];
-int   digitalMode[DIGPINS];
+int   digPinPos[MAX_PIN_DIGITAL_MEGA];
+int   c_digitalPin[MAX_PIN_DIGITAL_MEGA];
+int   s_digitalPin[SCEN_MAX][MAX_PIN_DIGITAL_MEGA];
+int   s_digitalStep[SCEN_MAX][MAX_PIN_DIGITAL_MEGA];
+int   digitalMode[MAX_PIN_DIGITAL_MEGA];
 
-int   intPinPos[INTPINS];
-int   c_intPin[INTPINS];
-int   s_interrupt[SCEN_MAX][INTPINS];
+int   intPinPos[MAX_PIN_IR_MEGA];
+int   c_intPin[MAX_PIN_IR_MEGA];
+int   s_interrupt[SCEN_MAX][MAX_PIN_IR_MEGA];
 int   s_interruptStep[SCEN_MAX];
-int   interruptMode[INTPINS];
-int   attached[INTPINS];
-int   inrpt[INTPINS]; // Interrupt No -> Pin No
+int   interruptMode[MAX_PIN_IR_MEGA];
+
 
 int   stepAtReadD[MAX_READ];
 int   stepAtReadA[MAX_READ];
@@ -101,10 +100,12 @@ int g_interpolation = NO;
 int g_nAnalogPins = 6;
 int g_nDigitalPins = 14;
 
-int preValueA[ANAPINS];
-int preValueD[DIGPINS];
-int curValueA[ANAPINS];
-int curValueD[DIGPINS];
+int boardType = UNO;
+
+//int preValueA[MAX_PIN_ANALOG_MEGA];
+//int preValueD[DIGPINS];
+//int curValueA[MAX_PIN_ANALOG_MEGA];
+//int curValueD[DIGPINS];
 
 int currentPin = 0;
 
@@ -157,28 +158,26 @@ int main(int argc, char *argv[])
   int x;
   g_go = YES;
   openSimFile();
-
-  setRange(UNO);
-  boardInit();
+  readSketchInfo();
+  setRange(boardType);
   readScenario();
+  boardInit();
+
 
   if(argc == 1)
     {
-      readSketchInfo();
       g_simulationLength = 499;
       g_scenSource = 0;
       runEncoding(g_simulationLength);
     }
   if(argc == 3)
     {
-      readSketchInfo();
       g_simulationLength = atoi(argv[1]);
       g_scenSource = atoi(argv[2]);
       runEncoding(g_simulationLength);
     }
   else if(argc == 8)
     {
-      readSketchInfo();
       // steps, source, pintype, pinno, pinvalue, pinstep,action
       g_simulationLength = atoi(argv[1]);
       g_scenSource =  atoi(argv[2]);

@@ -200,12 +200,12 @@ int digitalRead(int pin)
   passTime();
   if(digitalMode[pin] == INPUT )
     {
-      if(pin > 0 && pin < g_nDigitalPins)
+      if(pin >= min_digPin && pin <= max_digPin)
 	{
 	  value = getDigitalPinValue(pin,currentStep);
 	}
       else
-	errorLog("digitalRead Pin number out of range",pin);
+	errorLog("digitalRead Pin number out of range",max_digPin);
     }
   else
     errorLog("digitalRead: Wrong pin mode",pin);
@@ -233,7 +233,7 @@ int analogRead(int pin)  // Values 0 to 1023
   currentPin = pin;
   passTime();
 
-  if(pin > 0 && pin < g_nAnalogPins)
+  if(pin >= min_anaPin && pin <= max_anaPin)
     {
       value = getAnalogPinValue(pin,currentStep);
       if(value > 1023 || value < 0)
@@ -254,31 +254,51 @@ int analogRead(int pin)  // Values 0 to 1023
 //=====================================
 void analogWrite(int pin,int value) 
 //=====================================
-// Values 0 to 255   PWM: only pin 3,5,6,9,10,11
+// Values 0 to 255   
+// PWM: only pin 3,5,6,9,10,11  UNO
+// PWM: only pin 2 - 13 MEGA
 {
   char temp[80];
 
   passTime();
   currentPin = pin;
-  if(digitalMode[pin] != OUTPUT)
-    {
-      mLog1("AnalogWrite: Pin is not in OUPUT mode: ",pin);
-    }
 
-  if(pin==3 || pin==5 || pin==6 || pin==9 || pin==10 || pin==11)
+  if(boardType == UNO)
     {
-
-      if(value > 256 || value < 0)
+      if(pin==3 || pin==5 || pin==6 || pin==9 || pin==10 || pin==11)
 	{
-	  sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",currentStep,pin,value);
-	  wLog0(temp);
-	  value = 0;
+	  
+	  if(value > 256 || value < 0)
+	    {
+	      sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",currentStep,pin,value);
+	      wLog0(temp);
+	      value = 0;
+	    }
+	}
+      else
+	{
+	  errorLog("analogWrite: UNO Pin is not of PWM type",pin);
 	}
     }
-  else
+
+  if(boardType == MEGA)
     {
-      errorLog("analogWrite: Pin is not of PWM type",pin);
+      if(pin > 1 && pin < 14)
+	{
+	  
+	  if(value > 256 || value < 0)
+	    {
+	      sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",currentStep,pin,value);
+	      wLog0(temp);
+	      value = 0;
+	    }
+	}
+      else
+	{
+	  errorLog("analogWrite: MEGA Pin is not of PWM type",pin);
+	}
     }
+
   wLog2("analogWrite",pin,value);
   interruptNow();
   return;
