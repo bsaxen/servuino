@@ -15,6 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
+
 //====================================
 void boardInit()
 //====================================
@@ -523,7 +524,6 @@ void savePinStatus()
 void passTime()
 //====================================
 {
-  //savePinStatus();
   currentStep++;
   if(g_simulationLength < currentStep)stopEncoding();
   return;
@@ -644,6 +644,9 @@ void readScenario()
 	  if(p=strstr(row,"SCENDIGPIN"))
 	    {
 	      sscanf(p,"%s%d%d%d",junk,&pin,&step,&value);
+              pin   = checkRange(HEAL,"digpin",pin);
+              value = checkRange(HEAL,"digval",value);
+              step  = checkRange(HEAL,"step",step);
 	      dCount[pin]++;
 	      tmp = dCount[pin];
 	      if(step < s_digitalStep[tmp-1][pin])
@@ -655,6 +658,9 @@ void readScenario()
 	  if(p=strstr(row,"SCENANAPIN"))
 	    {
 	      sscanf(p,"%s%d%d%d",junk,&pin,&step,&value);
+              pin   = checkRange(HEAL,"anapin",pin);
+              value = checkRange(HEAL,"anaval",value);
+              step  = checkRange(HEAL,"step",step);
 	      aCount[pin]++;
 	      tmp = aCount[pin];
 	      if(step < s_analogStep[tmp-1][pin])
