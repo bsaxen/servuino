@@ -6,13 +6,20 @@
 #define ANA    1
 #define DIG    2
 
-#define ANAPINS 6
-#define DIGPINS 14
-#define INTPINS 6
-#define MAX_PIN_ANALOG 6
-#define MAX_PIN_DIGITAL 14
+//#define ANAPINS 6
+//#define DIGPINS 14
+//#define INTPINS 6
 
-#define TOTAL_PINS 20
+#define MAX_PIN_IR_UNO 2
+#define MAX_PIN_IR_MEGA 6
+
+#define MAX_PIN_ANALOG_UNO 6
+#define MAX_PIN_DIGITAL_UNO 14
+
+#define MAX_PIN_ANALOG_MEGA 16
+#define MAX_PIN_DIGITAL_MEGA 54
+
+//#define TOTAL_PINS 20
 
 #define D00  0
 #define D01  1
@@ -55,7 +62,7 @@
 #define OFF    0
 
 #define YES    1
-#define NO     2
+#define NO     0
 
 #define HEAL  101
 
@@ -117,39 +124,19 @@
 #define DEC    4
 #define HEX    5
 
-// Window  ====================
-#define UNO_H  16
-#define UNO_W  61
-#define UNO_COLOR 7
 
-#define MSG_H  20
-#define MSG_W  61
-#define MSG_COLOR 6
-
-#define LOG_H  40
-#define LOG_W  40
-#define LOG_COLOR 3
-
-#define SER_H  40
-#define SER_W  30
-#define SER_COLOR 4
-
-#define WIN_MODES 4
-
-#define DP 5
-#define AP 11
-#define RF 1
-#define ER 1
-#define SR 20
 
 void errorLog(const char msg[], int x);
 int checkRange(int mode,const char check[],int value);
 
 int max_digVal,min_digVal,max_anaVal,min_anaVal;
 int max_digPin,min_digPin,max_anaPin,min_anaPin;
+int max_irPin,min_irPin;
 
 int max_steps;
 
+int inrpt[MAX_PIN_IR_MEGA];
+int attached[MAX_PIN_IR_MEGA];
 
 // End of file
 
