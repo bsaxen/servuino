@@ -6,12 +6,16 @@ int setRange(int board)
   char temp[120],message[180];
 
   max_steps = SCEN_MAX;
+  max_loops = MAX_LOOPS;
 
   max_digVal = 1;
   min_digVal = 0;
   
   max_anaVal = 1023;
   min_anaVal = 0;
+
+  max_pwm    = 255;
+  min_pwm    = 0;
 
   if(board == UNO)
     {
@@ -61,6 +65,12 @@ int checkRange(int mode,const char check[],int value)
       maxx = max_anaVal;
       minx = min_anaVal;
     }
+  else if(strstr(check,"pwmval") != NULL)
+    {
+      strcpy(message,"PWM Value");
+      maxx = max_pwm;
+      minx = min_pwm;
+    }
   else if(strstr(check,"digpin") != NULL)
     {
       strcpy(message,"Digital Pin");
@@ -75,13 +85,25 @@ int checkRange(int mode,const char check[],int value)
     }
   else if(strstr(check,"step") != NULL)
     {
-      strcpy(message,"Steps out of range");
+      strcpy(message,"Step out of range");
       maxx = max_steps;
       minx = 0;
     }
+  else if(strstr(check,"loop") != NULL)
+    {
+      strcpy(message,"Loop out of range");
+      maxx = max_loops;
+      minx = 0;
+    }
+  else if(strstr(check,"interrupt") != NULL)
+    {
+      strcpy(message,"Interrupt out of range");
+      maxx = max_irPin;
+      minx = min_irPin;
+    }
   else
     {
-      strcpy(message,"Range Control");
+      strcpy(message,"Undefined Range Control");
       maxx = 0;
       minx = 0;
     }

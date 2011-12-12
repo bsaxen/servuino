@@ -6,10 +6,6 @@
 #define ANA    1
 #define DIG    2
 
-//#define ANAPINS 6
-//#define DIGPINS 14
-//#define INTPINS 6
-
 #define MAX_PIN_IR_UNO 2
 #define MAX_PIN_IR_MEGA 6
 
@@ -66,8 +62,8 @@
 
 #define HEAL  101
 
-#define S_OK    1
-#define S_NOK   2
+#define S_OK    0
+#define S_NOK   1
 
 // Values ====================
 #define LOW    0
@@ -132,8 +128,10 @@ int checkRange(int mode,const char check[],int value);
 int max_digVal,min_digVal,max_anaVal,min_anaVal;
 int max_digPin,min_digPin,max_anaPin,min_anaPin;
 int max_irPin,min_irPin;
+int max_pwm,min_pwm;
 
 int max_steps;
+int max_loops;
 
 int inrpt[MAX_PIN_IR_MEGA];
 int attached[MAX_PIN_IR_MEGA];

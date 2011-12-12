@@ -137,29 +137,35 @@ void pinMode(int pin,int mode)
 //=====================================
 {
   char temp[80];
+  int ok=S_NOK;
 
   currentPin = pin;
   
   passTime();
-  if(mode == INPUT || mode == OUTPUT)
+
+  ok = checkRange(S_OK,"digpin",pin);
+  if(ok == S_OK)
     {
-
-      digitalMode[pin] = mode;
-
-      if(mode==INPUT)
+      if(mode == INPUT || mode == OUTPUT)
 	{
-	  wLog1("pinMode IN",pin);
-	}
+	  
+	  digitalMode[pin] = mode;
 
-      if(mode==OUTPUT)
-	{
-	  wLog1("pinMode OUT",pin);
+	  if(mode==INPUT)
+	    {
+	      wLog1("pinMode IN",pin);
+	    }
+	  
+	  if(mode==OUTPUT)
+	    {
+	      wLog1("pinMode OUT",pin);
+	    }
+	  
 	}
-
+      else
+	errorLog("pinMode:Unknown Pin Mode",pin);
     }
-  else
-    errorLog("pinMode:Unknown Pin Mode",pin);
-
+  
   interruptNow();
 }
 //=====================================
@@ -167,24 +173,30 @@ void digitalWrite(int pin,int value)
 //=====================================
 {
   char temp[80];
+  int ok=S_NOK;
 
   currentPin = pin;
 
   passTime();
-  if(digitalMode[pin] == OUTPUT)
+
+  ok = checkRange(S_OK,"digpin",pin);
+  if(ok == S_OK)
     {
-      if(value==HIGH)
+      if(digitalMode[pin] == OUTPUT)
 	{
-	  wLog1("digitalWrite HIGH",pin);
+	  if(value==HIGH)
+	    {
+	      wLog1("digitalWrite HIGH",pin);
+	    }
+	  if(value==LOW)
+	    {
+	      wLog1("digitalWrite LOW",pin);
+	    }
 	}
-      if(value==LOW)
+      else
 	{
-	  wLog1("digitalWrite LOW",pin);
+	  errorLog("digitalWrite Wrong Pin Mode ",pin);
 	}
-    }
-  else
-    {
-      errorLog("digitalWrite Wrong Pin Mode ",pin);
     }
   interruptNow();
 }
@@ -192,23 +204,22 @@ void digitalWrite(int pin,int value)
 int digitalRead(int pin)
 //=====================================
 {
-  int value=0,x;
+  int value=0,x,ok=S_NOK;
   char temp[80];
 
   currentPin = pin;
 
   passTime();
-  if(digitalMode[pin] == INPUT )
+  ok = checkRange(S_OK,"digpin",pin);
+  if(ok == S_OK)
     {
-      if(pin >= min_digPin && pin <= max_digPin)
+      if(digitalMode[pin] == INPUT )
 	{
-	  value = getDigitalPinValue(pin,currentStep);
+	    value = getDigitalPinValue(pin,currentStep);  
 	}
       else
-	errorLog("digitalRead Pin number out of range",max_digPin);
+	errorLog("digitalRead: Wrong pin mode",pin);
     }
-  else
-    errorLog("digitalRead: Wrong pin mode",pin);
   
   wLog2("digitalRead",pin,value);
   interruptNow();
@@ -229,24 +240,16 @@ int analogRead(int pin)  // Values 0 to 1023
 
   int value,x;
   char temp[80];
+  int ok=S_NOK;
 
   currentPin = pin;
   passTime();
-
-  if(pin >= min_anaPin && pin <= max_anaPin)
+  ok = checkRange(S_OK,"anapin",pin);
+  if(ok == S_OK)
     {
       value = getAnalogPinValue(pin,currentStep);
-      if(value > 1023 || value < 0)
-	{
-	  sprintf(temp,"%d Analog pin=%d value out of range = %d",currentStep,pin,value);
-	  errorLog(temp,0);
-	  value = 0;
-	}
-
+      value = checkRange(HEAL,"anaval",value);
     }
-  else
-    errorLog("analogRead Pin number out of range",pin);
-  
   wLog2("analogRead",pin,value);
   interruptNow();
   return(value); 
@@ -259,46 +262,29 @@ void analogWrite(int pin,int value)
 // PWM: only pin 2 - 13 MEGA
 {
   char temp[80];
+  int ok=S_NOK;
 
   passTime();
   currentPin = pin;
 
-  if(boardType == UNO)
+  ok = checkRange(S_OK,"digpin",pin);
+  if(ok == S_OK)
     {
-      if(pin==3 || pin==5 || pin==6 || pin==9 || pin==10 || pin==11)
+      value = checkRange(HEAL,"pwmval",value);
+      
+      if(boardType == UNO)
 	{
-	  
-	  if(value > 256 || value < 0)
-	    {
-	      sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",currentStep,pin,value);
-	      wLog0(temp);
-	      value = 0;
-	    }
+	  if(pin!=3 && pin!=5 && pin!=6 && pin!=9 && pin!=10 && pin!=11)
+	    errorLog("analogWrite: UNO Pin is not of PWM type",pin);
 	}
-      else
+      
+      if(boardType == MEGA)
 	{
-	  errorLog("analogWrite: UNO Pin is not of PWM type",pin);
+	  if(pin < 2 || pin > 13)
+	      errorLog("analogWrite: MEGA Pin is not of PWM type",pin);
 	}
+      
     }
-
-  if(boardType == MEGA)
-    {
-      if(pin > 1 && pin < 14)
-	{
-	  
-	  if(value > 256 || value < 0)
-	    {
-	      sprintf(temp,"%d AnalogWrite pin=%d value out of range = %d",currentStep,pin,value);
-	      wLog0(temp);
-	      value = 0;
-	    }
-	}
-      else
-	{
-	  errorLog("analogWrite: MEGA Pin is not of PWM type",pin);
-	}
-    }
-
   wLog2("analogWrite",pin,value);
   interruptNow();
   return;
@@ -480,48 +466,41 @@ unsigned char bit(unsigned char x)
 
 void attachInterrupt(int ir,void(*func)(),int mode)
 {
-  int pin;
+  int pin,ok=S_NOK;
 
   passTime();
-  interruptMode[ir] = mode;
 
-  attached[ir] = YES;
-  mLog1("Interrupt number",ir);
+  ok = checkRange(S_OK,"interrupt",ir);
+  if(ok == S_OK)
+    {
+      interruptMode[ir] = mode;
+      attached[ir] = YES;
+      mLog1("Interrupt number",ir);
+      interrupt[ir] = func;
+      pin = inrpt[ir];
+      digitalMode[pin] == INTERRUPT;
+      if(mode==LOW)wLog2("attachInterruptLOW",ir,mode);
+      if(mode==RISING)wLog2("attachInterruptRISING",ir,mode);
+      if(mode==FALLING)wLog2("attachInterruptFALLING",ir,mode);
+      if(mode==CHANGE)wLog2("attachInterruptCHANGE",ir,mode);
+    }
 
-  if(ir>=0 && ir <=5)
-     interrupt[ir] = func;
-  
-  pin = inrpt[ir];
-  digitalMode[pin] == INTERRUPT;
-
-
-  if(ir < 0 || ir > 5)
-    mLog1("Unsupported interrupt number",ir);
-
-  if(mode==LOW)wLog2("attachInterruptLOW",ir,mode);
-  if(mode==RISING)wLog2("attachInterruptRISING",ir,mode);
-  if(mode==FALLING)wLog2("attachInterruptFALLING",ir,mode);
-  if(mode==CHANGE)wLog2("attachInterruptCHANGE",ir,mode);
   interruptNow();
 }
 
 //---------------------------------------------------
-void detachInterrupt(int interrupt)
+void detachInterrupt(int ir)
 {
+  int ok=S_NOK;
   passTime();
-  if(interrupt == 0)
+  
+  ok = checkRange(S_OK,"interrupt",ir);
+  if(ok == S_OK)
     {
-      interrupt0 = NULL;
-    }
-  if(interrupt == 1)
-    {
-      interrupt1 = NULL;
+      interrupt[ir] = NULL;
+      wLog1("detachInterrupt",ir);
     }
   
-  if(interrupt != 0 && interrupt != 1)
-    mLog1("Unsupported interrupt number",interrupt);
-    
-  wLog1("detachInterrupt",interrupt);
   interruptNow();
 }
 

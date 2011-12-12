@@ -62,18 +62,7 @@ void boardInit()
       interruptMode[i] = 0;
       intPinPos[i]     = 0;
       c_intPin[i]      = 0;
-/*       for(j=0;j<SCEN_MAX;j++) */
-/* 	{ */
-/* 	  s_interrupt[j][i] = 0; */
-/* 	} */
     }
-
-/*   for(i=0;i<SCEN_MAX;i++) */
-/*     { */
-/*       s_interruptStep[i] = 0; */
-
-/*     } */
-
 }
 
 //====================================
@@ -158,37 +147,45 @@ int getDigitalPinValue(int pin,int step)
 int insDigitalPinValue(int pin,int step, int value)
 //====================================
 {  
-  int i,limit,hit=0;
+  int i,limit,hit=0,ok=0;
 
-  limit = s_digitalStep[0][pin];
 
-  for (i=1;i<limit;i++)
+  ok = ok + checkRange(S_OK,"digpin",pin);
+  ok = ok + checkRange(S_OK,"step",step);
+  ok = ok + checkRange(S_OK,"digval",pin);
+
+  if(ok == S_OK)
     {
-      if(step > s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
-	{
-	  hit = i+1;
-	}
-      if(step == s_digitalStep[i][pin])
-	{
-	  hit = 0;
-	  s_digitalPin[i][pin]  = value;
-	  s_digitalStep[i][pin] = step;
-	}
-    }
-  if(step > s_digitalStep[limit][pin])hit = limit+1;
-
-
-  if(hit > 0)
-    {
-      s_digitalStep[0][pin]++;
       limit = s_digitalStep[0][pin];
-      for(i=limit;i>=hit;i--)
+      
+      for (i=1;i<limit;i++)
 	{
-	  s_digitalPin[i][pin]  = s_digitalPin[i-1][pin];
-	  s_digitalStep[i][pin] = s_digitalStep[i-1][pin];
+	  if(step > s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
+	    {
+	      hit = i+1;
+	    }
+	  if(step == s_digitalStep[i][pin])
+	    {
+	      hit = 0;
+	      s_digitalPin[i][pin]  = value;
+	      s_digitalStep[i][pin] = step;
+	    }
 	}
-      s_digitalPin[hit][pin]  = value;
-      s_digitalStep[hit][pin] = step;
+      if(step > s_digitalStep[limit][pin])hit = limit+1;
+      
+      
+      if(hit > 0)
+	{
+	  s_digitalStep[0][pin]++;
+	  limit = s_digitalStep[0][pin];
+	  for(i=limit;i>=hit;i--)
+	    {
+	      s_digitalPin[i][pin]  = s_digitalPin[i-1][pin];
+	      s_digitalStep[i][pin] = s_digitalStep[i-1][pin];
+	    }
+	  s_digitalPin[hit][pin]  = value;
+	  s_digitalStep[hit][pin] = step;
+	}
     }
   return(hit);
 }  
@@ -197,39 +194,46 @@ int insDigitalPinValue(int pin,int step, int value)
 int insAnalogPinValue(int pin,int step, int value)
 //====================================
 {  
-  int i,limit,hit=0;
+  int i,limit,hit=0,ok=0;
 
-  limit = s_analogStep[0][pin];
+  ok = ok + checkRange(S_OK,"anapin",pin);
+  ok = ok + checkRange(S_OK,"step",step);
+  ok = ok + checkRange(S_OK,"anaval",pin);
 
-  for (i=1;i<limit;i++)
+  if(ok == S_OK)
     {
-      if(step > s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
-	{
-	  hit = i+1;
-	}
-      if(step == s_analogStep[i][pin])
-	{
-	  hit = 0;
-	  s_analogPin[i][pin]  = value;
-	  s_analogStep[i][pin] = step;
-	}
-    }
-  if(step > s_analogStep[limit][pin])hit = limit+1;
 
-
-  if(hit > 0)
-    {
-      s_analogStep[0][pin]++;
       limit = s_analogStep[0][pin];
-      for(i=limit;i>=hit;i--)
+      
+      for (i=1;i<limit;i++)
 	{
-	  s_analogPin[i][pin]  = s_analogPin[i-1][pin];
-	  s_analogStep[i][pin] = s_analogStep[i-1][pin];
+	  if(step > s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
+	    {
+	      hit = i+1;
+	    }
+	  if(step == s_analogStep[i][pin])
+	    {
+	      hit = 0;
+	      s_analogPin[i][pin]  = value;
+	      s_analogStep[i][pin] = step;
+	    }
 	}
-      s_analogPin[hit][pin]  = value;
-      s_analogStep[hit][pin] = step;
+      if(step > s_analogStep[limit][pin])hit = limit+1;
+      
+      
+      if(hit > 0)
+	{
+	  s_analogStep[0][pin]++;
+	  limit = s_analogStep[0][pin];
+	  for(i=limit;i>=hit;i--)
+	    {
+	      s_analogPin[i][pin]  = s_analogPin[i-1][pin];
+	      s_analogStep[i][pin] = s_analogStep[i-1][pin];
+	    }
+	  s_analogPin[hit][pin]  = value;
+	  s_analogStep[hit][pin] = step;
+	}
     }
-
   return(hit);
 }  
 
@@ -237,27 +241,33 @@ int insAnalogPinValue(int pin,int step, int value)
 int delDigitalPinValue(int pin,int step)
 //====================================
 {  
-  int i,limit,hit=0;
+  int i,limit,hit=0,ok=0;
 
-  limit = s_digitalStep[0][pin];
-  for (i=1;i<=limit;i++)
+  ok = ok + checkRange(S_OK,"digpin",pin);
+  ok = ok + checkRange(S_OK,"step",step);
+
+  if(ok == S_OK)
     {
-      if(step == s_digitalStep[i][pin])
+      
+      limit = s_digitalStep[0][pin];
+      for (i=1;i<=limit;i++)
 	{
-	  hit = i;
+	  if(step == s_digitalStep[i][pin])
+	    {
+	      hit = i;
+	    }
+	}
+      
+      if(hit > 0)
+	{
+	  s_digitalStep[0][pin]--;
+	  for(i=hit;i<limit;i++)
+	    {
+	      s_digitalPin[i][pin]  = s_digitalPin[i+1][pin];
+	      s_digitalStep[i][pin] = s_digitalStep[i+1][pin];
+	    }
 	}
     }
-
-  if(hit > 0)
-    {
-      s_digitalStep[0][pin]--;
-      for(i=hit;i<limit;i++)
-	{
-	  s_digitalPin[i][pin]  = s_digitalPin[i+1][pin];
-	  s_digitalStep[i][pin] = s_digitalStep[i+1][pin];
-	}
-    }
-
   return(hit);
 }  
 
@@ -265,27 +275,32 @@ int delDigitalPinValue(int pin,int step)
 int delAnalogPinValue(int pin,int step)
 //====================================
 {  
-  int i,limit,hit=0;
+  int i,limit,hit=0,ok=0;
 
-  limit = s_analogStep[0][pin];
-  for (i=1;i<=limit;i++)
+  ok = ok + checkRange(S_OK,"anapin",pin);
+  ok = ok + checkRange(S_OK,"step",step);
+
+  if(ok == S_OK)
     {
-      if(step == s_analogStep[i][pin])
+      limit = s_analogStep[0][pin];
+      for (i=1;i<=limit;i++)
 	{
-	  hit = i;
+	  if(step == s_analogStep[i][pin])
+	    {
+	      hit = i;
+	    }
+	}
+      
+      if(hit > 0)
+	{
+	  s_analogStep[0][pin]--;
+	  for(i=hit;i<limit;i++)
+	    {
+	      s_analogPin[i][pin]  = s_analogPin[i+1][pin];
+	      s_analogStep[i][pin] = s_analogStep[i+1][pin];
+	    }
 	}
     }
-
-  if(hit > 0)
-    {
-      s_analogStep[0][pin]--;
-      for(i=hit;i<limit;i++)
-	{
-	  s_analogPin[i][pin]  = s_analogPin[i+1][pin];
-	  s_analogStep[i][pin] = s_analogStep[i+1][pin];
-	}
-    }
-
   return(hit);
 }  
 
@@ -535,42 +550,7 @@ void passTime()
   return;
 }
 
-//====================================
-void regAnaRead(int pin, int value)
-//====================================
-{
-  int x;
-  x = stepAtReadA[0];
-  x++;
-  stepAtReadA[0] = x;
-  if(x < MAX_READ)
-    {
-      stepAtReadA[x]  = currentStep;
-      valueAtReadA[x] = value;
-      pinAtReadA[x]   = pin;
-    }
-  else
-    errorLog("Number of analog events in scenario out of range",x);
-}
 
-//====================================
-void regDigRead(int pin, int value,int step)
-//====================================
-{
-  int x;
-  char temp[300];
-  x = stepAtReadD[0];
-  x++;
-  stepAtReadD[0] = x;
-  if(x < MAX_READ)
-    {
-      stepAtReadD[x]  = step;
-      valueAtReadD[x] = value;
-      pinAtReadD[x]   = pin;
-    }
-  else
-    errorLog("Number of digital events in scenario out of range",x);
-}
 //====================================
 void doInterrupt(int pin,int ir, int irType,int value)
 //====================================
@@ -595,7 +575,7 @@ void interruptNow()
 {
   int ir,ir_1,ir_2,pin,extTrigged = NO;
 
-  for(ir=0;ir<=5;ir++)
+  for(ir=0;ir<=max_irPin;ir++)
     {
       if(attached[ir] == YES)
 	{
@@ -603,7 +583,6 @@ void interruptNow()
 
 	  ir_1 = getDigitalPinValue(pin,currentStep);
 	  ir_2 = getDigitalPinValue(pin,currentStep-1);
-	      //}
 	  
 	  if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
 	    {
