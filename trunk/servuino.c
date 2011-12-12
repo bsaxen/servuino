@@ -166,7 +166,7 @@ int main(int argc, char *argv[])
 
   if(argc == 1)
     {
-      g_simulationLength = 499;
+      g_simulationLength = 901;
       g_scenSource = 0;
       runEncoding(g_simulationLength);
     }
