@@ -152,7 +152,7 @@ int insDigitalPinValue(int pin,int step, int value)
 
   ok = ok + checkRange(S_OK,"digpin",pin);
   ok = ok + checkRange(S_OK,"step",step);
-  ok = ok + checkRange(S_OK,"digval",pin);
+  ok = ok + checkRange(S_OK,"digval",value);
 
   if(ok == S_OK)
     {
@@ -198,7 +198,7 @@ int insAnalogPinValue(int pin,int step, int value)
 
   ok = ok + checkRange(S_OK,"anapin",pin);
   ok = ok + checkRange(S_OK,"step",step);
-  ok = ok + checkRange(S_OK,"anaval",pin);
+  ok = ok + checkRange(S_OK,"anaval",value);
 
   if(ok == S_OK)
     {
