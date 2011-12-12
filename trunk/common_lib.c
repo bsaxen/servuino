@@ -39,6 +39,13 @@ int setRange(int board)
       max_irPin = MAX_PIN_IR_MEGA - 1;
       min_irPin = 0;
     }
+
+  inrpt[0] = IR0;
+  inrpt[1] = IR1;
+  inrpt[2] = IR2;
+  inrpt[3] = IR3;
+  inrpt[4] = IR4;
+  inrpt[5] = IR5;
 }
 //====================================
 int checkRange(int mode,const char check[],int value)

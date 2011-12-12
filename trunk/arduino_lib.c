@@ -180,6 +180,7 @@ void digitalWrite(int pin,int value)
   passTime();
 
   ok = checkRange(S_OK,"digpin",pin);
+  value = checkRange(HEAL,"digval",value);
   if(ok == S_OK)
     {
       if(digitalMode[pin] == OUTPUT)
@@ -216,6 +217,7 @@ int digitalRead(int pin)
       if(digitalMode[pin] == INPUT )
 	{
 	    value = getDigitalPinValue(pin,currentStep);  
+	    value = checkRange(HEAL,"digval",value);
 	}
       else
 	errorLog("digitalRead: Wrong pin mode",pin);
@@ -475,7 +477,6 @@ void attachInterrupt(int ir,void(*func)(),int mode)
     {
       interruptMode[ir] = mode;
       attached[ir] = YES;
-      mLog1("Interrupt number",ir);
       interrupt[ir] = func;
       pin = inrpt[ir];
       digitalMode[pin] == INTERRUPT;
@@ -484,6 +485,8 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       if(mode==FALLING)wLog2("attachInterruptFALLING",ir,mode);
       if(mode==CHANGE)wLog2("attachInterruptCHANGE",ir,mode);
     }
+  else
+    wLog2("attachInterruptERROR",ir,mode);
 
   interruptNow();
 }

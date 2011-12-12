@@ -31,12 +31,7 @@ int g_go = NO;
 
 char interruptType[5][80];
 void (*interrupt[6])();
-void (*interrupt0)();
-void (*interrupt1)();
-void (*interrupt2)();
-void (*interrupt3)();
-void (*interrupt4)();
-void (*interrupt5)();
+
 //int  pinToInterrupt[INTPINS];
 
 void stepCommand();
@@ -127,12 +122,7 @@ void runEncoding(int n)
   strcpy(interruptType[RISING],"interruptRISING");
   strcpy(interruptType[CHANGE],"interruptCHANGE");
 
-  inrpt[0] = IR0;
-  inrpt[1] = IR1;
-  inrpt[2] = IR2;
-  inrpt[3] = IR3;
-  inrpt[4] = IR4;
-  inrpt[5] = IR5;
+
 
   fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
   fprintf(s_log,"# LOOP %d\n",g_nloop);
