@@ -96,6 +96,7 @@ int g_nAnalogPins = 6;
 int g_nDigitalPins = 14;
 
 int boardType = UNO;
+int nCodeString = 0;
 
 //int preValueA[MAX_PIN_ANALOG_MEGA];
 //int preValueD[DIGPINS];
@@ -104,8 +105,9 @@ int boardType = UNO;
 
 int currentPin = 0;
 
-FILE *s_log,*e_log;
+FILE *s_log,*e_log,*c_log;
 
+#include "code.h"
 #include "common_lib.c"
 #include "servuino.h"
 #include "servuino_lib.c"
@@ -133,6 +135,8 @@ void runEncoding(int n)
     {
       g_nloop++;
       fprintf(s_log,"# LOOP %d\n",g_nloop);
+      passTime();
+      codeLog(F_LOOP,g_nloop,0,0,0,NULL);
       loop();  
       mLineText("loop shift");
     }

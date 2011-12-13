@@ -15,6 +15,12 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
+//====================================
+void codeLog(int fn,int a,int b, int c, int d,const char *p)
+//====================================
+{
+  fprintf(c_log,"+ %d %d %d %d %d %d '%s'\n",currentStep,fn,a,b,c,d,p);
+}
 
 //====================================
 void boardInit()
@@ -76,6 +82,13 @@ void openSimFile()
     }
   fprintf(s_log,"# Servuino simulation data\n");
 
+  c_log = fopen("data.code","w");
+  if(c_log == NULL)
+    {
+      printf("Unable to open data.code\n");
+    }
+  fprintf(c_log,"# Servuino simulation code data\n");
+
   e_log = fopen("data.error","w");
 }
 
@@ -85,6 +98,7 @@ void closeSimFile()
 {
   fclose(s_log);
   fclose(e_log);
+  fclose(c_log);
 }
 
 //====================================
