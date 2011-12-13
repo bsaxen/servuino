@@ -160,7 +160,7 @@ void pinMode(int pin,int mode)
 	    {
 	      wLog1("pinMode OUT",pin);
 	    }
-	  
+	  codeLog(F_PINMODE,pin,mode,0,0,NULL);
 	}
       else
 	errorLog("pinMode:Unknown Pin Mode",pin);
@@ -193,6 +193,7 @@ void digitalWrite(int pin,int value)
 	    {
 	      wLog1("digitalWrite LOW",pin);
 	    }
+	  codeLog(F_DIGITALWRITE,pin,value,0,0,NULL);
 	}
       else
 	{
@@ -224,6 +225,7 @@ int digitalRead(int pin)
     }
   
   wLog2("digitalRead",pin,value);
+  codeLog(F_DIGITALREAD,pin,value,0,0,NULL);
   interruptNow();
   return(value);
 }
@@ -234,6 +236,7 @@ void analogReference(char type[])
 //=====================================
 {
   unimplemented("analogReference()");
+  codeLog(F_ANALOGREFERENCE,0,0,0,0,NULL);
   //DEFAULT, INTERNAL, INTERNAL1V1, INTERNAL2V56, or EXTERNAL
 }
 
@@ -253,6 +256,7 @@ int analogRead(int pin)  // Values 0 to 1023
       value = checkRange(HEAL,"anaval",value);
     }
   wLog2("analogRead",pin,value);
+  codeLog(F_ANALOGREAD,pin,value,0,0,NULL);
   interruptNow();
   return(value); 
 }
@@ -288,6 +292,7 @@ void analogWrite(int pin,int value)
       
     }
   wLog2("analogWrite",pin,value);
+  codeLog(F_ANALOGWRITE,pin,value,0,0,NULL);
   interruptNow();
   return;
 }
@@ -296,36 +301,49 @@ void analogWrite(int pin,int value)
 void tone(int pin, unsigned int freq)
 {
   currentPin = pin;
+  codeLog(F_TONE_int_int,pin,freq,0,0,NULL);
   unimplemented("tone()");
 }
 
 void tone(int pin, unsigned int freq, unsigned long duration)
 {
   currentPin = pin;
+  codeLog(F_TONE_int_int_long,pin,freq,duration,0,NULL);
   unimplemented("tone()");
 }
 
 void noTone(int pin)
 {
   currentPin = pin;
+  codeLog(F_NOTONE,pin,0,0,0,NULL);
   unimplemented("noTone()");
 }
 
 void shiftOut(int dataPin, int clockPin, int bitOrder, int value)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
+  codeLog(F_SHIFTOUT,dataPin,clockPin,bitOrder,value,NULL);
   unimplemented("shiftOut()");
+}
+
+int shiftIn(int dataPin, int clockPin, int bitOrder)
+{
+  //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
+  codeLog(F_SHIFTIN,dataPin,clockPin,bitOrder,0,NULL);
+  unimplemented("shiftIn()");
 }
 
 unsigned long pulseIn(int pin, int value)
 {
   currentPin = pin;
+  codeLog(F_PULSEIN_int_int,pin,value,0,0,NULL);
   unimplemented("pulseIn()");
 }
 
 unsigned long pulseIn(int pin, int value, unsigned long timeout)
 {
   currentPin = pin;
+  codeLog(F_PULSEIN_int_int_long,pin,value,timeout,0,NULL);
   unimplemented("pulseIn()");
 }
 
@@ -347,6 +365,7 @@ void delay(int ms)
 {
   passTime(); 
   wLog1("delay()",ms);
+  codeLog(F_DELAY,ms,0,0,0,NULL);
   interruptNow();
   //msleep(ms);
 }
@@ -354,6 +373,7 @@ void delay(int ms)
 void delayMicroseconds(int us)
 {
   passTime();
+  codeLog(F_DELAYMICROSECONDS,us,0,0,0,NULL);
   wLog1("delayMicroseconds()",us);
   interruptNow();
   //msleep(us);
@@ -484,6 +504,7 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       if(mode==RISING)wLog2("attachInterruptRISING",ir,mode);
       if(mode==FALLING)wLog2("attachInterruptFALLING",ir,mode);
       if(mode==CHANGE)wLog2("attachInterruptCHANGE",ir,mode);
+      codeLog(F_ATTACHINTERRUPT,pin,ir,mode,0,NULL);
     }
   else
     wLog2("attachInterruptERROR",ir,mode);
@@ -494,14 +515,16 @@ void attachInterrupt(int ir,void(*func)(),int mode)
 //---------------------------------------------------
 void detachInterrupt(int ir)
 {
-  int ok=S_NOK;
+  int ok=S_NOK,pin;
   passTime();
   
   ok = checkRange(S_OK,"interrupt",ir);
   if(ok == S_OK)
     {
       interrupt[ir] = NULL;
+      pin = inrpt[ir];
       wLog1("detachInterrupt",ir);
+      codeLog(F_DETACHINTERRUPT,pin,ir,0,0,NULL);
     }
   
   interruptNow();
@@ -542,6 +565,7 @@ void serial::begin(int baudRate)
   passTime();
   baud = baudRate;
   wLog1("Serial:begin",baud);
+  codeLog(F_SERIAL_BEGIN,baudRate,0,0,0,NULL);
   digitalMode[0] = RX;
   digitalMode[1] = TX;
   serialMode = ON;
@@ -552,6 +576,7 @@ void serial::end()
 {
   passTime();
   wLog0("Serial:end");
+  codeLog(F_SERIAL_END,0,0,0,0,NULL);
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
   serialMode = OFF;
@@ -561,22 +586,26 @@ void serial::end()
 int serial::available()  // returns the number of bytes available to read
 {
   unimplemented("Serial.available()");
+  codeLog(F_SERIAL_AVAILABLE,0,0,0,0,NULL);
   return(1);
 }
 
 int serial::read() // the first byte of incoming serial data available (or -1 if no data is available)
 {
   unimplemented("Serial.read()");
+  codeLog(F_SERIAL_READ,0,0,0,0,NULL);
   return(-1);
 }
 
 int serial::peek() 
 {
+  codeLog(F_SERIAL_PEEK,0,0,0,0,NULL);
   return(-1);
 }
 
 void serial::flush() 
 {
+  codeLog(F_SERIAL_FLUSH,0,0,0,0,NULL);
   showSerial("flush",1);
 }
 
@@ -584,6 +613,7 @@ void serial::print(int x)
 {
   passTime();
   wLog1("Serial:print(int)",x);
+  codeLog(F_SERIAL_PRINT_int,x,0,0,0,NULL);
   interruptNow();
 }
 
@@ -591,12 +621,14 @@ void serial::print(int x,int base)
 {
   passTime();
   wLog1("Serial:print(int,int)",x);
+  codeLog(F_SERIAL_PRINT_int_int,x,base,0,0,NULL);
   interruptNow();
 }
 
 void serial::print(const char *p) 
 {
   passTime();
+  codeLog(F_SERIAL_PRINT_char,0,0,0,0,p);
   wLogChar1("Serial:print(char)",p);
   interruptNow();
 }
@@ -604,6 +636,7 @@ void serial::print(const char *p)
 void serial::println(int x) 
 {
   passTime();
+  codeLog(F_SERIAL_PRINTLN_int,x,0,0,0,NULL);
   wLog1("Serial:println(int)",x);
   interruptNow();
 }
@@ -611,6 +644,7 @@ void serial::println(int x)
 void serial::println(const char *p) 
 {
   passTime();
+  codeLog(F_SERIAL_PRINTLN_char,0,0,0,0,p);
   wLogChar1("Serial:println(char)",p);
   interruptNow();
 }
@@ -618,6 +652,7 @@ void serial::println(const char *p)
 void serial::println(String p) 
 {
   passTime();
+  codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL);
   //wLogChar("Serial:println(char)",p,-1);
   interruptNow();
 }
@@ -625,6 +660,7 @@ void serial::println(String p)
 void serial::write(char *p) 
 {
   passTime();
+  codeLog(F_SERIAL_WRITE,0,0,0,0,p);
   wLogChar1("Serial:write(char)",p);
   interruptNow();
 }
