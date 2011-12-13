@@ -135,7 +135,6 @@ void runEncoding(int n)
     {
       g_nloop++;
       fprintf(s_log,"# LOOP %d\n",g_nloop);
-      passTime();
       codeLog(F_LOOP,g_nloop,0,0,0,NULL);
       loop();  
       mLineText("loop shift");
