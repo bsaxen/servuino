@@ -27,15 +27,19 @@ void statusLog()
 //====================================
 {
   int x,y,n,i,bas;
+  char z[90];
   int tempA[MAX_PIN_ANALOG_MEGA];
   int tempD[MAX_PIN_DIGITAL_MEGA];
+  int tempM[MAX_PIN_DIGITAL_MEGA];
   int pinA[MAX_PIN_ANALOG_MEGA];
   int pinD[MAX_PIN_DIGITAL_MEGA];
+  int pinM[MAX_PIN_DIGITAL_MEGA];
   
   n = 0;
   tempA[0] = 0;
   tempD[0] = 0;
-  
+
+  // Value status of analog pins
   for(i=0;i<=max_anaPin;i++)
     {
       x = c_analogPin[i];
@@ -51,6 +55,8 @@ void statusLog()
   n = 0;
   y = 0;
   bas = 1;
+
+  // Value status of digital pins
   for(i=0;i<=max_digPin;i++)
     {      
       x = c_digitalPin[i];
@@ -68,8 +74,25 @@ void statusLog()
 	}
     }
   y = y/2;
+
+  strcpy(z,"");
+  // Mode status of digital pins
+  for(i=0;i<=max_digPin;i++)
+    {      
+      x = digitalMode[i];
+      printf("Benyy:%d %d\n",i,x);
+      if(x == FREE)z[i]   ='-';
+      if(x == INPUT)z[i]  ='I';
+      if(x == OUTPUT)z[i] ='O';
+      if(x == CHANGE)z[i] ='C';
+      if(x == RISING)z[i] ='R';
+      if(x == FALLING)z[i]='F';
+      if(x == RX)z[i]     ='>';
+      if(x == TX)z[i]     ='<';
+    }
+  z[i]='\0';
   
-  fprintf(n_log,"%d,%d,%d,%d",currentStep,y,tempA[0],tempD[0]);
+  fprintf(n_log,"%d,%s,%d,%d,%d",currentStep,z,y,tempA[0],tempD[0]);
   if(tempA[0] > 0)
     {
       for(i=1;i<=tempA[0];i++)fprintf(n_log,",%d,%d",pinA[i],tempA[i]);

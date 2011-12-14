@@ -84,14 +84,14 @@
 #define DELETE 20
 
 // Interrupt =================
-#define CHANGE  1
-#define RISING  2
-#define FALLING 3
+#define CHANGE  11
+#define RISING  12
+#define FALLING 13
 
 
 #define FREE   0
-#define RX     3
-#define TX     4
+#define RX     23
+#define TX     24
 
 #define RUN    1
 #define ADMIN  2
