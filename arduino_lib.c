@@ -26,6 +26,9 @@
   
 char  stemp[80];
 
+typedef int byte;
+typedef bool boolean;
+
 //------ String Class ---------------------
 class String {
 
