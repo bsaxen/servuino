@@ -23,6 +23,65 @@ void codeLog(int fn,int a,int b, int c, int d,const char *p)
 }
 
 //====================================
+void statusLog()
+//====================================
+{
+  int x,y,n,i,bas;
+  int tempA[MAX_PIN_ANALOG_MEGA];
+  int tempD[MAX_PIN_DIGITAL_MEGA];
+  int pinA[MAX_PIN_ANALOG_MEGA];
+  int pinD[MAX_PIN_DIGITAL_MEGA];
+  
+  n = 0;
+  tempA[0] = 0;
+  tempD[0] = 0;
+  
+  for(i=0;i<=max_anaPin;i++)
+    {
+      x = c_analogPin[i];
+      if(x != 0)
+	{
+	  n++;
+	  tempA[0] = n;
+	  tempA[n] = x;
+	  pinA[n]  = i;
+	}  
+    }
+  
+  n = 0;
+  y = 0;
+  bas = 1;
+  for(i=0;i<=max_digPin;i++)
+    {      
+      x = c_digitalPin[i];
+      if(x > 1) // PWM
+	{
+	  n++;
+	  tempA[0] = n;
+	  tempA[n] = x;
+	  pinD[n]  = i;
+	} 
+      else
+	{
+	  bas = bas*2;
+	  y = y + bas*x;
+	}
+    }
+  y = y/2;
+  
+  fprintf(n_log,"%d,%d,%d,%d",currentStep,y,tempA[0],tempD[0]);
+  if(tempA[0] > 0)
+    {
+      for(i=1;i<=tempA[0];i++)fprintf(n_log,",%d,%d",pinA[i],tempA[i]);
+    }
+  if(tempD[0] > 0)
+    {
+      for(i=1;i<=tempD[0];i++)fprintf(n_log,",%d,%d",pinD[i],tempD[i]);
+    }
+  fprintf(n_log,"\n");
+}
+
+//====================================
 void boardInit()
 //====================================
 {
@@ -44,11 +103,11 @@ void boardInit()
     {
       anaPinPos[i]   = 0;
       c_analogPin[i] = 0;
-      for(j=0;j<SCEN_MAX;j++)
-	{
-	  s_analogPin[j][i]  = 0;
-	  s_analogStep[j][i] = 0;
-	} 
+/*       for(j=0;j<SCEN_MAX;j++) */
+/* 	{ */
+/* 	  s_analogPin[j][i]  = 0; */
+/* 	  s_analogStep[j][i] = 0; */
+/* 	}  */
     }
   
   for(i=0;i<=max_digPin;i++)
@@ -56,11 +115,11 @@ void boardInit()
       digitalMode[i]  = FREE;
       digPinPos[i]    = 0;
       c_digitalPin[i] = 0;
-      for(j=0;j<SCEN_MAX;j++)
-	{
-	  s_digitalPin[j][i]  = 0;
-	  s_digitalStep[j][i] = 0;
-	}
+/*       for(j=0;j<SCEN_MAX;j++) */
+/* 	{ */
+/* 	  s_digitalPin[j][i]  = 0; */
+/* 	  s_digitalStep[j][i] = 0; */
+/* 	} */
     }
 
   for(i=0;i<max_irPin;i++)
@@ -82,6 +141,13 @@ void openSimFile()
     }
   fprintf(s_log,"# Servuino simulation data\n");
 
+  n_log = fopen("data.si","w");
+  if(n_log == NULL)
+    {
+      printf("Unable to open data.si\n");
+    }
+  fprintf(n_log,"# Servuino status data\n");
+
   c_log = fopen("data.code","w");
   if(c_log == NULL)
     {
@@ -96,6 +162,7 @@ void openSimFile()
 void closeSimFile()
 //====================================
 {
+  fclose(n_log);
   fclose(s_log);
   fclose(e_log);
   fclose(c_log);
@@ -352,27 +419,27 @@ void saveScenario()
   return;
 }
 
-//====================================
-void status()
-//====================================
-{
-  int i;
+/* //==================================== */
+/* void status() */
+/* //==================================== */
+/* { */
+/*   int i; */
 
-  fprintf(s_log,"# STATUS %d\n",g_nloop);
-  fprintf(s_log,"# DIG_PIN_MOD: ");
-  for(i=0;i<13;i++)fprintf(s_log,"%3d ",digitalMode[i]);
-  fprintf(s_log,"\n");
-  fprintf(s_log,"# DIG_PIN_VAL: ");
-  for(i=0;i<13;i++)fprintf(s_log,"%3d ",c_digitalPin[i]);
-  fprintf(s_log,"\n");
+/*   fprintf(s_log,"# STATUS %d\n",g_nloop); */
+/*   fprintf(s_log,"# DIG_PIN_MOD: "); */
+/*   for(i=0;i<=13;i++)fprintf(s_log,"%3d ",digitalMode[i]); */
+/*   fprintf(s_log,"\n"); */
+/*   fprintf(s_log,"# DIG_PIN_VAL: "); */
+/*   for(i=0;i<=13;i++)fprintf(s_log,"%3d ",c_digitalPin[i]); */
+/*   fprintf(s_log,"\n"); */
 
 
-  fprintf(s_log,"# ANA_PIN_VAL: ");
-  for(i=0;i<6;i++) fprintf(s_log,"%3d ",c_analogPin[i]);
-  fprintf(s_log,"\n");
+/*   fprintf(s_log,"# ANA_PIN_VAL: "); */
+/*   for(i=0;i<6;i++) fprintf(s_log,"%3d ",c_analogPin[i]); */
+/*   fprintf(s_log,"\n"); */
 
-  return;
-}
+/*   return; */
+/* } */
 //====================================
 void iLog1(const char *p, int value1)
 //====================================
@@ -559,6 +626,7 @@ void savePinStatus()
 void passTime()
 //====================================
 {
+  statusLog();
   currentStep++;
   if(g_simulationLength < currentStep)stopEncoding();
   return;
@@ -619,11 +687,29 @@ void readScenario()
 {
   FILE *in;
   char row[120],*p, junk[20];
-  int pin,step,value,i;
+  int pin,step,value,i,j;
   int tmp=0,dCount[MAX_PIN_DIGITAL_MEGA],aCount[MAX_PIN_ANALOG_MEGA];
 
   if(g_scenSource == 0)in = fopen("sketch.pde","r");
   if(g_scenSource == 1)in = fopen("data.scen","r");
+
+  for(i=0;i<=max_anaPin;i++)
+    {
+      for(j=0;j<SCEN_MAX;j++)
+	{
+	  s_analogPin[j][i]  = 0;
+	  s_analogStep[j][i] = 0;
+	} 
+    }
+  
+  for(i=0;i<=max_digPin;i++)
+    {
+      for(j=0;j<SCEN_MAX;j++)
+	{
+	  s_digitalPin[j][i]  = 0;
+	  s_digitalStep[j][i] = 0;
+	}
+    }
 
   for(i=0;i<=max_digPin;i++)dCount[i] = 0;
   for(i=0;i<=max_anaPin;i++)aCount[i] = 0;
@@ -649,7 +735,7 @@ void readScenario()
 	      dCount[pin]++;
 	      tmp = dCount[pin];
 	      if(step < s_digitalStep[tmp-1][pin])
-		fprintf(e_log,"Error:Scenario data not given in increasing order: Digatal Step %d\n",step);
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Digital Step=%d Pin=%d\n",step,pin);
 	      s_digitalStep[tmp][pin]  = step;
 	      s_digitalPin[tmp][pin]   = value;
 	      s_digitalStep[0][pin]    = tmp;
@@ -663,7 +749,7 @@ void readScenario()
 	      aCount[pin]++;
 	      tmp = aCount[pin];
 	      if(step < s_analogStep[tmp-1][pin])
-		fprintf(e_log,"Error:Scenario data not given in increasing order: Analog Step %d\n",step);
+		fprintf(e_log,"Error:Scenario data not given in increasing order: Analog Step=%d Pin=%d\n",step,pin);
 	      s_analogStep[tmp][pin]   = step;
 	      s_analogPin[tmp][pin]    = value;
 	      s_analogStep[0][pin]     = tmp;

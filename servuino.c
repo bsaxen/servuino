@@ -105,7 +105,7 @@ int nCodeString = 0;
 
 int currentPin = 0;
 
-FILE *s_log,*e_log,*c_log;
+FILE *s_log,*e_log,*c_log,*n_log;
 
 #include "code.h"
 #include "common_lib.c"
@@ -123,8 +123,6 @@ void runEncoding(int n)
   strcpy(interruptType[FALLING],"interruptFALLING");
   strcpy(interruptType[RISING],"interruptRISING");
   strcpy(interruptType[CHANGE],"interruptCHANGE");
-
-
 
   fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
   fprintf(s_log,"# LOOP %d\n",g_nloop);
@@ -153,8 +151,9 @@ int main(int argc, char *argv[])
   openSimFile();
   readSketchInfo();
   setRange(boardType);
-  readScenario();
+ 
   boardInit();
+  readScenario();
 
 
   if(argc == 1)
