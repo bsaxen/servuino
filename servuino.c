@@ -25,9 +25,10 @@ char sketch[120];
 
 // Init
 
-int currentStep = 0;
-int g_simulationLength = 111;
-int g_go = NO;
+int  currentStep = 0;
+int  g_simulationLength = 111;
+int  g_go = NO;
+char g_version[40];
 
 char interruptType[5][80];
 void (*interrupt[6])();
@@ -147,6 +148,8 @@ int main(int argc, char *argv[])
 //====================================
 {
   int x;
+
+  strcpy(g_version,"0.0.1");
   g_go = YES;
   openSimFile();
   readSketchInfo();
