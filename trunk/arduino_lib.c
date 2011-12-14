@@ -180,8 +180,9 @@ void digitalWrite(int pin,int value)
 
   currentPin = pin;
 
-  passTime();
 
+  passTime();
+  c_digitalPin[pin] = value;
   ok = checkRange(S_OK,"digpin",pin);
   value = checkRange(HEAL,"digval",value);
   if(ok == S_OK)
@@ -226,7 +227,7 @@ int digitalRead(int pin)
       else
 	errorLog("digitalRead: Wrong pin mode",pin);
     }
-  
+  c_digitalPin[pin] = value;
   wLog2("digitalRead",pin,value);
   codeLog(F_DIGITALREAD,pin,value,0,0,NULL);
   interruptNow();
@@ -258,6 +259,7 @@ int analogRead(int pin)  // Values 0 to 1023
       value = getAnalogPinValue(pin,currentStep);
       value = checkRange(HEAL,"anaval",value);
     }
+  c_analogPin[pin] = value;
   wLog2("analogRead",pin,value);
   codeLog(F_ANALOGREAD,pin,value,0,0,NULL);
   interruptNow();
@@ -273,9 +275,10 @@ void analogWrite(int pin,int value)
   char temp[80];
   int ok=S_NOK;
 
+
   passTime();
   currentPin = pin;
-
+  c_digitalPin[pin] = value;
   ok = checkRange(S_OK,"digpin",pin);
   if(ok == S_OK)
     {
