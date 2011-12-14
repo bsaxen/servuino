@@ -139,21 +139,21 @@ void openSimFile()
     {
       printf("Unable to open data.su\n");
     }
-  fprintf(s_log,"# Servuino simulation data\n");
+  fprintf(s_log,"# Servuino simulation data Version: %s\n",g_version);
 
   n_log = fopen("data.si","w");
   if(n_log == NULL)
     {
       printf("Unable to open data.si\n");
     }
-  fprintf(n_log,"# Servuino status data\n");
+  fprintf(n_log,"# Servuino status data Version: %s\n",g_version);
 
   c_log = fopen("data.code","w");
   if(c_log == NULL)
     {
       printf("Unable to open data.code\n");
     }
-  fprintf(c_log,"# Servuino simulation code data\n");
+  fprintf(c_log,"# Servuino simulation code data Version: %s\n",g_version);
 
   e_log = fopen("data.error","w");
 }
