@@ -149,7 +149,7 @@ int main(int argc, char *argv[])
 {
   int x;
 
-  strcpy(g_version,"0.0.1");
+  strcpy(g_version,"0.0.2");
   g_go = YES;
   openSimFile();
   readSketchInfo();
