@@ -80,7 +80,6 @@ void statusLog()
   for(i=0;i<=max_digPin;i++)
     {      
       x = digitalMode[i];
-      printf("Benyy:%d %d\n",i,x);
       if(x == FREE)z[i]   ='-';
       if(x == INPUT)z[i]  ='I';
       if(x == OUTPUT)z[i] ='O';
@@ -126,11 +125,6 @@ void boardInit()
     {
       anaPinPos[i]   = 0;
       c_analogPin[i] = 0;
-/*       for(j=0;j<SCEN_MAX;j++) */
-/* 	{ */
-/* 	  s_analogPin[j][i]  = 0; */
-/* 	  s_analogStep[j][i] = 0; */
-/* 	}  */
     }
   
   for(i=0;i<=max_digPin;i++)
@@ -138,11 +132,6 @@ void boardInit()
       digitalMode[i]  = FREE;
       digPinPos[i]    = 0;
       c_digitalPin[i] = 0;
-/*       for(j=0;j<SCEN_MAX;j++) */
-/* 	{ */
-/* 	  s_digitalPin[j][i]  = 0; */
-/* 	  s_digitalStep[j][i] = 0; */
-/* 	} */
     }
 
   for(i=0;i<max_irPin;i++)
