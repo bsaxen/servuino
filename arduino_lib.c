@@ -146,7 +146,6 @@ void pinMode(int pin,int mode)
   
   passTime();
 
-  printf("pin %d mode %d\n",pin,mode);
   ok = checkRange(S_OK,"digpin",pin);
   if(ok == S_OK)
     {

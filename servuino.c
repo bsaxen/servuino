@@ -30,7 +30,7 @@ int  g_simulationLength = 111;
 int  g_go = NO;
 char g_version[40];
 
-char interruptType[5][80];
+char interruptType[20][80];
 void (*interrupt[6])();
 
 //int  pinToInterrupt[INTPINS];
