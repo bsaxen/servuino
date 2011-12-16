@@ -130,7 +130,8 @@ void unimplemented(const char *f)
   char temp[200];
   passTime();
   sprintf(temp,"unimplemented: %s\n",f);
-  wLog0(temp);
+  wLog0(0,temp);
+  wLog0(1,temp);
   interruptNow();
 }
 
@@ -139,7 +140,7 @@ void unimplemented(const char *f)
 void pinMode(int pin,int mode)
 //=====================================
 {
-  char temp[80];
+  char temp[120];
   int ok=S_NOK;
 
   currentPin = pin;
@@ -156,12 +157,22 @@ void pinMode(int pin,int mode)
 
 	  if(mode==INPUT)
 	    {
-	      wLog1("pinMode IN",pin);
+	      wLog1(0,"pinMode IN",pin);
+	      strcpy(temp,textPinModeIn[pin]);
+	      if(!strstr(temp,"void"))
+		wLog1(1,temp,pin);
+	      else
+	      wLog1(1,"pinMode IN",pin);
 	    }
 	  
 	  if(mode==OUTPUT)
 	    {
-	      wLog1("pinMode OUT",pin);
+	      wLog1(0,"pinMode OUT",pin);
+	      strcpy(temp,textPinModeOut[pin]);
+	      if(!strstr(temp,"void"))
+		wLog1(1,temp,pin);
+	      else
+		wLog1(1,"pinMode OUT",pin);
 	    }
 	  codeLog(F_PINMODE,pin,mode,0,0,NULL);
 	}
@@ -175,7 +186,7 @@ void pinMode(int pin,int mode)
 void digitalWrite(int pin,int value)
 //=====================================
 {
-  char temp[80];
+  char temp[120];
   int ok=S_NOK;
 
   currentPin = pin;
@@ -191,11 +202,21 @@ void digitalWrite(int pin,int value)
 	{
 	  if(value==HIGH)
 	    {
-	      wLog1("digitalWrite HIGH",pin);
+	      wLog1(0,"digitalWrite HIGH",pin);
+	      strcpy(temp,textDigitalWriteHigh[pin]);
+	      if(!strstr(temp,"void"))
+		wLog1(1,temp,pin);
+	      else
+		wLog1(1,"digitalWrite HIGH",pin);
 	    }
 	  if(value==LOW)
 	    {
-	      wLog1("digitalWrite LOW",pin);
+	      wLog1(0,"digitalWrite LOW",pin);
+	      strcpy(temp,textDigitalWriteLow[pin]);
+	      if(!strstr(temp,"void"))
+		wLog1(1,temp,pin);
+	      else
+	      wLog1(1,"digitalWrite LOW",pin);
 	    }
 	  codeLog(F_DIGITALWRITE,pin,value,0,0,NULL);
 	}
@@ -211,7 +232,7 @@ int digitalRead(int pin)
 //=====================================
 {
   int value=0,x,ok=S_NOK;
-  char temp[80];
+  char temp[120];
 
   currentPin = pin;
 
@@ -228,7 +249,12 @@ int digitalRead(int pin)
 	errorLog("digitalRead: Wrong pin mode",pin);
     }
   c_digitalPin[pin] = value;
-  wLog2("digitalRead",pin,value);
+  wLog2(0,"digitalRead",pin,value);
+  strcpy(temp,textDigitalRead[pin]);
+  if(!strstr(temp,"void"))
+    wLog2(1,temp,pin,value);
+  else
+    wLog2(1,"digitalRead",pin,value);
   codeLog(F_DIGITALREAD,pin,value,0,0,NULL);
   interruptNow();
   return(value);
@@ -260,7 +286,12 @@ int analogRead(int pin)  // Values 0 to 1023
       value = checkRange(HEAL,"anaval",value);
     }
   c_analogPin[pin] = value;
-  wLog2("analogRead",pin,value);
+  wLog2(0,"analogRead",pin,value);
+  strcpy(temp,textAnalogRead[pin]);
+  if(!strstr(temp,"void"))
+    wLog2(1,temp,pin,value);
+  else
+    wLog2(1,"analogRead",pin,value);
   codeLog(F_ANALOGREAD,pin,value,0,0,NULL);
   interruptNow();
   return(value); 
@@ -297,7 +328,12 @@ void analogWrite(int pin,int value)
 	}
       
     }
-  wLog2("analogWrite",pin,value);
+  wLog2(0,"analogWrite",pin,value);
+  strcpy(temp,textAnalogWrite[pin]);
+  if(!strstr(temp,"void"))
+    wLog2(1,temp,pin,value);
+  else
+    wLog2(1,"analogWrite",pin,value);
   codeLog(F_ANALOGWRITE,pin,value,0,0,NULL);
   interruptNow();
   return;
@@ -357,32 +393,30 @@ unsigned long pulseIn(int pin, int value, unsigned long timeout)
 
 unsigned long millis()
 {
-  //unimplemented("millis()");
   return(currentStep*100);
 }
 
 unsigned long micros()
 {
-  //unimplemented("micros()");
   return(currentStep*100000);
 }
 
 void delay(int ms)
 {
   passTime(); 
-  wLog1("delay()",ms);
+  wLog1(0,"delay()",ms);
+  wLog1(1,"delay()",ms);
   codeLog(F_DELAY,ms,0,0,0,NULL);
   interruptNow();
-  //msleep(ms);
 }
 
 void delayMicroseconds(int us)
 {
   passTime();
   codeLog(F_DELAYMICROSECONDS,us,0,0,0,NULL);
-  wLog1("delayMicroseconds()",us);
+  wLog1(0,"delayMicroseconds()",us);
+  wLog1(1,"delayMicroseconds()",us);
   interruptNow();
-  //msleep(us);
 }
 
 //------ Math ------------------------------
@@ -506,14 +540,23 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       interrupt[ir] = func;
       pin = inrpt[ir];
       digitalMode[pin] == INTERRUPT;
-      if(mode==LOW)wLog2("attachInterruptLOW",ir,mode);
-      if(mode==RISING)wLog2("attachInterruptRISING",ir,mode);
-      if(mode==FALLING)wLog2("attachInterruptFALLING",ir,mode);
-      if(mode==CHANGE)wLog2("attachInterruptCHANGE",ir,mode);
+
+      if(mode==LOW)    wLog2(0,"attachInterruptLOW",ir,mode);
+      if(mode==RISING) wLog2(0,"attachInterruptRISING",ir,mode);
+      if(mode==FALLING)wLog2(0,"attachInterruptFALLING",ir,mode);
+      if(mode==CHANGE) wLog2(0,"attachInterruptCHANGE",ir,mode);
+
+      if(mode==LOW)    wLog2(1,"attachInterruptLOW",ir,mode);
+      if(mode==RISING) wLog2(1,"attachInterruptRISING",ir,mode);
+      if(mode==FALLING)wLog2(1,"attachInterruptFALLING",ir,mode);
+      if(mode==CHANGE) wLog2(1,"attachInterruptCHANGE",ir,mode);
       codeLog(F_ATTACHINTERRUPT,pin,ir,mode,0,NULL);
     }
   else
-    wLog2("attachInterruptERROR",ir,mode);
+    {
+      wLog2(0,"attachInterruptERROR",ir,mode);
+      wLog2(1,"attachInterruptERROR",ir,mode);
+    }
 
   interruptNow();
 }
@@ -529,7 +572,8 @@ void detachInterrupt(int ir)
     {
       interrupt[ir] = NULL;
       pin = inrpt[ir];
-      wLog1("detachInterrupt",ir);
+      wLog1(0,"detachInterrupt",ir);
+      wLog1(1,"detachInterrupt",ir);
       codeLog(F_DETACHINTERRUPT,pin,ir,0,0,NULL);
     }
   
@@ -570,7 +614,7 @@ void serial::begin(int baudRate)
 {
   passTime();
   baud = baudRate;
-  wLog1("Serial:begin",baud);
+  wLog1(0,"Serial:begin",baud);
   codeLog(F_SERIAL_BEGIN,baudRate,0,0,0,NULL);
   digitalMode[0] = RX;
   digitalMode[1] = TX;
@@ -581,7 +625,7 @@ void serial::begin(int baudRate)
 void serial::end() 
 {
   passTime();
-  wLog0("Serial:end");
+  wLog0(0,"Serial:end");
   codeLog(F_SERIAL_END,0,0,0,0,NULL);
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
@@ -618,7 +662,8 @@ void serial::flush()
 void serial::print(int x) 
 {
   passTime();
-  wLog1("Serial:print(int)",x);
+  wLog1(0,"Serial:print(int)",x);
+  wLog1(1,"Serial:print(int)",x);
   codeLog(F_SERIAL_PRINT_int,x,0,0,0,NULL);
   interruptNow();
 }
@@ -626,7 +671,8 @@ void serial::print(int x)
 void serial::print(int x,int base) 
 {
   passTime();
-  wLog1("Serial:print(int,int)",x);
+  wLog1(0,"Serial:print(int,int)",x);
+  wLog1(1,"Serial:print(int,int)",x);
   codeLog(F_SERIAL_PRINT_int_int,x,base,0,0,NULL);
   interruptNow();
 }
@@ -635,7 +681,8 @@ void serial::print(const char *p)
 {
   passTime();
   codeLog(F_SERIAL_PRINT_char,0,0,0,0,p);
-  wLogChar1("Serial:print(char)",p);
+  wLogChar1(0,"Serial:print(char)",p);
+  wLogChar1(1,"Serial:print(char)",p);
   interruptNow();
 }
 
@@ -643,7 +690,8 @@ void serial::println(int x)
 {
   passTime();
   codeLog(F_SERIAL_PRINTLN_int,x,0,0,0,NULL);
-  wLog1("Serial:println(int)",x);
+  wLog1(0,"Serial:println(int)",x);
+  wLog1(1,"Serial:println(int)",x);
   interruptNow();
 }
 
@@ -651,7 +699,8 @@ void serial::println(const char *p)
 {
   passTime();
   codeLog(F_SERIAL_PRINTLN_char,0,0,0,0,p);
-  wLogChar1("Serial:println(char)",p);
+  wLogChar1(0,"Serial:println(char)",p);
+  wLogChar1(1,"Serial:println(char)",p);
   interruptNow();
 }
 
@@ -659,7 +708,8 @@ void serial::println(String p)
 {
   passTime();
   codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL);
-  //wLogChar("Serial:println(char)",p,-1);
+  //wLogChar(0,"Serial:println(char)",p,-1);
+  //wLogChar(1,"Serial:println(char)",p,-1);
   interruptNow();
 }
 
@@ -667,7 +717,8 @@ void serial::write(char *p)
 {
   passTime();
   codeLog(F_SERIAL_WRITE,0,0,0,0,p);
-  wLogChar1("Serial:write(char)",p);
+  wLogChar1(0,"Serial:write(char)",p);
+  wLogChar1(1,"Serial:write(char)",p);
   interruptNow();
 }
 
