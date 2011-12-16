@@ -615,6 +615,7 @@ void serial::begin(int baudRate)
   passTime();
   baud = baudRate;
   wLog1(0,"Serial:begin",baud);
+  wLog1(1,"Serial:begin",baud);
   codeLog(F_SERIAL_BEGIN,baudRate,0,0,0,NULL);
   digitalMode[0] = RX;
   digitalMode[1] = TX;
@@ -626,6 +627,7 @@ void serial::end()
 {
   passTime();
   wLog0(0,"Serial:end");
+  wLog0(1,"Serial:end");
   codeLog(F_SERIAL_END,0,0,0,0,NULL);
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
