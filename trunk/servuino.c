@@ -27,7 +27,6 @@ char sketch[120];
 
 int  currentStep = 0;
 int  g_simulationLength = 111;
-int  g_go = NO;
 char g_version[40];
 
 char interruptType[20][80];
@@ -53,12 +52,17 @@ int   s_digitalPin[SCEN_MAX][MAX_PIN_DIGITAL_MEGA];
 int   s_digitalStep[SCEN_MAX][MAX_PIN_DIGITAL_MEGA];
 int   digitalMode[MAX_PIN_DIGITAL_MEGA];
 
-int   intPinPos[MAX_PIN_IR_MEGA];
-int   c_intPin[MAX_PIN_IR_MEGA];
 int   s_interrupt[SCEN_MAX][MAX_PIN_IR_MEGA];
 int   s_interruptStep[SCEN_MAX];
 int   interruptMode[MAX_PIN_IR_MEGA];
 
+char  textPinModeIn[MAX_PIN_DIGITAL_MEGA][SIZE_ROW];
+char  textPinModeOut[MAX_PIN_DIGITAL_MEGA][SIZE_ROW];
+char  textDigitalWriteLow[MAX_PIN_DIGITAL_MEGA][SIZE_ROW];
+char  textDigitalWriteHigh[MAX_PIN_DIGITAL_MEGA][SIZE_ROW];
+char  textAnalogWrite[MAX_PIN_DIGITAL_MEGA][SIZE_ROW];
+char  textAnalogRead[MAX_PIN_ANALOG_MEGA][SIZE_ROW];
+char  textDigitalRead[MAX_PIN_DIGITAL_MEGA][SIZE_ROW];
 
 int   stepAtReadD[MAX_READ];
 int   stepAtReadA[MAX_READ];
@@ -106,7 +110,7 @@ int nCodeString = 0;
 
 int currentPin = 0;
 
-FILE *s_log,*e_log,*c_log,*n_log;
+FILE *s_log,*e_log,*c_log,*a_log,*u_log;
 
 #include "code.h"
 #include "common_lib.c"
@@ -125,18 +129,22 @@ void runEncoding(int n)
   strcpy(interruptType[RISING],"interruptRISING");
   strcpy(interruptType[CHANGE],"interruptCHANGE");
 
-  fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
-  fprintf(s_log,"# LOOP %d\n",g_nloop);
+  //fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
+  //fprintf(s_log,"# LOOP %d\n",g_nloop);
+
+  passTime();
+  wLog0(0,"Setup");
+  wLog0(1,"Setup");
   setup();
-  mLineText("Start Looping");
 
   for(i=0;i<MAX_LOOPS;i++)  
     {
       g_nloop++;
-      fprintf(s_log,"# LOOP %d\n",g_nloop);
+      passTime();
       codeLog(F_LOOP,g_nloop,0,0,0,NULL);
+      wLog1(0,"Loop",g_nloop);
+      wLog1(1,"Loop",g_nloop);
       loop();  
-      mLineText("loop shift");
     }
   stopEncoding();
   return;
@@ -149,15 +157,15 @@ int main(int argc, char *argv[])
 {
   int x;
 
-  strcpy(g_version,"0.0.2");
-  g_go = YES;
-  openSimFile();
+  strcpy(g_version,"0.0.3");
+
+  openFiles();
   readSketchInfo();
   setRange(boardType);
  
   boardInit();
   readScenario();
-
+  readCustomLog();
 
   if(argc == 1)
     {
@@ -204,7 +212,7 @@ int main(int argc, char *argv[])
   else
     errorLog("Servuino not executed",0);
 
-  closeSimFile();
+  closeFiles();
 }
  
 
