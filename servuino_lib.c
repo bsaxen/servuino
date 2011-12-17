@@ -80,7 +80,6 @@ void statusLog()
   for(i=0;i<=max_digPin;i++)
     {      
       x = digitalMode[i];
-      if(x > 10)printf("%d %d\n",i,x);
       if(x == FREE)z[i]   ='-';
       else if(x == INPUT)z[i]  ='I';
       else if(x == OUTPUT)z[i] ='O';
