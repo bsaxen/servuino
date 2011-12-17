@@ -666,7 +666,7 @@ void serial::print(int x)
   passTime();
   wLog1(0,"Serial:print(int)",x);
   wLog1(1,"Serial:print(int)",x);
-  fprintf(x_log,"%d SL %d\n",currentStep,x);
+  fprintf(x_log,"%d SL [%d]\n",currentStep,x);
   codeLog(F_SERIAL_PRINT_int,x,0,0,0,NULL);
   interruptNow();
 }
@@ -676,7 +676,7 @@ void serial::print(int x,int base)
   passTime();
   wLog1(0,"Serial:print(int,int)",x);
   wLog1(1,"Serial:print(int,int)",x);
-  fprintf(x_log,"%d SL %d\n",currentStep,x);
+  fprintf(x_log,"%d SL [%d]\n",currentStep,x);
   codeLog(F_SERIAL_PRINT_int_int,x,base,0,0,NULL);
   interruptNow();
 }
@@ -687,7 +687,7 @@ void serial::print(const char *p)
   codeLog(F_SERIAL_PRINT_char,0,0,0,0,p);
   wLogChar1(0,"Serial:print(char)",p);
   wLogChar1(1,"Serial:print(char)",p);
-  fprintf(x_log,"%d SL '%s'\n",currentStep,p);
+  fprintf(x_log,"%d SL [%s]\n",currentStep,p);
   interruptNow();
 }
 
@@ -697,7 +697,7 @@ void serial::println(int x)
   codeLog(F_SERIAL_PRINTLN_int,x,0,0,0,NULL);
   wLog1(0,"Serial:println(int)",x);
   wLog1(1,"Serial:println(int)",x);
-  fprintf(x_log,"%d NL %d\n",currentStep,x);
+  fprintf(x_log,"%d NL [%d]\n",currentStep,x);
   interruptNow();
 }
 
@@ -707,7 +707,7 @@ void serial::println(const char *p)
   codeLog(F_SERIAL_PRINTLN_char,0,0,0,0,p);
   wLogChar1(0,"Serial:println(char)",p);
   wLogChar1(1,"Serial:println(char)",p);
-  fprintf(x_log,"%d NL '%s'\n",currentStep,p);
+  fprintf(x_log,"%d NL [%s]\n",currentStep,p);
   interruptNow();
 }
 
@@ -717,7 +717,7 @@ void serial::println(String p)
   codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL);
   //wLogChar(0,"Serial:println(char)",p,-1);
   //wLogChar(1,"Serial:println(char)",p,-1);
-  //fprintf(x_log,"%d NL '%s'\n",currentStep,p);
+  //fprintf(x_log,"%d NL [%s]\n",currentStep,p);
   interruptNow();
 }
 
@@ -727,7 +727,7 @@ void serial::write(char *p)
   codeLog(F_SERIAL_WRITE,0,0,0,0,p);
   wLogChar1(0,"Serial:write(char)",p);
   wLogChar1(1,"Serial:write(char)",p);
-  fprintf(x_log,"%d SL '%s'\n",currentStep,p);
+  fprintf(x_log,"%d SL [%s]\n",currentStep,p);
   interruptNow();
 }
 
