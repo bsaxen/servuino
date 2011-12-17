@@ -110,7 +110,7 @@ int nCodeString = 0;
 
 int currentPin = 0;
 
-FILE *s_log,*e_log,*c_log,*a_log,*u_log;
+FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log;
 
 #include "code.h"
 #include "common_lib.c"

@@ -86,8 +86,8 @@ void statusLog()
       if(x == CHANGE)z[i] ='C';
       if(x == RISING)z[i] ='R';
       if(x == FALLING)z[i]='F';
-      if(x == RX)z[i]     ='>';
-      if(x == TX)z[i]     ='<';
+      if(x == RX)z[i]     ='X';
+      if(x == TX)z[i]     ='Y';
     }
   z[i]='\0';
   
@@ -188,6 +188,14 @@ void openFiles()
     }
   fprintf(c_log,"# Servuino Code Simulation Data Version: %s\n",g_version);
 
+  // Serial logging
+  x_log = fopen("data.serial","w");
+  if(x_log == NULL)
+    {
+      errorLog("Unable to open data.serial",0);
+    }
+  fprintf(x_log,"# Servuino Serial Simulation Data Version: %s\n",g_version);
+
 
 }
 
@@ -200,6 +208,7 @@ void closeFiles()
   fclose(c_log);
   fclose(u_log);
   fclose(a_log);
+  fclose(x_log);
 }
 
 //====================================
