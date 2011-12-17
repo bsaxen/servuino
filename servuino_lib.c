@@ -80,14 +80,16 @@ void statusLog()
   for(i=0;i<=max_digPin;i++)
     {      
       x = digitalMode[i];
+      if(x > 10)printf("%d %d\n",i,x);
       if(x == FREE)z[i]   ='-';
-      if(x == INPUT)z[i]  ='I';
-      if(x == OUTPUT)z[i] ='O';
-      if(x == CHANGE)z[i] ='C';
-      if(x == RISING)z[i] ='R';
-      if(x == FALLING)z[i]='F';
-      if(x == RX)z[i]     ='X';
-      if(x == TX)z[i]     ='Y';
+      else if(x == INPUT)z[i]  ='I';
+      else if(x == OUTPUT)z[i] ='O';
+      else if(x == CHANGE)z[i] ='C';
+      else if(x == RISING)z[i] ='R';
+      else if(x == FALLING)z[i]='F';
+      else if(x == RX)z[i]     ='X';
+      else if(x == TX)z[i]     ='Y';
+      else z[i] = 'Q';
     }
   z[i]='\0';
   

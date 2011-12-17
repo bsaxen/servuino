@@ -539,7 +539,7 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       attached[ir] = YES;
       interrupt[ir] = func;
       pin = inrpt[ir];
-      digitalMode[pin] == INTERRUPT;
+      digitalMode[pin] = mode;
 
       if(mode==LOW)    wLog2(0,"attachInterruptLOW",ir,mode);
       if(mode==RISING) wLog2(0,"attachInterruptRISING",ir,mode);
@@ -570,8 +570,10 @@ void detachInterrupt(int ir)
   ok = checkRange(S_OK,"interrupt",ir);
   if(ok == S_OK)
     {
+
       interrupt[ir] = NULL;
       pin = inrpt[ir];
+      digitalMode[pin] == FREE;
       wLog1(0,"detachInterrupt",ir);
       wLog1(1,"detachInterrupt",ir);
       codeLog(F_DETACHINTERRUPT,pin,ir,0,0,NULL);
