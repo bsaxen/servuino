@@ -193,9 +193,10 @@ void digitalWrite(int pin,int value)
 
 
   passTime();
-  c_digitalPin[pin] = value;
+
   ok = checkRange(S_OK,"digpin",pin);
   value = checkRange(HEAL,"digval",value);
+  c_digitalPin[pin] = value;
   if(ok == S_OK)
     {
       if(digitalMode[pin] == OUTPUT)
