@@ -179,6 +179,7 @@ int main(int argc, char *argv[])
       g_scenSource = atoi(argv[2]);
       readScenario(); // Maybe other source
       runEncoding(g_simulationLength);
+
     }
   else if(argc == 8)
     {

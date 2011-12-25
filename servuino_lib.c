@@ -26,8 +26,8 @@ void codeLog(int fn,int a,int b, int c, int d,const char *p)
 void statusLog()
 //====================================
 {
-  int x,y,n,i,bas;
-  char z[90];
+  int x,n,i;
+  char z[200];
   int tempA[MAX_PIN_ANALOG_MEGA];
   int tempD[MAX_PIN_DIGITAL_MEGA];
   int tempM[MAX_PIN_DIGITAL_MEGA];
@@ -35,11 +35,24 @@ void statusLog()
   int pinD[MAX_PIN_DIGITAL_MEGA];
   int pinM[MAX_PIN_DIGITAL_MEGA];
   
-  n = 0;
+
   tempA[0] = 0;
   tempD[0] = 0;
+  for(i=0;i<=max_anaPin;i++)
+    {
+      tempA[i] = 0;
+      pinA[i]  = 0; 
+    }
+  for(i=0;i<=max_digPin;i++)
+    {
+      tempD[i] = 0;
+      pinD[i]  = 0; 
+    }
+
+  // step,status dig pins, dig pin value, n ana pair, n PWM dig pair, ( pairs)
 
   // Value status of analog pins
+  n = 0;
   for(i=0;i<=max_anaPin;i++)
     {
       x = c_analogPin[i];
@@ -52,28 +65,20 @@ void statusLog()
 	}  
     }
   
-  n = 0;
-  y = 0;
-  bas = 1;
 
   // Value status of digital pins
+  n = 0;
   for(i=0;i<=max_digPin;i++)
     {      
       x = c_digitalPin[i];
-      if(x > 1) // PWM
+      if(x > 0)
 	{
 	  n++;
-	  tempA[0] = n;
-	  tempA[n] = x;
+	  tempD[0] = n;
+	  tempD[n] = x;
 	  pinD[n]  = i;
 	} 
-      else
-	{
-	  bas = bas*2;
-	  y = y + bas*x;
-	}
     }
-  y = y/2;
 
   strcpy(z,"");
   // Mode status of digital pins
@@ -92,7 +97,7 @@ void statusLog()
     }
   z[i]='\0';
   
-  fprintf(s_log,"%d,%s,%d,%d,%d",currentStep,z,y,tempA[0],tempD[0]);
+  fprintf(s_log,"%d,%s,%d,%d",currentStep,z,tempA[0],tempD[0]);
   if(tempA[0] > 0)
     {
       for(i=1;i<=tempA[0];i++)fprintf(s_log,",%d,%d",pinA[i],tempA[i]);
