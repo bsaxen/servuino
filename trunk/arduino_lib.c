@@ -1,5 +1,5 @@
 /*  Servuino is a Arduino Simulator Engine
-    Copyright (C) 2011  Benny Saxen
+    Copyright (C) 2012  Benny Saxen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -27,96 +27,99 @@
 char  stemp[80];
 
 typedef int byte;
+typedef int word;
 typedef bool boolean;
 
 //------ String Class ---------------------
-class String {
 
- public:
-  //String(char p);
-  String(const char *p);
-  void charAt();
-  void compareTo();
-  void concat();
-  void endsWith();
-  void equals();
-  void equalsIgnoreCase();
-  void getBytes();
-  void indexOf();
-  void lastIndexOf();
-  void length();
-  String replace(char x, char y);
-  String replace(const char *x, const char *y);
-  void setCharAt();
-  void startsWith();
-  void substring();
-  void toCharArray();
-  void toLowerCase();
-  void toUpperCase();
-  void trim();
+/* class String: public string { */
 
-};
+/*   public: */
+/*   String(char p); */
+/*   String(const char *p); */
+/*      void charAt(int pos); */
+/*   void compareTo(); */
+/*   void concat(); */
+/*   void endsWith(); */
+/*   void equals(); */
+/*   void equalsIgnoreCase(); */
+/*   void getBytes(); */
+/*   void indexOf(); */
+/*   void lastIndexOf(); */
+/*   void length(); */
+/*   String replace(char x, char y); */
+/*   String replace(const char *x, const char *y); */
+/*   void setCharAt(); */
+/*   void startsWith(); */
+/*   void substring(); */
+/*   void toCharArray(); */
+/*   void toLowerCase(); */
+/*   void toUpperCase(); */
+/*   void trim(); */
 
-String::String(const char *p) 
-{
-}
-void String::charAt() 
-{
-}
-void String::compareTo() 
-{
-}
-void String::concat() 
-{
-}
-void String::endsWith() 
-{
-}
-void String::equals() 
-{
-}
-void String::equalsIgnoreCase() 
-{
-}
-void String::getBytes() 
-{
-}
-void String::indexOf() 
-{
-}
-void String::lastIndexOf() 
-{
-}
-void String::length() 
-{
-}
-String String::replace(char x,char y) 
-{
-}
-String String::replace(const char *x,const char *y) 
-{
-}
-void String::setCharAt() 
-{
-}
-void String::startsWith() 
-{
-}
-void String::substring() 
-{
-}
-void String::toCharArray() 
-{
-}
-void String::toLowerCase() 
-{
-}
-void String::toUpperCase() 
-{
-}
-void String::trim() 
-{
-}
+/* }; */
+
+/* //String::String(const char *p)  */
+/* { */
+/* } */
+/* void String::charAt(int pos)  */
+/* { */
+/*   char string::at(pos)); */
+/* } */
+/* void String::compareTo()  */
+/* { */
+/* } */
+/* void String::concat()  */
+/* { */
+/* } */
+/* void String::endsWith()  */
+/* { */
+/* } */
+/* void String::equals()  */
+/* { */
+/* } */
+/* void String::equalsIgnoreCase()  */
+/* { */
+/* } */
+/* void String::getBytes()  */
+/* { */
+/* } */
+/* void String::indexOf()  */
+/* { */
+/* } */
+/* void String::lastIndexOf()  */
+/* { */
+/* } */
+/* void String::length()  */
+/* { */
+/* } */
+/* String String::replace(char x,char y)  */
+/* { */
+/* } */
+/* String String::replace(const char *x,const char *y)  */
+/* { */
+/* } */
+/* void String::setCharAt()  */
+/* { */
+/* } */
+/* void String::startsWith()  */
+/* { */
+/* } */
+/* void String::substring()  */
+/* { */
+/* } */
+/* void String::toCharArray()  */
+/* { */
+/* } */
+/* void String::toLowerCase()  */
+/* { */
+/* } */
+/* void String::toUpperCase()  */
+/* { */
+/* } */
+/* void String::trim()  */
+/* { */
+/* } */
 
 
 
@@ -489,40 +492,64 @@ long random(long lowerLimit, long upperLimit)
 
 
 //------ Bits and Bytes --------------------
-unsigned char lowByte(unsigned char x)
+unsigned char lowByte(word x)
 {
-  unimplemented("lowByte()");
+  return(x&0xff);
 }
 
-unsigned char highByte(unsigned char x)
+unsigned char highByte(word x)
 {
-  unimplemented("lowByte()");
+  unsigned char y;
+  x = x&0xff00;
+  y = x >> 8;
+  return(y);
 }
 
-unsigned char bitRead(unsigned char x)
+unsigned char bitRead(int x, int n)
 {
-  unimplemented("bitRead()");
+  int bit;
+
+  bit = x >> n;
+  bit = bit&0x0001;
+  return(bit);
 }
 
-unsigned char bitWrite(unsigned char x)
+int  bitSet(int x, int n)
 {
-  unimplemented("bitWrite()");
+  int res,mask;
+
+  mask = 1 << n;
+  res = x | mask;
+
+  return(res);
 }
 
-unsigned char bitSet(unsigned char x)
+int  bitClear(int x, int n)
 {
-  unimplemented("bitSet()");
+  int res,mask;
+
+  mask = 1 << n;
+  res = x & ~mask;
+
+  return(res);
 }
 
-unsigned char bitClear(unsigned char x)
+int bitWrite(int x, int n, int b)
 {
-  unimplemented("bitClear()");
+  int res;
+  if(b==0)res = bitClear(x,n);
+  if(b==1)res = bitSet(x,n);
+  return(res);
 }
 
-unsigned char bit(unsigned char x)
+int bit(int n)
 {
-  unimplemented("bit()");
+  int res;
+  //for(i=0;i<n;i++)res = res*2;
+  res = 1 << n;
+  return(res);
 }
+
 
 //------ External Interrupts ---------------
 
@@ -607,7 +634,8 @@ class serial {
   void print(const char *p);
   void println(int x);
   void println(const char *p);
-  void println(String p);
+  //void println(String p);
+  void println();
   void write(char *p);
 };
 
@@ -714,13 +742,23 @@ void serial::println(const char *p)
   interruptNow();
 }
 
-void serial::println(String p) 
+/* void serial::println(String p)  */
+/* { */
+/*   passTime(); */
+/*   codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL); */
+/*   //wLogChar(0,"Serial:println(char)",p,-1); */
+/*   //wLogChar(1,"Serial:println(char)",p,-1); */
+/*   //fprintf(x_log,"%d NL [%s]\n",currentStep,p); */
+/*   interruptNow(); */
+/* } */
+
+void serial::println() 
 {
   passTime();
-  codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL);
-  //wLogChar(0,"Serial:println(char)",p,-1);
-  //wLogChar(1,"Serial:println(char)",p,-1);
-  //fprintf(x_log,"%d NL [%s]\n",currentStep,p);
+  codeLog(F_SERIAL_PRINTLN_void,0,0,0,0,NULL);
+  wLog0(0,"Serial:println()");
+  wLog0(1,"Serial:println()");
+  fprintf(x_log,"%d NL []\n",currentStep);
   interruptNow();
 }
 

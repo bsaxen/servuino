@@ -1,5 +1,5 @@
 /*  Servuino is a Arduino Simulator Engine
-    Copyright (C) 2011  Benny Saxen
+    Copyright (C) 2012  Benny Saxen
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -17,10 +17,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <string>
 #include <math.h> 
 
 #include "common.h"
-
+using namespace std;
 char sketch[120];
 
 // Init
