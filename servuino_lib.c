@@ -480,20 +480,20 @@ void saveScenarioExpanded() // Servuino input/output
     {
       fprintf(e_log,"Unable to open data.scenario\n");
     }
-  fprintf(out,"Step  Digital "); 
+  fprintf(out,"# Digital: "); 
   for(i=0;i<=max_digPin;i++)
     {
       if(s_digitalStep[0][i] > 0)
 	fprintf(out,"%4d ",i);
     }
-  fprintf(out,"Analog "); 
+  fprintf(out,"\n");
+  fprintf(out,"# Analog: "); 
   for(i=0;i<=max_anaPin;i++)
     {
       if(s_analogStep[0][i] > 0)
 	fprintf(out,"%4d ",i);
     }
   fprintf(out,"\n");
-  fprintf(out,"----\n");
 
   for(k=1;k<=g_simulationLength;k++)
     {
