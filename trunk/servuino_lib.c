@@ -436,10 +436,35 @@ int delAnalogPinValue(int pin,int step)
 
 
 //====================================
+int checkScenario(int now,int anadig,int pin, int step)
+//====================================
+{
+  int k;
+  int hit = 0;
+
+  if(anadig == DIG)
+    {
+      for(k=1;k<now;k++)
+	{
+	  if(step == s_digitalStep[k][pin])hit++;
+	}
+    }
+
+  if(anadig == ANA)
+    {
+      for(k=1;k<now;k++)
+	{
+	  if(step == s_digitalStep[k][pin])hit++;
+	}
+    } 
+  return(hit);
+}
+
+//====================================
 void saveScenario() // Servuino input/output
 //====================================
 {
-  int i,j,k;
+  int i,j,k,step,ok=0;
   FILE *out;
 
   out = fopen("data.scen","w");
@@ -452,7 +477,10 @@ void saveScenario() // Servuino input/output
     {
       for(k=1;k<=s_digitalStep[0][i];k++)
 	{
-	  fprintf(out,"// SCENDIGPIN %d %d %d\n",i,s_digitalStep[k][i],s_digitalPin[k][i]);
+	  step = s_digitalStep[k][i];
+	  ok = checkScenario(k,DIG,i,step);
+	  if(ok==0)
+	    fprintf(out,"// SCENDIGPIN %d %d %d\n",i,s_digitalStep[k][i],s_digitalPin[k][i]);
 	}
     }
   
@@ -460,13 +488,18 @@ void saveScenario() // Servuino input/output
     {
       for(k=1;k<=s_analogStep[0][i];k++)
 	{
-	  fprintf(out,"// SCENANAPIN %d %d %d\n",i,s_analogStep[k][i],s_analogPin[k][i]);
+	  step = s_analogStep[k][i];
+	  ok = checkScenario(k,ANA,i,step);
+	  if(ok==0)
+	    fprintf(out,"// SCENANAPIN %d %d %d\n",i,s_analogStep[k][i],s_analogPin[k][i]);
 	}
     }
   
   fclose(out);
   return;
 }
+
+
 
 //====================================
 void saveScenarioExpanded() // Servuino input/output
