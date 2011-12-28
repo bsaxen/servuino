@@ -436,7 +436,7 @@ int delAnalogPinValue(int pin,int step)
 
 
 //====================================
-void saveScenario()
+void saveScenario() // Servuino input/output
 //====================================
 {
   int i,j,k;
@@ -464,6 +464,60 @@ void saveScenario()
 	}
     }
   
+  fclose(out);
+  return;
+}
+
+//====================================
+void saveScenarioExpanded() // Servuino input/output
+//====================================
+{
+  int i,j,k,temp;
+  FILE *out;
+
+  out = fopen("data.scenario","w");
+  if(out == NULL)
+    {
+      fprintf(e_log,"Unable to open data.scenario\n");
+    }
+  fprintf(out,"Step  Digital "); 
+  for(i=0;i<=max_digPin;i++)
+    {
+      if(s_digitalStep[0][i] > 0)
+	fprintf(out,"%4d ",i);
+    }
+  fprintf(out,"Analog "); 
+  for(i=0;i<=max_anaPin;i++)
+    {
+      if(s_analogStep[0][i] > 0)
+	fprintf(out,"%4d ",i);
+    }
+  fprintf(out,"\n");
+  fprintf(out,"----\n");
+
+  for(k=1;k<=g_simulationLength;k++)
+    {
+      fprintf(out,"%4d          ",k);     
+      for(i=0;i<=max_digPin;i++)
+	{
+	  if(s_digitalStep[0][i] > 0)
+	    {
+	      temp = getDigitalPinValue(i,k);
+	      fprintf(out,"%4d ",temp);
+	    }
+	}
+      fprintf(out,"       ");
+      for(i=0;i<=max_anaPin;i++)
+	{
+	  if(s_analogStep[0][i] > 0)
+	    {
+	      temp = getAnalogPinValue(i,k);
+	      fprintf(out,"%4d ",temp);
+	    }
+	}
+      fprintf(out,"\n");      
+    }
+ 
   fclose(out);
   return;
 }
@@ -648,6 +702,7 @@ void stopEncoding()
 
   fprintf(a_log,"# ENDOFSIM\n");
   saveScenario();
+  saveScenarioExpanded();
   closeFiles();
   exit(0);
 }

@@ -37,7 +37,7 @@ public:
    String operator+( const char one );
    String operator+( unsigned long number );
    String operator+( String right );
-   //String string::operator+( String right );
+   //String string::operator+( String right ) const;
 
    bool operator!() const; // is String empty?
    bool operator==( const String & ) const; // test s1 == s2
