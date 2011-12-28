@@ -440,11 +440,12 @@ int checkScenario(int now,int anadig,int pin, int step)
 //====================================
 {
   int k;
-  int hit = 0;
+  int hit = 0,send;
 
   if(anadig == DIG)
     {
-      for(k=1;k<now;k++)
+      send = s_digitalStep[0][pin];
+      for(k=now+1;k<=send;k++)
 	{
 	  if(step == s_digitalStep[k][pin])hit++;
 	}
@@ -452,7 +453,8 @@ int checkScenario(int now,int anadig,int pin, int step)
 
   if(anadig == ANA)
     {
-      for(k=1;k<now;k++)
+      send = s_analogStep[0][pin];
+      for(k=now+1;k<=send;k++)
 	{
 	  if(step == s_digitalStep[k][pin])hit++;
 	}
