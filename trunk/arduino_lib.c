@@ -225,7 +225,25 @@ String String::operator+(String right )
   return temp; // enables cascaded calls
 } // end function operator+=
 
+//===============================================
+// String
+/* String String::operator+(String right ) const */
+/* { */
+/*   cout << "-------------------------------------" << endl; */
+/*   cout << "String + String right" << right << endl; */
+/*   String temp;  */
 
+/*   size_t newLength = slength + right.slength; // new length */
+/*   char *tempPtr = new char[ newLength + 1 ]; // create memory */
+  
+/*   strcpy( tempPtr, sPtr ); // copy sPtr */
+/*   strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr */
+  
+/*   //delete [] sPtr; // reclaim old space */
+/*   temp.sPtr = tempPtr; // assign new array to sPtr */
+/*   temp.slength = newLength; // assign new length to length */
+/*   return temp; // enables cascaded calls */
+/* } // end function operator+= */
 
 //===============================================
 // is this String empty?
