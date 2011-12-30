@@ -32,406 +32,7 @@ typedef bool boolean;
 
 //------ String Class ---------------------
 
-//class String: public string { };
 
-
-
-//#include "String.h" // String class definition
-//===============================================
-// conversion (and default) constructor converts char * to String
-String::String( const char *s ) 
-   : slength( ( s != 0 ) ? strlen( s ) : 0 )
-{
-   cout << "Conversion (and default) constructor: " << s << endl;
-   setString( s ); // call utility function
-} // end String conversion constructor
-//===============================================
-// copy constructor
-String::String( const String &copy ) 
-   : slength( copy.slength )
-{
-   cout << "Copy constructor: " << copy.sPtr << endl;
-   setString( copy.sPtr ); // call utility function
-} // end String copy constructor
-//===============================================
-// Destructor
-String::~String()
-{
-   cout << "Destructor: " << sPtr << endl;
-   delete [] sPtr; // release pointer-based string memory
-} // end ~String destructor
-//===============================================
-// overloaded = operator; avoids self assignment
-const String &String::operator=( const String &right )
-{
-  cout << "-------------------------------------" << endl;
-   cout << "operator= called" << endl;
-
-   if ( &right != this ) // avoid self assignment
-   {         
-      delete [] sPtr; // prevents memory leak
-      slength = right.slength; // new String slength
-      setString( right.sPtr ); // call utility function
-   } // end if
-   else
-      cout << "Attempted assignment of a String to itself" << endl;
-
-   return *this; // enables cascaded assignments
-} // end function operator=
-
-//===============================================
-// overloaded = operator; avoids self assignment
-const String &String::operator=( string right )
-{
-  cout << "-------------------------------------" << endl;
-  char *p;
-
-   cout << "String = string"<< right << endl;
-   //delete [] sPtr; // prevents memory leak
-   slength = right.length(); // new String slength
-   p=(char *)(right.c_str());  
-   setString(p); // call utility function
-   
-   return *this; // enables cascaded assignments
-} // end function operator=
-
-//===============================================
-// overloaded = operator; avoids self assignment
-const String &String::operator=(const char *right )
-{
-  cout << "-------------------------------------" << endl;
-  const char *p;
-
-   cout << "String = char*" << right << endl;
-   //delete [] sPtr; // prevents memory leak
-   slength = strlen(right); // new String slength
-   p = right;  
-   setString(p); // call utility function
-   
-   return *this; // enables cascaded assignments
-} // end function operator=
-
-
-//===============================================
-// concatenate right operand to this object and store in this object
-const String &String::operator+=( const String &right )
-{
-  cout << "-------------------------------------" << endl;
-   size_t newLength = slength + right.slength; // new length
-   char *tempPtr = new char[ newLength + 1 ]; // create memory
-
-   strcpy( tempPtr, sPtr ); // copy sPtr
-   strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr
-
-   //delete [] sPtr; // reclaim old space
-   sPtr = tempPtr; // assign new array to sPtr
-   slength = newLength; // assign new length to length
-   return *this; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// Benny
-String String::operator+( const int number )
-{
-
-  cout << "-------------------------------------" << endl;
-  cout << "String + const int" << number << endl;
-  String temp; 
-  stringstream ss;
-  String right;
-  ss << number;
-  right = ss.str();
-
-  size_t newLength = slength + right.slength; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-  
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.slength = newLength; // assign new length to length
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// Benny
-String String::operator+( unsigned long number )
-{
-  cout << "-------------------------------------" << endl;
-  cout << "String + unsigned long number" << endl;
-  String temp; 
-  stringstream ss;
-  String right;
-  ss << number;
-  right = ss.str();
-
-  size_t newLength = slength + right.slength; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-  
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.slength = newLength; // assign new length to length
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// Benny
-String String::operator+( const char one )
-{
-  cout << "-------------------------------------" << endl;
-  cout << "String + char in " << one << endl;
-  
-  String temp; 
-  stringstream ss;
-  String right;
-  ss << one;
-  right = ss.str();
-  size_t newLength = slength + right.slength; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-
-  //cout << "slength" << slength << "newlength " << newLength << endl;
-
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.slength = newLength; // assign new length to length
-  //cout << "String + char out" << " sPtr=" << *sPtr << " rightP=" << *temp.sPtr << endl;
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// String
-String String::operator+(String right )
-{
-  cout << "-------------------------------------" << endl;
-  cout << "String + String right" << right << endl;
-  String temp; 
-
-  size_t newLength = slength + right.slength; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-  
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.slength = newLength; // assign new length to length
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// String
-/* String String::operator+(String right ) const */
-/* { */
-/*   cout << "-------------------------------------" << endl; */
-/*   cout << "String + String right" << right << endl; */
-/*   String temp;  */
-
-/*   size_t newLength = slength + right.slength; // new length */
-/*   char *tempPtr = new char[ newLength + 1 ]; // create memory */
-  
-/*   strcpy( tempPtr, sPtr ); // copy sPtr */
-/*   strcpy( tempPtr + slength, right.sPtr ); // copy right.sPtr */
-  
-/*   //delete [] sPtr; // reclaim old space */
-/*   temp.sPtr = tempPtr; // assign new array to sPtr */
-/*   temp.slength = newLength; // assign new length to length */
-/*   return temp; // enables cascaded calls */
-/* } // end function operator+= */
-
-//===============================================
-// is this String empty?
-bool String::operator!() const
-{ 
-   return slength == 0; 
-} // end function operator! 
-//===============================================
-// Is this String equal to right String?
-bool String::operator==( const String &right ) const
-{ 
-   return strcmp( sPtr, right.sPtr ) == 0; 
-} // end function operator==
-//===============================================
-// Is this String less than right String?
-bool String::operator<( const String &right ) const
-{ 
-   return strcmp( sPtr, right.sPtr ) < 0; 
-} // end function operator<
-//===============================================
-// return reference to character in String as a modifiable lvalue
-char &String::operator[]( int subscript )
-{
-   // test for subscript out of range
-   if ( subscript < 0 || subscript >= slength )
-   {
-      cerr << "Error: Subscript " << subscript 
-         << " out of range" << endl;
-      exit( 1 ); // terminate program
-   } // end if
-
-   return sPtr[ subscript ]; // non-const return; modifiable lvalue
-} // end function operator[]
-//===============================================
-// return reference to character in String as rvalue
-char String::operator[]( int subscript ) const
-{
-   // test for subscript out of range
-   if ( subscript < 0 || subscript >= slength )
-   {
-      cerr << "Error: Subscript " << subscript 
-           << " out of range" << endl;
-      exit( 1 ); // terminate program
-   } // end if
-
-   return sPtr[ subscript ]; // returns copy of this element
-} // end function operator[]
-//===============================================
-// return a substring beginning at index and of length subLength
-String String::operator()( int index, int subLength ) const
-{
-   // if index is out of range or substring length < 0, 
-   // return an empty String object
-   if ( index < 0 || index >= slength || subLength < 0 )  
-      return ""; // converted to a String object automatically
-
-   // determine length of substring
-   int len;
-
-   if ( ( subLength == 0 ) || ( index + subLength > slength ) )
-      len = slength - index;
-   else
-      len = subLength;
-
-   // allocate temporary array for substring and 
-   // terminating null character
-   char *tempPtr = new char[ len + 1 ];
-
-   // copy substring into char array and terminate string
-   strncpy( tempPtr, &sPtr[ index ], len );
-   tempPtr[ len ] = '\0';
-
-   // create temporary String object containing the substring
-   String tempString( tempPtr );
-   delete [] tempPtr; // delete temporary array
-   return tempString; // return copy of the temporary String
-} // end function operator()
-
-//===============================================
-// utility function called by constructors and operator=
-void String::setString( const char *string2 )
-{
-   sPtr = new char[ slength + 1 ]; // allocate memory
-
-   if ( string2 != 0 ) // if string2 is not null pointer, copy contents
-      strcpy( sPtr, string2 ); // copy literal to object
-   else // if string2 is a null pointer, make this an empty string
-      sPtr[ 0 ] = '\0'; // empty string
-} // end function setString 
-//===============================================
-// overloaded output operator
-ostream &operator<<( ostream &output, const String &s )
-{
-   output << s.sPtr;
-   return output; // enables cascading
-} // end function operator<<
-//===============================================
-// overloaded input operator
-istream &operator>>( istream &input, String &s )
-{
-   char temp[ 100 ]; // buffer to store input
-   input >> setw( 100 ) >> temp;
-   s = temp; // use String class assignment operator
-   return input; // enables cascading
-} // end function operator>>
-
-
-
-void String::charAt(int pos) 
-{
-  cout << "charAt" << endl;
-}
-void String::compareTo() 
-{
-  cout << "compareTo" << endl;
-}
-void String::concat() 
-{
-  cout << "concat" << endl;
-}
-void String::endsWith() 
-{
-  cout << "endsWith" << endl;
-}
-void String::equals() 
-{
-  cout << "equals" << endl;
-}
-void String::equalsIgnoreCase() 
-{
-  cout << "equalsIgnoreCase" << endl;
-}
-void String::getBytes() 
-{
-  cout << "getBytes" << endl;
-}
-void String::indexOf() 
-{
-  cout << "indexOf" << endl;
-}
-void String::lastIndexOf() 
-{
-  cout << "lastIndexOf" << endl;
-}
-//===============================================
-int String::length() const 
-{ 
-   return slength; 
-}
-//===============================================
-String String::replace(string from, string to)
-{ 
-  String temp;
-  cout << "Replace" << endl;
-  return temp;
-}
-String String::replace(const char *x,const char *y) 
-{
-  cout << "Replace" << endl;
-}
-void String::setCharAt() 
-{
-  cout << "setCharAt" << endl;
-}
-void String::startsWith() 
-{
-  cout << "startsWith" << endl;
-}
-void String::substring() 
-{
-  cout << "substring" << endl;
-}
-void String::toCharArray() 
-{
-  cout << "toCharArray" << endl;
-}
-void String::toLowerCase() 
-{
-  cout << "toLowerCase" << endl;
-}
-void String::toUpperCase() 
-{
-  cout << "toUpperCase" << endl;
-}
-void String::trim() 
-{
-  cout << "trim" << endl;
-}
 
 //=====================================
 // Functions
@@ -1072,7 +673,7 @@ void serial::println(String s)
 {
   passTime();
   const char *p;
-  p= s.sPtr;
+  p= s.getPointer();
   //p=(char *)(s.c_str());  
   codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL);
   wLogChar2(0,"Serial:println(String)",p,-1);
@@ -1101,3 +702,493 @@ void serial::write(char *p)
   interruptNow();
 }
 
+//==========================================
+// String
+//==========================================
+
+// conversion (and default) constructor converts char * to String
+String::String( const char *s ) 
+   : lngth( ( s != 0 ) ? strlen( s ) : 0 )
+{
+  //cout << "Conversion (and default) constructor: " << s << endl;
+   setString( s ); // call utility function
+} 
+
+// copy constructor
+String::String( const String &copy ) 
+   : lngth( copy.lngth )
+{
+  //cout << "Copy constructor: " << copy.sPtr << endl;
+   setString( copy.sPtr ); // call utility function
+}
+
+// Destructor
+String::~String()
+{
+  //cout << "Destructor: " << sPtr << endl;
+   delete [] sPtr; // release pointer-based string memory
+} 
+
+// overloaded = operator; avoids self assignment
+const String &String::operator=( const String &right )
+{
+  //cout << "operator= called" << endl;
+
+   if ( &right != this ) // avoid self assignment
+   {         
+      delete [] sPtr; // prevents memory leak
+      lngth = right.lngth; // new String length
+      setString( right.sPtr ); // call utility function
+   } // end if
+   else
+      cout << "Attempted assignment of a String to itself" << endl;
+
+   return *this; 
+} 
+
+// concatenate right operand to this object and store in this object
+const String &String::operator+=( const String &right )
+{
+   size_t newLength = lngth + right.lngth; // new length
+   char *tempPtr = new char[ newLength + 1 ]; // create memory
+
+   strcpy( tempPtr, sPtr ); // copy sPtr
+   strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
+
+   delete [] sPtr; // reclaim old space
+   sPtr = tempPtr; // assign new array to sPtr
+   lngth = newLength; // assign new length to length
+   return *this; // enables cascaded calls
+} 
+
+// is this String empty?
+bool String::operator!() const
+{ 
+   return lngth == 0; 
+} 
+
+// Is this String equal to right String?
+bool String::operator==( const String &right ) const
+{ 
+   return strcmp( sPtr, right.sPtr ) == 0; 
+}
+
+// Is this String less than right String?
+bool String::operator<( const String &right ) const
+{ 
+   return strcmp( sPtr, right.sPtr ) < 0; 
+} 
+
+// return reference to character in String as a modifiable lvalue
+char &String::operator[]( int subscript )
+{
+   // test for subscript out of range
+   if ( subscript < 0 || subscript >= lngth )
+   {
+      cerr << "Error: Subscript " << subscript 
+         << " out of range" << endl;
+      exit( 1 ); // terminate program
+   } // end if
+
+   return sPtr[ subscript ]; // non-const return; modifiable lvalue
+} 
+
+// return reference to character in String as rvalue
+char String::operator[]( int subscript ) const
+{
+   // test for subscript out of range
+   if ( subscript < 0 || subscript >= lngth )
+   {
+      cerr << "Error: Subscript " << subscript 
+           << " out of range" << endl;
+      exit( 1 ); // terminate program
+   } // end if
+
+   return sPtr[ subscript ]; // returns copy of this element
+} 
+
+// return a substring beginning at index and of length subLength
+String String::operator()( int index, int subLength ) const
+{
+   // if index is out of range or substring length < 0, 
+   // return an empty String object
+   if ( index < 0 || index >= lngth || subLength < 0 )  
+      return ""; // converted to a String object automatically
+
+   // determine length of substring
+   int len;
+
+   if ( ( subLength == 0 ) || ( index + subLength > lngth ) )
+      len = lngth - index;
+   else
+      len = subLength;
+
+   // allocate temporary array for substring and 
+   // terminating null character
+   char *tempPtr = new char[ len + 1 ];
+
+   // copy substring into char array and terminate string
+   strncpy( tempPtr, &sPtr[ index ], len );
+   tempPtr[ len ] = '\0';
+
+   // create temporary String object containing the substring
+   String tempString( tempPtr );
+   delete [] tempPtr; // delete temporary array
+   return tempString; // return copy of the temporary String
+} 
+
+// return string length
+int String::getLength() const 
+{ 
+   return lngth; 
+} 
+
+// utility function called by constructors and operator=
+void String::setString( const char *string2 )
+{
+   sPtr = new char[ lngth + 1 ]; // allocate memory
+
+   if ( string2 != 0 ) // if string2 is not null pointer, copy contents
+      strcpy( sPtr, string2 ); // copy literal to object
+   else // if string2 is a null pointer, make this an empty string
+      sPtr[ 0 ] = '\0'; // empty string
+} 
+
+// overloaded output operator
+ostream &operator<<( ostream &output, const String &s )
+{
+   output << s.sPtr;
+   return output; // enables cascading
+} 
+
+// overloaded input operator
+istream &operator>>( istream &input, String &s )
+{
+   char temp[ 100 ]; // buffer to store input
+   input >> setw( 100 ) >> temp;
+   s = temp; // use String class assignment operator
+   return input; // enables cascading
+} 
+
+//===============================================
+// Benny adding
+//===============================================
+// String
+String String::operator+(String right )
+{
+  //cout << "-------------------------------------" << endl;
+  //cout << "String + String right" << right << endl;
+  String temp; 
+
+  size_t newLength = lngth + right.lngth; // new length
+  char *tempPtr = new char[ newLength + 1 ]; // create memory
+  
+  strcpy( tempPtr, sPtr ); // copy sPtr
+  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
+  
+  //delete [] sPtr; // reclaim old space
+  temp.sPtr = tempPtr; // assign new array to sPtr
+  temp.lngth = newLength; // assign new length to length
+  return temp; // enables cascaded calls
+} // end function operator+=
+//===============================================
+// Benny
+String String::operator+( const int number )
+{
+
+  //cout << "-------------------------------------" << endl;
+  //cout << "String + const int" << number << endl;
+  String temp; 
+  stringstream ss;
+  String right;
+  ss << number;
+  right = ss.str();
+
+  size_t newLength = lngth + right.lngth; // new length
+  char *tempPtr = new char[ newLength + 1 ]; // create memory
+  
+  strcpy( tempPtr, sPtr ); // copy sPtr
+  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
+  
+  //delete [] sPtr; // reclaim old space
+  temp.sPtr = tempPtr; // assign new array to sPtr
+  temp.lngth = newLength; // assign new length to length
+  return temp; // enables cascaded calls
+} // end function operator+=
+
+//===============================================
+// Benny
+String String::operator+( unsigned long number )
+{
+  //cout << "-------------------------------------" << endl;
+  //cout << "String + unsigned long number" << endl;
+  String temp; 
+  stringstream ss;
+  String right;
+  ss << number;
+  right = ss.str();
+
+  size_t newLength = lngth + right.lngth; // new length
+  char *tempPtr = new char[ newLength + 1 ]; // create memory
+  
+  strcpy( tempPtr, sPtr ); // copy sPtr
+  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
+  
+  //delete [] sPtr; // reclaim old space
+  temp.sPtr = tempPtr; // assign new array to sPtr
+  temp.lngth = newLength; // assign new length to length
+  return temp; // enables cascaded calls
+} // end function operator+=
+
+//===============================================
+// Benny
+String String::operator+( const char one )
+{
+  //cout << "-------------------------------------" << endl;
+  //cout << "String + char in " << one << endl;
+  
+  String temp; 
+  stringstream ss;
+  String right;
+  ss << one;
+  right = ss.str();
+  size_t newLength = lngth + right.lngth; // new length
+  char *tempPtr = new char[ newLength + 1 ]; // create memory
+
+  //cout << "length" << lngth << "newlength " << newLength << endl;
+
+  strcpy( tempPtr, sPtr ); // copy sPtr
+  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
+  
+  //delete [] sPtr; // reclaim old space
+  temp.sPtr = tempPtr; // assign new array to sPtr
+  temp.lngth = newLength; // assign new length to length
+  //cout << "String + char out" << " sPtr=" << *sPtr << " rightP=" << *temp.sPtr << endl;
+  return temp; // enables cascaded calls
+} // end function operator+=
+
+//===============================================
+// Benny
+const String &String::operator=( string right )
+{
+  //cout << "-------------------------------------" << endl;
+  char *p;
+   //cout << "String = string"<< right << endl;
+   //delete [] sPtr; // prevents memory leak
+   lngth = right.length(); // new String slength
+   p=(char *)(right.c_str());  
+   setString(p); // call utility function
+   
+   return *this; // enables cascaded assignments
+} // end function operator=
+
+//===============================================
+// Benny
+const String &String::operator=(const char *right )
+{
+  //cout << "-------------------------------------" << endl;
+  const char *p;
+
+  //cout << "String = char*" << right << endl;
+   //delete [] sPtr; // prevents memory leak
+   lngth = strlen(right); // new String slength
+   p = right;  
+   setString(p); // call utility function
+   
+   return *this; // enables cascaded assignments
+} // end function operator=
+
+
+String::String( const int x ) 
+{
+  char p[10];
+  sprintf(p,"%d",x);
+  lngth = strlen(p);
+  setString(p);
+} 
+
+String::String( const int x, const int base ) 
+{
+  char p[10];
+  if(base == BIN)sprintf(p,"BIN%d",x);
+  if(base == DEC)sprintf(p,"DEC%d",x);
+  if(base == HEX)sprintf(p,"HEX%d",x);
+  lngth = strlen(p);
+  setString(p);
+} 
+
+char String::charAt( const int n ) 
+{
+  char res;
+  res = sPtr[n];
+  return(res);
+} 
+
+int String::compareTo( const String s ) 
+{
+  int res;
+  if(*this > s)res = -1;
+  if(*this < s)res = 1;
+  if(*this == s)res = 0;
+  return(res);
+} 
+
+String String::concat( const String s ) 
+{
+  *this += s;
+  return *this;
+} 
+
+bool String::endsWith( const String s ) 
+{
+  bool res;
+  int pos;
+  string p(sPtr);
+  pos = lngth - s.lngth;
+  res = p.compare(pos,s.lngth,s.sPtr);
+  return(res);
+} 
+
+bool String::equals( const String s ) 
+{
+   return strcmp( sPtr, s.sPtr ) == 0; 
+} 
+
+bool String::equalsIgnoreCase( const String s ) 
+{
+  // Not implemented
+   return strcmp( sPtr, s.sPtr ) == 0; 
+} 
+
+void String::getBytes( int buf[],int *len ) 
+{
+  int i;
+  char *p;
+
+  p = sPtr;
+  for(i=0;i<lngth;i++)
+    {
+      buf[i] = (int)p;
+      p++;
+    }
+  *len = lngth;
+  return; 
+} 
+
+int String::indexOf(char val) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::indexOf(String val) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::indexOf(char val, int from) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::indexOf(String val, int from) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::lastIndexOf(char val) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::lastIndexOf(String val) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::lastIndexOf(char val, int from) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::lastIndexOf(String val, int from) 
+{
+  // Not implemented
+  return(-1); 
+} 
+
+int String::length() 
+{
+  return(lngth); 
+} 
+
+String String::replace(String sub1, String sub2) 
+{
+  // Not implemented
+  String res;
+  return(res); 
+} 
+
+void String::setCharAt( int index,char c ) 
+{
+  // Not implemented
+  return;
+} 
+
+bool String::startsWith( String s ) 
+{
+  bool res;
+  // Not implemented
+  return(res);
+} 
+
+String String::substring(int from) 
+{
+  String res;
+  // Not implemented
+  return(res);
+} 
+
+String String::substring(int from, int to) 
+{
+  String res;
+  // Not implemented
+  return(res);
+} 
+
+void String::toCharArray(char buf[], int *len) 
+{
+  // Not implemented
+  return;
+} 
+
+void String::toLowerCase() 
+{
+  // Not implemented
+  return;
+} 
+
+void String::toUpperCase() 
+{
+  // Not implemented
+  return;
+} 
+
+void String::trim() 
+{
+  // Not implemented
+  return;
+} 
+
+char* String::getPointer() 
+{
+  return(sPtr);
+} 
+
+// End of file
