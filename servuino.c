@@ -148,7 +148,7 @@ void runEncoding(int n)
       passTime();
       codeLog(F_LOOP,g_nloop,0,0,0,NULL);
       wLog1(0,"servuinoLoop",g_nloop);
-      wLog1(1,"servuinoLoop",g_nloop);
+      wLog1(1,"Loop",g_nloop);
       loop();  
     }
   stopEncoding();
