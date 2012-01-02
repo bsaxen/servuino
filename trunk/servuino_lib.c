@@ -562,8 +562,8 @@ void saveScenarioExpanded() // Servuino input/output
 void iLog1(const char *p, int value1)
 //====================================
 {
-  fprintf(a_log,"* %d %s %d\n",currentStep,p,value1);
-  fprintf(u_log,"* %d %s %d\n",currentStep,p,value1);
+  fprintf(a_log,"* %d %s ? %d\n",currentStep,p,value1);
+  fprintf(u_log,"* %d %s ? %d\n",currentStep,p,value1);
   return;
 }
 
@@ -574,8 +574,8 @@ void mLine()
   char line[120];
   
   strcpy(line,"--------------------");
-  fprintf(a_log,"= %d %s\n",currentStep,line);
-  fprintf(u_log,"= %d %s\n",currentStep,line);
+  fprintf(a_log,"= %d ? %s\n",currentStep,line);
+  fprintf(u_log,"= %d ? %s\n",currentStep,line);
   return;
 }
 //====================================
@@ -585,24 +585,24 @@ void mLineText(const char *t)
   char line[120];
   
   sprintf(line,"------ %s ------",t);
-  fprintf(a_log,"= %d %s\n",currentStep,line);
-  fprintf(u_log,"= %d %s\n",currentStep,line);
+  fprintf(a_log,"= %d ? %s\n",currentStep,line);
+  fprintf(u_log,"= %d ? %s\n",currentStep,line);
   return;
 }
 //====================================
 void mLog0(const char *p)
 //====================================
 {
-  fprintf(a_log,"= %d %s\n",currentStep,p);
-  fprintf(u_log,"= %d %s\n",currentStep,p);
+  fprintf(a_log,"= %d ? %s\n",currentStep,p);
+  fprintf(u_log,"= %d ? %s\n",currentStep,p);
   return;
 }
 //====================================
 void mLog1(const char *p, int value1)
 //====================================
 {
-  fprintf(a_log,"= %d %s %d\n",currentStep,p,value1);
-  fprintf(u_log,"= %d %s %d\n",currentStep,p,value1);
+  fprintf(a_log,"= %d ? %s %d\n",currentStep,p,value1);
+  fprintf(u_log,"= %d ? %s %d\n",currentStep,p,value1);
   return;
 }
 
@@ -610,8 +610,8 @@ void mLog1(const char *p, int value1)
 void wLog0(int au,const char *p)
 //====================================
 {
-  if(au==0)fprintf(a_log,"+ %d %s\n",currentStep,p);
-  if(au==1)fprintf(u_log,"+ %d %s\n",currentStep,p);
+  if(au==0)fprintf(a_log,"+ %d ? %s\n",currentStep,p);
+  if(au==1)fprintf(u_log,"+ %d ? %s\n",currentStep,p);
   return;
 }
 
@@ -619,8 +619,8 @@ void wLog0(int au,const char *p)
 void wLog1(int au,const char *p, int value1)
 //====================================
 {
-  if(au==0)fprintf(a_log,"+ %d %s %d\n",currentStep,p,value1);
-  if(au==1)fprintf(u_log,"+ %d %s %d\n",currentStep,p,value1);
+  if(au==0)fprintf(a_log,"+ %d ? %s %d\n",currentStep,p,value1);
+  if(au==1)fprintf(u_log,"+ %d ? %s %d\n",currentStep,p,value1);
   return;
 }
 
@@ -628,8 +628,8 @@ void wLog1(int au,const char *p, int value1)
 void wLog2(int au,const char *p, int value1, int value2)
 //====================================
 {
-  if(au==0)fprintf(a_log,"+ %d %s %d %d\n",currentStep,p,value1,value2);
-  if(au==1)fprintf(u_log,"+ %d %s %d %d\n",currentStep,p,value1,value2);
+  if(au==0)fprintf(a_log,"+ %d ? %s %d %d\n",currentStep,p,value1,value2);
+  if(au==1)fprintf(u_log,"+ %d ? %s %d %d\n",currentStep,p,value1,value2);
   return;
 }
 
@@ -638,8 +638,8 @@ void wLog2(int au,const char *p, int value1, int value2)
 void wLogChar1(int au,const char *p, const char *value1)
 //====================================
 {
-  if(au==0)fprintf(a_log,"+ %d %s '%s'\n",currentStep,p,value1);
-  if(au==1)fprintf(u_log,"+ %d %s '%s'\n",currentStep,p,value1);
+  if(au==0)fprintf(a_log,"+ %d ? %s '%s'\n",currentStep,p,value1);
+  if(au==1)fprintf(u_log,"+ %d ? %s '%s'\n",currentStep,p,value1);
   return;
 }
 
@@ -647,8 +647,8 @@ void wLogChar1(int au,const char *p, const char *value1)
 void wLogChar2(int au,const char *p, const char *value1, int value2)
 //====================================
 {
-  if(au==0)fprintf(a_log,"+ %d %s '%s' %d\n",currentStep,p,value1,value2);
-  if(au==1)fprintf(u_log,"+ %d %s '%s' %d\n",currentStep,p,value1,value2);
+  if(au==0)fprintf(a_log,"+ %d ? %s '%s' %d\n",currentStep,p,value1,value2);
+  if(au==1)fprintf(u_log,"+ %d ? %s '%s' %d\n",currentStep,p,value1,value2);
   return;
 }
 

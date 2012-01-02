@@ -833,170 +833,117 @@ String String::operator()( int index, int subLength ) const
 
    // create temporary String object containing the substring
    String tempString( tempPtr );
-   delete [] tempPtr; // delete temporary array
-   return tempString; // return copy of the temporary String
+   delete [] tempPtr;
+   return tempString;
 } 
 
-// return string length
 int String::getLength() const 
 { 
    return lngth; 
 } 
 
-// utility function called by constructors and operator=
 void String::setString( const char *string2 )
 {
-   sPtr = new char[ lngth + 1 ]; // allocate memory
+   sPtr = new char[ lngth + 1 ];
 
-   if ( string2 != 0 ) // if string2 is not null pointer, copy contents
-      strcpy( sPtr, string2 ); // copy literal to object
-   else // if string2 is a null pointer, make this an empty string
-      sPtr[ 0 ] = '\0'; // empty string
+   if ( string2 != 0 ) 
+      strcpy( sPtr, string2 );
+   else 
+      sPtr[ 0 ] = '\0';
 } 
 
-// overloaded output operator
 ostream &operator<<( ostream &output, const String &s )
 {
    output << s.sPtr;
-   return output; // enables cascading
+   return output;
 } 
 
-// overloaded input operator
 istream &operator>>( istream &input, String &s )
 {
-   char temp[ 100 ]; // buffer to store input
+   char temp[ 100 ];
    input >> setw( 100 ) >> temp;
-   s = temp; // use String class assignment operator
-   return input; // enables cascading
+   s = temp;
+   return input;
 } 
 
-//===============================================
-// Benny adding
-//===============================================
-// String
 String String::operator+(String right )
 {
-  //cout << "-------------------------------------" << endl;
-  //cout << "String + String right" << right << endl;
   String temp; 
+  size_t newLength = lngth + right.lngth;
+  char *tempPtr = new char[ newLength + 1 ]; 
+  strcpy( tempPtr, sPtr );
+  strcpy( tempPtr + lngth, right.sPtr );
+  temp.sPtr = tempPtr;
+  temp.lngth = newLength;
+  return temp;
+}
 
-  size_t newLength = lngth + right.lngth; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-  
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.lngth = newLength; // assign new length to length
-  return temp; // enables cascaded calls
-} // end function operator+=
-//===============================================
-// Benny
 String String::operator+( const int number )
 {
-
-  //cout << "-------------------------------------" << endl;
-  //cout << "String + const int" << number << endl;
   String temp; 
   stringstream ss;
   String right;
   ss << number;
   right = ss.str();
+  size_t newLength = lngth + right.lngth;
+  char *tempPtr = new char[ newLength + 1 ];
+  strcpy( tempPtr, sPtr );
+  strcpy( tempPtr + lngth, right.sPtr );
+  temp.sPtr = tempPtr;
+  temp.lngth = newLength;
+  return temp;
+} 
 
-  size_t newLength = lngth + right.lngth; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-  
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.lngth = newLength; // assign new length to length
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// Benny
 String String::operator+( unsigned long number )
 {
-  //cout << "-------------------------------------" << endl;
-  //cout << "String + unsigned long number" << endl;
   String temp; 
   stringstream ss;
   String right;
   ss << number;
   right = ss.str();
+  size_t newLength = lngth + right.lngth;
+  char *tempPtr = new char[ newLength + 1 ];
+  strcpy( tempPtr, sPtr );
+  strcpy( tempPtr + lngth, right.sPtr ); 
+  temp.sPtr = tempPtr; 
+  temp.lngth = newLength; 
+  return temp;
+}
 
-  size_t newLength = lngth + right.lngth; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
-  
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.lngth = newLength; // assign new length to length
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// Benny
 String String::operator+( const char one )
 {
-  //cout << "-------------------------------------" << endl;
-  //cout << "String + char in " << one << endl;
-  
   String temp; 
   stringstream ss;
   String right;
   ss << one;
   right = ss.str();
-  size_t newLength = lngth + right.lngth; // new length
-  char *tempPtr = new char[ newLength + 1 ]; // create memory
+  size_t newLength = lngth + right.lngth;
+  char *tempPtr = new char[ newLength + 1 ]; 
+  strcpy( tempPtr, sPtr );
+  strcpy( tempPtr + lngth, right.sPtr );
+  temp.sPtr = tempPtr;
+  temp.lngth = newLength; 
+  return temp; 
+} 
 
-  //cout << "length" << lngth << "newlength " << newLength << endl;
 
-  strcpy( tempPtr, sPtr ); // copy sPtr
-  strcpy( tempPtr + lngth, right.sPtr ); // copy right.sPtr
-  
-  //delete [] sPtr; // reclaim old space
-  temp.sPtr = tempPtr; // assign new array to sPtr
-  temp.lngth = newLength; // assign new length to length
-  //cout << "String + char out" << " sPtr=" << *sPtr << " rightP=" << *temp.sPtr << endl;
-  return temp; // enables cascaded calls
-} // end function operator+=
-
-//===============================================
-// Benny
 const String &String::operator=( string right )
 {
-  //cout << "-------------------------------------" << endl;
   char *p;
-   //cout << "String = string"<< right << endl;
-   //delete [] sPtr; // prevents memory leak
-   lngth = right.length(); // new String slength
-   p=(char *)(right.c_str());  
-   setString(p); // call utility function
-   
-   return *this; // enables cascaded assignments
-} // end function operator=
+  lngth = right.length(); 
+  p=(char *)(right.c_str());  
+  setString(p);  
+  return *this; 
+}
 
-//===============================================
-// Benny
 const String &String::operator=(const char *right )
 {
-  //cout << "-------------------------------------" << endl;
   const char *p;
-
-  //cout << "String = char*" << right << endl;
-   //delete [] sPtr; // prevents memory leak
-   lngth = strlen(right); // new String slength
-   p = right;  
-   setString(p); // call utility function
-   
-   return *this; // enables cascaded assignments
-} // end function operator=
+  lngth = strlen(right);
+  p = right;  
+  setString(p);
+  return *this; 
+} 
 
 
 String::String( const int x ) 
