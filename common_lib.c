@@ -111,7 +111,7 @@ int checkRange(int mode,const char check[],int value)
     {
       strcpy(message,"Step out of range");
       maxx = max_steps;
-      minx = 0;
+      minx = 1;
     }
   else if(strstr(check,"loop") != NULL)
     {
@@ -153,7 +153,7 @@ int checkRange(int mode,const char check[],int value)
       sprintf(temp,"%s %d <",message,value);
       errorLog(temp,minx);
       if(mode==HEAL)
-	res = 0;
+	res = minx;
       else 
 	res = S_NOK;
     }

@@ -85,14 +85,15 @@ void statusLog()
   for(i=0;i<=max_digPin;i++)
     {      
       x = digitalMode[i];
-      if(x == FREE)z[i]   ='-';
-      else if(x == INPUT)z[i]  ='I';
-      else if(x == OUTPUT)z[i] ='O';
-      else if(x == CHANGE)z[i] ='C';
-      else if(x == RISING)z[i] ='R';
-      else if(x == FALLING)z[i]='F';
-      else if(x == RX)z[i]     ='X';
-      else if(x == TX)z[i]     ='Y';
+      if(x == FREE)z[i]          ='-';
+      else if(x == INPUT)z[i]    ='I';
+      else if(x == OUTPUT)z[i]   ='O';
+      else if(x == CHANGE)z[i]   ='C';
+      else if(x == RISING)z[i]   ='R';
+      else if(x == FALLING)z[i]  ='F';
+      else if(x == LOW)z[i]      ='L';
+      else if(x == RX)z[i]       ='X';
+      else if(x == TX)z[i]       ='Y';
       else z[i] = 'Q';
     }
   z[i]='\0';
@@ -806,6 +807,10 @@ void interruptNow()
 	  if(interruptMode[ir] == CHANGE && ir_1 != ir_2)
 	    {
 	      doInterrupt(pin,ir,CHANGE,ir_1);
+	    }
+	  if(interruptMode[ir] == LOW && ir_1 != ir_2)
+	    {
+	      doInterrupt(pin,ir,LOW,ir_1);
 	    }
 	}
     } 

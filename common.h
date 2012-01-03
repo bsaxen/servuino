@@ -106,10 +106,14 @@
 #define RISING  12
 #define FALLING 13
 
+#define I_CHANGE  21
+#define I_RISING  22
+#define I_FALLING 23
+#define I_LOW     24
 
 #define FREE   0
-#define RX     23
-#define TX     24
+#define RX     4
+#define TX     5
 
 #define RUN    1
 #define ADMIN  2
@@ -137,6 +141,8 @@
 #define OCT    3
 #define DEC    4
 #define HEX    5
+
+#define WRONG  99
 
 
 
