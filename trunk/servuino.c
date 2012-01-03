@@ -33,7 +33,7 @@ int  currentStep = 0;
 int  g_simulationLength = 111;
 char g_version[40];
 
-char interruptType[20][80];
+char interruptType[50][80];
 void (*interrupt[6])();
 
 //int  pinToInterrupt[INTPINS];
