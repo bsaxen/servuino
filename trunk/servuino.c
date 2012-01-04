@@ -114,10 +114,9 @@ int nCodeString = 0;
 
 int currentPin = 0;
 
-FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log;
+FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log;
 
 #include "code.h"
-//#include "String.c"
 #include "common_lib.c"
 #include "servuino.h"
 #include "servuino_lib.c"
@@ -162,7 +161,7 @@ int main(int argc, char *argv[])
 {
   int x;
 
-  strcpy(g_version,"0.0.3");
+  strcpy(g_version,"0.0.4");
 
   openFiles();
   readSketchInfo();

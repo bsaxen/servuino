@@ -203,6 +203,14 @@ void openFiles()
     }
   fprintf(x_log,"# Servuino Serial Simulation Data Version: %s\n",g_version);
 
+  // Serial logging
+  t_log = fopen("data.time","w");
+  if(t_log == NULL)
+    {
+      errorLog("Unable to open data.time",0);
+    }
+  fprintf(t_log,"# Servuino Time Delay (microseconds) Version: %s\n",g_version);
+
 
 }
 
@@ -216,6 +224,7 @@ void closeFiles()
   fclose(u_log);
   fclose(a_log);
   fclose(x_log);
+  fclose(t_log);
 }
 
 //====================================

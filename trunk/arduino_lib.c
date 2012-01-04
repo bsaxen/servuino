@@ -321,6 +321,7 @@ void delay(int ms)
   passTime(); 
   wLog1(0,"delay()",ms);
   wLog1(1,"delay()",ms);
+  fprintf(t_log,"+ %d %d\n",currentStep,ms*1000);
   codeLog(F_DELAY,ms,0,0,0,NULL);
   interruptNow();
 }
@@ -331,6 +332,7 @@ void delayMicroseconds(int us)
   codeLog(F_DELAYMICROSECONDS,us,0,0,0,NULL);
   wLog1(0,"delayMicroseconds()",us);
   wLog1(1,"delayMicroseconds()",us);
+  fprintf(t_log,"+ %d %d\n",currentStep,us);
   interruptNow();
 }
 
