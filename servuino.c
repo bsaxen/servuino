@@ -25,7 +25,7 @@ using namespace std;
 #include "common.h"
 
 
-char sketch[120];
+char sketch[120],g_temp[120];
 
 // Init
 
@@ -195,7 +195,6 @@ int main(int argc, char *argv[])
       g_pinValue   =  atoi(argv[5]);
       g_pinStep    =  atoi(argv[6]);
       g_action     =  atoi(argv[7]);
-
       readScenario();// read from data.scen
 
       max_steps = g_simulationLength;

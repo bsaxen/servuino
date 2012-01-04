@@ -231,6 +231,7 @@ void closeFiles()
 void errorLog(const char msg[], int x)
 //====================================
 {
+  printf("ServuinoERROR: %s %d\n",msg,x);
   fprintf(e_log,"ServuinoERROR: %s %d\n",msg,x);
   return;
 }
@@ -244,7 +245,7 @@ int getAnalogPinValue(int pin,int step)
   if(g_interpolation == YES)
     {
       limit = s_analogStep[0][pin];
-      for (i=0;i<limit;i++)
+      for (i=1;i<=limit;i++)
 	{
 	  if(step >= s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
 	    res = s_analogPin[i][pin];
@@ -254,7 +255,7 @@ int getAnalogPinValue(int pin,int step)
   else
     {
       limit = s_analogStep[0][pin];
-      for (i=0;i<limit;i++)
+      for (i=1;i<=limit;i++)
 	{
 	  if(step >= s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
 	    res = s_analogPin[i][pin];
@@ -274,7 +275,7 @@ int getDigitalPinValue(int pin,int step)
 
   limit = s_digitalStep[0][pin];
 
-  for (i=0;i<limit;i++)
+  for (i=1;i<=limit;i++)
     {
       if(step >= s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
 	res = s_digitalPin[i][pin];
@@ -289,43 +290,74 @@ int insDigitalPinValue(int pin,int step, int value)
 {  
   int i,limit,hit=0,ok=0;
 
-
   ok = ok + checkRange(S_OK,"digpin",pin);
   ok = ok + checkRange(S_OK,"step",step);
   ok = ok + checkRange(S_OK,"digval",value);
 
   if(ok == S_OK)
     {
+
       limit = s_digitalStep[0][pin];
-      
-      for (i=1;i<limit;i++)
+
+      // Insert breakpoint at the end
+      if(step > s_digitalStep[limit][pin])
 	{
-	  if(step > s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
+	  hit = 1;
+	  s_digitalPin[limit+1][pin]  = value;
+	  s_digitalStep[limit+1][pin] = step;
+	  limit++;
+	}  
+
+      // Insert breakpoint at the begining
+      else if(step < s_digitalStep[1][pin])
+	{
+	  hit = limit;
+	  for(i=limit;i>0;i--)
 	    {
-	      hit = i+1;
+	      s_digitalPin[i+1][pin]  = s_digitalPin[i][pin];
+	      s_digitalStep[i+1][pin] = s_digitalStep[i][pin];
 	    }
-	  if(step == s_digitalStep[i][pin])
+	  s_digitalPin[1][pin]  = value;
+	  s_digitalStep[1][pin] = step;
+	  limit++;
+	}    
+      // Insert breakpoint in between
+      else
+	{
+	  for (i=1;i<=limit;i++)
+	    {	      
+	      // If step in between
+	      if(step > s_digitalStep[i][pin] && step < s_digitalStep[i+1][pin])
+		{
+		  hit = i+1; // New breakpoint index
+		}
+	      // If breakpoint already exists - replace value
+	      if(step == s_digitalStep[i][pin])
+		{
+		  hit = -1;
+		  s_digitalPin[i][pin]  = value;
+		}
+	    }
+	  // Insert breakpoint
+	  if(hit > 0)
 	    {
-	      hit = 0;
-	      s_digitalPin[i][pin]  = value;
-	      s_digitalStep[i][pin] = step;
+	      for(i=limit;i>=hit;i--)
+		{
+		  s_digitalPin[i+1][pin]  = s_digitalPin[i][pin];
+		  s_digitalStep[i+1][pin] = s_digitalStep[i][pin];
+		}
+	      s_digitalPin[hit][pin]  = value;
+	      s_digitalStep[hit][pin] = step;
+	      limit++;
 	    }
 	}
-      if(step > s_digitalStep[limit][pin])hit = limit+1;
-      
-      
-      if(hit > 0)
-	{
-	  s_digitalStep[0][pin]++;
-	  limit = s_digitalStep[0][pin];
-	  for(i=limit;i>=hit;i--)
-	    {
-	      s_digitalPin[i][pin]  = s_digitalPin[i-1][pin];
-	      s_digitalStep[i][pin] = s_digitalStep[i-1][pin];
-	    }
-	  s_digitalPin[hit][pin]  = value;
-	  s_digitalStep[hit][pin] = step;
-	}
+      s_digitalStep[0][pin] = limit;
+
+    }
+  if(hit==0)
+    {
+      sprintf(g_temp,"Digital: Unable to insert breakpoint pin=%d step=%d value=%d",pin,step,value);
+      errorLog(g_temp,0);
     }
   return(hit);
 }  
@@ -344,38 +376,70 @@ int insAnalogPinValue(int pin,int step, int value)
     {
 
       limit = s_analogStep[0][pin];
-      
-      for (i=1;i<limit;i++)
+
+      // Insert breakpoint at the end
+      if(step > s_analogStep[limit][pin])
 	{
-	  if(step > s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
+	  hit = 1;
+	  s_analogPin[limit+1][pin]  = value;
+	  s_analogStep[limit+1][pin] = step;
+	  limit++;
+	}  
+
+      // Insert breakpoint at the begining
+      else if(step < s_analogStep[1][pin])
+	{
+	  hit = limit;
+	  for(i=limit;i>0;i--)
 	    {
-	      hit = i+1;
+	      s_analogPin[i+1][pin]  = s_analogPin[i][pin];
+	      s_analogStep[i+1][pin] = s_analogStep[i][pin];
 	    }
-	  if(step == s_analogStep[i][pin])
+	  s_analogPin[1][pin]  = value;
+	  s_analogStep[1][pin] = step;
+	  limit++;
+	}    
+      // Insert breakpoint in between
+      else
+	{
+	  for (i=1;i<=limit;i++)
 	    {
-	      hit = 0;
-	      s_analogPin[i][pin]  = value;
-	      s_analogStep[i][pin] = step;
+	      // If step in between
+	      if(step > s_analogStep[i][pin] && step < s_analogStep[i+1][pin])
+		{
+		  hit = i+1; // New breakpoint index
+		}
+	      // If breakpoint already exists - replace value
+	      if(step == s_analogStep[i][pin])
+		{
+		  hit = -1;
+		  s_analogPin[i][pin]  = value;
+		}
+	    }
+	  // Insert breakpoint
+	  if(hit > 0)
+	    {
+	      for(i=limit;i>=hit;i--)
+		{
+		  s_analogPin[i+1][pin]  = s_analogPin[i][pin];
+		  s_analogStep[i+1][pin] = s_analogStep[i][pin];
+		}
+	      s_analogPin[hit][pin]  = value;
+	      s_analogStep[hit][pin] = step;
+	      limit++;
 	    }
 	}
-      if(step > s_analogStep[limit][pin])hit = limit+1;
-      
-      
-      if(hit > 0)
-	{
-	  s_analogStep[0][pin]++;
-	  limit = s_analogStep[0][pin];
-	  for(i=limit;i>=hit;i--)
-	    {
-	      s_analogPin[i][pin]  = s_analogPin[i-1][pin];
-	      s_analogStep[i][pin] = s_analogStep[i-1][pin];
-	    }
-	  s_analogPin[hit][pin]  = value;
-	  s_analogStep[hit][pin] = step;
-	}
+      s_analogStep[0][pin] = limit;
+
+    }
+  if(hit==0)
+    {
+      sprintf(g_temp,"Analog: Unable to insert breakpoint pin=%d step=%d value=%d",pin,step,value);
+      errorLog(g_temp,0);
     }
   return(hit);
 }  
+
 
 //====================================
 int delDigitalPinValue(int pin,int step)
@@ -388,7 +452,6 @@ int delDigitalPinValue(int pin,int step)
 
   if(ok == S_OK)
     {
-      
       limit = s_digitalStep[0][pin];
       for (i=1;i<=limit;i++)
 	{
@@ -401,15 +464,30 @@ int delDigitalPinValue(int pin,int step)
       if(hit > 0)
 	{
 	  s_digitalStep[0][pin]--;
-	  for(i=hit;i<limit;i++)
+	  //Remove the only/last breakpoint
+	  if(limit == hit)
 	    {
-	      s_digitalPin[i][pin]  = s_digitalPin[i+1][pin];
-	      s_digitalStep[i][pin] = s_digitalStep[i+1][pin];
+	      s_digitalPin[hit][pin]  = 0;
+	      s_digitalStep[hit][pin] = 0;
+	    }
+	  else if(hit < limit) 
+	    {
+	      for(i=hit;i<limit;i++)
+		{
+		  s_digitalPin[i][pin]  = s_digitalPin[i+1][pin];
+		  s_digitalStep[i][pin] = s_digitalStep[i+1][pin];
+		}
 	    }
 	}
     }
+  if(hit==0)
+    {
+      sprintf(g_temp,"Digital: Unable to delete breakpoint pin=%d step=%d",pin,step);
+      errorLog(g_temp,0);
+    }
   return(hit);
 }  
+
 
 //====================================
 int delAnalogPinValue(int pin,int step)
@@ -434,12 +512,26 @@ int delAnalogPinValue(int pin,int step)
       if(hit > 0)
 	{
 	  s_analogStep[0][pin]--;
-	  for(i=hit;i<limit;i++)
+	  //Remove the only/last breakpoint
+	  if(limit == hit)
 	    {
-	      s_analogPin[i][pin]  = s_analogPin[i+1][pin];
-	      s_analogStep[i][pin] = s_analogStep[i+1][pin];
+	      s_analogPin[hit][pin]  = 0;
+	      s_analogStep[hit][pin] = 0;
+	    }
+	  else if(hit < limit) 
+	    {
+	      for(i=hit;i<limit;i++)
+		{
+		  s_analogPin[i][pin]  = s_analogPin[i+1][pin];
+		  s_analogStep[i][pin] = s_analogStep[i+1][pin];
+		}
 	    }
 	}
+    }
+  if(hit==0)
+    {
+      sprintf(g_temp,"Analog: Unable to delete breakpoint pin=%d step=%d",pin,step);
+      errorLog(g_temp,0);
     }
   return(hit);
 }  
@@ -482,7 +574,7 @@ void saveScenario() // Servuino input/output
   out = fopen("data.scen","w");
   if(out == NULL)
     {
-      fprintf(e_log,"Unable to open data.scen\n");
+      errorLog("Unable to open data.scen",0);
     }
   
   for(i=0;i<=max_digPin;i++)
@@ -523,7 +615,7 @@ void saveScenarioExpanded() // Servuino input/output
   out = fopen("data.scenario","w");
   if(out == NULL)
     {
-      fprintf(e_log,"Unable to open data.scenario\n");
+      errorLog("Unable to open data.scenario",0);
     }
   fprintf(out,"# Digital: "); 
   for(i=0;i<=max_digPin;i++)
