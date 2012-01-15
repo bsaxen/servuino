@@ -15,6 +15,29 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
+
+//====================================
+char *int2bin(int num, int pad)
+// Example: printf("%s\n", int2bin(i, 8));
+//====================================
+{
+  char *str = (char*)malloc(sizeof(char) * (pad+1));
+  if (str) 
+    {
+      str[pad]='\0';
+      while (--pad>=0) 
+	{
+	  str[pad] = num & 1 ? '1' : '0';
+	  num >>= 1;
+	}
+    } 
+  else 
+    {
+      printf("int2bin:No string\n");
+    }
+  return str;
+}
+
 //====================================
 int setRange(int board)
 //====================================

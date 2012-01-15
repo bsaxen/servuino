@@ -14,36 +14,31 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
 */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
 #include <string>
 #include <math.h> 
 using namespace std;
-
-//#include "String.h"
 #include "common.h"
 
+char  sketch[120],g_temp[120];
+int   currentStep = 0;
+int   g_simulationLength = 111;
+char  g_version[40];
 
-char sketch[120],g_temp[120];
+char  interruptType[50][80];
+void  (*interrupt[6])();
 
-// Init
-
-int  currentStep = 0;
-int  g_simulationLength = 111;
-char g_version[40];
-
-char interruptType[50][80];
-void (*interrupt[6])();
-
-//int  pinToInterrupt[INTPINS];
-
-void stepCommand();
+void  stepCommand();
 
 int   row,col;
 int   graph_x = 10,graph_y = 10;
 
 char  appName[120];
+
+int   s_pinMode[SCEN_MAX][MAX_PIN_ANALOG_MEGA];
 
 int   anaPinPos[MAX_PIN_ANALOG_MEGA];
 int   c_analogPin[MAX_PIN_ANALOG_MEGA];
@@ -87,11 +82,9 @@ int   scenInterrupt = 0;
 
 int   conn;
 
-// Configuration default values
-
 int   confLogLev  =   0;
 
-int g_nloop = 0;
+int g_nloop      = 0;
 int g_scenSource = 0;
 int g_pinType    = 0;
 int g_pinNo      = 0;
@@ -101,20 +94,13 @@ int g_action     = 0;
 
 int g_allowInterrupt = YES;
 int g_interpolation  = NO;
-//int g_nAnalogPins    = 6;
-//int g_nDigitalPins   = 14;
 
-int boardType = UNO;
+
+int g_boardType   = UNO;
 int nCodeString = 0;
 
-//int preValueA[MAX_PIN_ANALOG_MEGA];
-//int preValueD[DIGPINS];
-//int curValueA[MAX_PIN_ANALOG_MEGA];
-//int curValueD[DIGPINS];
 
-int currentPin = 0;
-
-FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log;
+FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log,*r_log;
 
 #include "code.h"
 #include "common_lib.c"
@@ -133,9 +119,6 @@ void runEncoding(int n)
   strcpy(interruptType[RISING],"interruptRISING");
   strcpy(interruptType[CHANGE],"interruptCHANGE");
 
-  //fprintf(s_log,"# SCENARIODATA %d %d %d\n",scenDigital,scenAnalog,scenInterrupt);
-  //fprintf(s_log,"# LOOP %d\n",g_nloop);
-
   passTime();
   wLog0(0,"Setup");
   wLog0(1,"Setup");
@@ -145,7 +128,6 @@ void runEncoding(int n)
     {
       g_nloop++;
       passTime();
-      codeLog(F_LOOP,g_nloop,0,0,0,NULL);
       wLog1(0,"servuinoLoop",g_nloop);
       wLog1(1,"Loop",g_nloop);
       loop();  
@@ -161,11 +143,11 @@ int main(int argc, char *argv[])
 {
   int x;
 
-  strcpy(g_version,"0.0.4");
+  strcpy(g_version,"0.0.5");
 
   openFiles();
   readSketchInfo();
-  setRange(boardType);
+  setRange(g_boardType);
  
   boardInit();
   readScenario();
@@ -189,29 +171,27 @@ int main(int argc, char *argv[])
     {
       // steps, source, pintype, pinno, pinvalue, pinstep,action
       g_simulationLength = atoi(argv[1]);
-      g_scenSource =  atoi(argv[2]);
-      g_pinType    =  atoi(argv[3]);
-      g_pinNo      =  atoi(argv[4]);
-      g_pinValue   =  atoi(argv[5]);
-      g_pinStep    =  atoi(argv[6]);
-      g_action     =  atoi(argv[7]);
+      g_scenSource       =  atoi(argv[2]);
+      g_pinType          =  atoi(argv[3]);
+      g_pinNo            =  atoi(argv[4]);
+      g_pinValue         =  atoi(argv[5]);
+      g_pinStep          =  atoi(argv[6]);
+      g_action           =  atoi(argv[7]);
+
       readScenario();// read from data.scen
 
       max_steps = g_simulationLength;
 
       if(g_pinType == DIG)
 	{ 
-	  if(g_action == ADD)x = insDigitalPinValue(g_pinNo,g_pinStep,g_pinValue);
+	  if(g_action == ADD)   x = insDigitalPinValue(g_pinNo,g_pinStep,g_pinValue);
 	  if(g_action == DELETE)x = delDigitalPinValue(g_pinNo,g_pinStep);
-
 	}
       if(g_pinType == ANA)
 	{ 
-	  if(g_action == ADD)x = insAnalogPinValue(g_pinNo,g_pinStep,g_pinValue);
+	  if(g_action == ADD)   x = insAnalogPinValue(g_pinNo,g_pinStep,g_pinValue);
 	  if(g_action == DELETE)x = delAnalogPinValue(g_pinNo,g_pinStep);
-
 	}
-
       runEncoding(g_simulationLength);
     }
   else
