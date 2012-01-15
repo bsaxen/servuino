@@ -38,7 +38,6 @@ int   graph_x = 10,graph_y = 10;
 
 char  appName[120];
 
-int   s_pinMode[SCEN_MAX][MAX_PIN_ANALOG_MEGA];
 
 int   anaPinPos[MAX_PIN_ANALOG_MEGA];
 int   c_analogPin[MAX_PIN_ANALOG_MEGA];
