@@ -30,8 +30,264 @@ typedef int byte;
 typedef int word;
 typedef bool boolean;
 
-//------ String Class ---------------------
 
+
+unsigned int B00000000=0b00000000; // 0
+unsigned int B00000001=0b00000001; // 1
+unsigned int B00000010=0b00000010; // 2
+unsigned int B00000011=0b00000011; // 3
+unsigned int B00000100=0b00000100; // 4
+unsigned int B00000101=0b00000101; // 5
+unsigned int B00000110=0b00000110; // 6
+unsigned int B00000111=0b00000111; // 7
+unsigned int B00001000=0b00001000; // 8
+unsigned int B00001001=0b00001001; // 9
+unsigned int B00001010=0b00001010; // 10
+unsigned int B00001011=0b00001011; // 11
+unsigned int B00001100=0b00001100; // 12
+unsigned int B00001101=0b00001101; // 13
+unsigned int B00001110=0b00001110; // 14
+unsigned int B00001111=0b00001111; // 15
+unsigned int B00010000=0b00010000; // 16
+unsigned int B00010001=0b00010001; // 17
+unsigned int B00010010=0b00010010; // 18
+unsigned int B00010011=0b00010011; // 19
+unsigned int B00010100=0b00010100; // 20
+unsigned int B00010101=0b00010101; // 21
+unsigned int B00010110=0b00010110; // 22
+unsigned int B00010111=0b00010111; // 23
+unsigned int B00011000=0b00011000; // 24
+unsigned int B00011001=0b00011001; // 25
+unsigned int B00011010=0b00011010; // 26
+unsigned int B00011011=0b00011011; // 27
+unsigned int B00011100=0b00011100; // 28
+unsigned int B00011101=0b00011101; // 29
+unsigned int B00011110=0b00011110; // 30
+unsigned int B00011111=0b00011111; // 31
+unsigned int B00100000=0b00100000; // 32
+unsigned int B00100001=0b00100001; // 33
+unsigned int B00100010=0b00100010; // 34
+unsigned int B00100011=0b00100011; // 35
+unsigned int B00100100=0b00100100; // 36
+unsigned int B00100101=0b00100101; // 37
+unsigned int B00100110=0b00100110; // 38
+unsigned int B00100111=0b00100111; // 39
+unsigned int B00101000=0b00101000; // 40
+unsigned int B00101001=0b00101001; // 41
+unsigned int B00101010=0b00101010; // 42
+unsigned int B00101011=0b00101011; // 43
+unsigned int B00101100=0b00101100; // 44
+unsigned int B00101101=0b00101101; // 45
+unsigned int B00101110=0b00101110; // 46
+unsigned int B00101111=0b00101111; // 47
+unsigned int B00110000=0b00110000; // 48
+unsigned int B00110001=0b00110001; // 49
+unsigned int B00110010=0b00110010; // 50
+unsigned int B00110011=0b00110011; // 51
+unsigned int B00110100=0b00110100; // 52
+unsigned int B00110101=0b00110101; // 53
+unsigned int B00110110=0b00110110; // 54
+unsigned int B00110111=0b00110111; // 55
+unsigned int B00111000=0b00111000; // 56
+unsigned int B00111001=0b00111001; // 57
+unsigned int B00111010=0b00111010; // 58
+unsigned int B00111011=0b00111011; // 59
+unsigned int B00111100=0b00111100; // 60
+unsigned int B00111101=0b00111101; // 61
+unsigned int B00111110=0b00111110; // 62
+unsigned int B00111111=0b00111111; // 63
+unsigned int B01000000=0b01000000; // 64
+unsigned int B01000001=0b01000001; // 65
+unsigned int B01000010=0b01000010; // 66
+unsigned int B01000011=0b01000011; // 67
+unsigned int B01000100=0b01000100; // 68
+unsigned int B01000101=0b01000101; // 69
+unsigned int B01000110=0b01000110; // 70
+unsigned int B01000111=0b01000111; // 71
+unsigned int B01001000=0b01001000; // 72
+unsigned int B01001001=0b01001001; // 73
+unsigned int B01001010=0b01001010; // 74
+unsigned int B01001011=0b01001011; // 75
+unsigned int B01001100=0b01001100; // 76
+unsigned int B01001101=0b01001101; // 77
+unsigned int B01001110=0b01001110; // 78
+unsigned int B01001111=0b01001111; // 79
+unsigned int B01010000=0b01010000; // 80
+unsigned int B01010001=0b01010001; // 81
+unsigned int B01010010=0b01010010; // 82
+unsigned int B01010011=0b01010011; // 83
+unsigned int B01010100=0b01010100; // 84
+unsigned int B01010101=0b01010101; // 85
+unsigned int B01010110=0b01010110; // 86
+unsigned int B01010111=0b01010111; // 87
+unsigned int B01011000=0b01011000; // 88
+unsigned int B01011001=0b01011001; // 89
+unsigned int B01011010=0b01011010; // 90
+unsigned int B01011011=0b01011011; // 91
+unsigned int B01011100=0b01011100; // 92
+unsigned int B01011101=0b01011101; // 93
+unsigned int B01011110=0b01011110; // 94
+unsigned int B01011111=0b01011111; // 95
+unsigned int B01100000=0b01100000; // 96
+unsigned int B01100001=0b01100001; // 97
+unsigned int B01100010=0b01100010; // 98
+unsigned int B01100011=0b01100011; // 99
+unsigned int B01100100=0b01100100; // 100
+unsigned int B01100101=0b01100101; // 101
+unsigned int B01100110=0b01100110; // 102
+unsigned int B01100111=0b01100111; // 103
+unsigned int B01101000=0b01101000; // 104
+unsigned int B01101001=0b01101001; // 105
+unsigned int B01101010=0b01101010; // 106
+unsigned int B01101011=0b01101011; // 107
+unsigned int B01101100=0b01101100; // 108
+unsigned int B01101101=0b01101101; // 109
+unsigned int B01101110=0b01101110; // 110
+unsigned int B01101111=0b01101111; // 111
+unsigned int B01110000=0b01110000; // 112
+unsigned int B01110001=0b01110001; // 113
+unsigned int B01110010=0b01110010; // 114
+unsigned int B01110011=0b01110011; // 115
+unsigned int B01110100=0b01110100; // 116
+unsigned int B01110101=0b01110101; // 117
+unsigned int B01110110=0b01110110; // 118
+unsigned int B01110111=0b01110111; // 119
+unsigned int B01111000=0b01111000; // 120
+unsigned int B01111001=0b01111001; // 121
+unsigned int B01111010=0b01111010; // 122
+unsigned int B01111011=0b01111011; // 123
+unsigned int B01111100=0b01111100; // 124
+unsigned int B01111101=0b01111101; // 125
+unsigned int B01111110=0b01111110; // 126
+unsigned int B01111111=0b01111111; // 127
+unsigned int B10000000=0b10000000; // 128
+unsigned int B10000001=0b10000001; // 129
+unsigned int B10000010=0b10000010; // 130
+unsigned int B10000011=0b10000011; // 131
+unsigned int B10000100=0b10000100; // 132
+unsigned int B10000101=0b10000101; // 133
+unsigned int B10000110=0b10000110; // 134
+unsigned int B10000111=0b10000111; // 135
+unsigned int B10001000=0b10001000; // 136
+unsigned int B10001001=0b10001001; // 137
+unsigned int B10001010=0b10001010; // 138
+unsigned int B10001011=0b10001011; // 139
+unsigned int B10001100=0b10001100; // 140
+unsigned int B10001101=0b10001101; // 141
+unsigned int B10001110=0b10001110; // 142
+unsigned int B10001111=0b10001111; // 143
+unsigned int B10010000=0b10010000; // 144
+unsigned int B10010001=0b10010001; // 145
+unsigned int B10010010=0b10010010; // 146
+unsigned int B10010011=0b10010011; // 147
+unsigned int B10010100=0b10010100; // 148
+unsigned int B10010101=0b10010101; // 149
+unsigned int B10010110=0b10010110; // 150
+unsigned int B10010111=0b10010111; // 151
+unsigned int B10011000=0b10011000; // 152
+unsigned int B10011001=0b10011001; // 153
+unsigned int B10011010=0b10011010; // 154
+unsigned int B10011011=0b10011011; // 155
+unsigned int B10011100=0b10011100; // 156
+unsigned int B10011101=0b10011101; // 157
+unsigned int B10011110=0b10011110; // 158
+unsigned int B10011111=0b10011111; // 159
+unsigned int B10100000=0b10100000; // 160
+unsigned int B10100001=0b10100001; // 161
+unsigned int B10100010=0b10100010; // 162
+unsigned int B10100011=0b10100011; // 163
+unsigned int B10100100=0b10100100; // 164
+unsigned int B10100101=0b10100101; // 165
+unsigned int B10100110=0b10100110; // 166
+unsigned int B10100111=0b10100111; // 167
+unsigned int B10101000=0b10101000; // 168
+unsigned int B10101001=0b10101001; // 169
+unsigned int B10101010=0b10101010; // 170
+unsigned int B10101011=0b10101011; // 171
+unsigned int B10101100=0b10101100; // 172
+unsigned int B10101101=0b10101101; // 173
+unsigned int B10101110=0b10101110; // 174
+unsigned int B10101111=0b10101111; // 175
+unsigned int B10110000=0b10110000; // 176
+unsigned int B10110001=0b10110001; // 177
+unsigned int B10110010=0b10110010; // 178
+unsigned int B10110011=0b10110011; // 179
+unsigned int B10110100=0b10110100; // 180
+unsigned int B10110101=0b10110101; // 181
+unsigned int B10110110=0b10110110; // 182
+unsigned int B10110111=0b10110111; // 183
+unsigned int B10111000=0b10111000; // 184
+unsigned int B10111001=0b10111001; // 185
+unsigned int B10111010=0b10111010; // 186
+unsigned int B10111011=0b10111011; // 187
+unsigned int B10111100=0b10111100; // 188
+unsigned int B10111101=0b10111101; // 189
+unsigned int B10111110=0b10111110; // 190
+unsigned int B10111111=0b10111111; // 191
+unsigned int B11000000=0b11000000; // 192
+unsigned int B11000001=0b11000001; // 193
+unsigned int B11000010=0b11000010; // 194
+unsigned int B11000011=0b11000011; // 195
+unsigned int B11000100=0b11000100; // 196
+unsigned int B11000101=0b11000101; // 197
+unsigned int B11000110=0b11000110; // 198
+unsigned int B11000111=0b11000111; // 199
+unsigned int B11001000=0b11001000; // 200
+unsigned int B11001001=0b11001001; // 201
+unsigned int B11001010=0b11001010; // 202
+unsigned int B11001011=0b11001011; // 203
+unsigned int B11001100=0b11001100; // 204
+unsigned int B11001101=0b11001101; // 205
+unsigned int B11001110=0b11001110; // 206
+unsigned int B11001111=0b11001111; // 207
+unsigned int B11010000=0b11010000; // 208
+unsigned int B11010001=0b11010001; // 209
+unsigned int B11010010=0b11010010; // 210
+unsigned int B11010011=0b11010011; // 211
+unsigned int B11010100=0b11010100; // 212
+unsigned int B11010101=0b11010101; // 213
+unsigned int B11010110=0b11010110; // 214
+unsigned int B11010111=0b11010111; // 215
+unsigned int B11011000=0b11011000; // 216
+unsigned int B11011001=0b11011001; // 217
+unsigned int B11011010=0b11011010; // 218
+unsigned int B11011011=0b11011011; // 219
+unsigned int B11011100=0b11011100; // 220
+unsigned int B11011101=0b11011101; // 221
+unsigned int B11011110=0b11011110; // 222
+unsigned int B11011111=0b11011111; // 223
+unsigned int B11100000=0b11100000; // 224
+unsigned int B11100001=0b11100001; // 225
+unsigned int B11100010=0b11100010; // 226
+unsigned int B11100011=0b11100011; // 227
+unsigned int B11100100=0b11100100; // 228
+unsigned int B11100101=0b11100101; // 229
+unsigned int B11100110=0b11100110; // 230
+unsigned int B11100111=0b11100111; // 231
+unsigned int B11101000=0b11101000; // 232
+unsigned int B11101001=0b11101001; // 233
+unsigned int B11101010=0b11101010; // 234
+unsigned int B11101011=0b11101011; // 235
+unsigned int B11101100=0b11101100; // 236
+unsigned int B11101101=0b11101101; // 237
+unsigned int B11101110=0b11101110; // 238
+unsigned int B11101111=0b11101111; // 239
+unsigned int B11110000=0b11110000; // 240
+unsigned int B11110001=0b11110001; // 241
+unsigned int B11110010=0b11110010; // 242
+unsigned int B11110011=0b11110011; // 243
+unsigned int B11110100=0b11110100; // 244
+unsigned int B11110101=0b11110101; // 245
+unsigned int B11110110=0b11110110; // 246
+unsigned int B11110111=0b11110111; // 247
+unsigned int B11111000=0b11111000; // 248
+unsigned int B11111001=0b11111001; // 249
+unsigned int B11111010=0b11111010; // 250
+unsigned int B11111011=0b11111011; // 251
+unsigned int B11111100=0b11111100; // 252
+unsigned int B11111101=0b11111101; // 253
+unsigned int B11111110=0b11111110; // 254
+unsigned int B11111111=0b11111111; // 255
 
 
 //=====================================
@@ -49,16 +305,15 @@ void unimplemented(const char *f)
   interruptNow();
 }
 
+
 //------ Digital I/O -----------------------
 //=====================================
 void pinMode(int pin,int mode)
 //=====================================
 {
   char temp[120];
-  int ok=S_NOK;
+  int  ok=S_NOK;
 
-  currentPin = pin;
-  
   passTime();
 
   ok = checkRange(S_OK,"digpin",pin);
@@ -71,7 +326,10 @@ void pinMode(int pin,int mode)
 
 	  if(mode==INPUT)
 	    {
+	      if(g_boardType==UNO)writeRegister(1,R_DDR,pin,0);
 	      wLog1(0,"pinMode IN",pin);
+
+	      // Custom Logging
 	      strcpy(temp,textPinModeIn[pin]);
 	      if(!strstr(temp,"void"))
 		wLog1(1,temp,pin);
@@ -81,14 +339,16 @@ void pinMode(int pin,int mode)
 	  
 	  if(mode==OUTPUT)
 	    {
+	      if(g_boardType==UNO)writeRegister(1,R_DDR,pin,1);
 	      wLog1(0,"pinMode OUT",pin);
+
+	      // Custom Logging
 	      strcpy(temp,textPinModeOut[pin]);
 	      if(!strstr(temp,"void"))
 		wLog1(1,temp,pin);
 	      else
 		wLog1(1,"pinMode OUT",pin);
 	    }
-	  codeLog(F_PINMODE,pin,mode,0,0,NULL);
 	}
       else
 	errorLog("pinMode:Unknown Pin Mode",pin);
@@ -100,11 +360,8 @@ void pinMode(int pin,int mode)
 void digitalWrite(int pin,int value)
 //=====================================
 {
-  char temp[120];
-  int ok=S_NOK;
-
-  currentPin = pin;
-
+  char temp[120],pin_mode=0;
+  int  ok=S_NOK;
 
   passTime();
 
@@ -113,31 +370,72 @@ void digitalWrite(int pin,int value)
   c_digitalPin[pin] = value;
   if(ok == S_OK)
     {
-      if(digitalMode[pin] == OUTPUT)
+      if(g_boardType==UNO)
 	{
-	  if(value==HIGH)
+	  pin_mode = readRegister(1,R_DDR,pin);
+	  if(pin_mode == 1)
 	    {
-	      wLog1(0,"digitalWrite HIGH",pin);
-	      strcpy(temp,textDigitalWriteHigh[pin]);
-	      if(!strstr(temp,"void"))
-		wLog1(1,temp,pin);
-	      else
-		wLog1(1,"digitalWrite HIGH",pin);
+	      if(value==HIGH)
+		{
+		  writeRegister(1,R_PORT,pin,1);
+		  wLog1(0,"digitalWrite HIGH",pin);
+		  
+		  // Custom Logging
+		  strcpy(temp,textDigitalWriteHigh[pin]);
+		  if(!strstr(temp,"void"))
+		    wLog1(1,temp,pin);
+		  else
+		    wLog1(1,"digitalWrite HIGH",pin);
+		}
+	      if(value==LOW)
+		{
+		  writeRegister(1,R_PORT,pin,0);
+		  wLog1(0,"digitalWrite LOW",pin);
+		  
+		  // Custom Logging
+		  strcpy(temp,textDigitalWriteLow[pin]);
+		  if(!strstr(temp,"void"))
+		    wLog1(1,temp,pin);
+		  else
+		    wLog1(1,"digitalWrite LOW",pin);
+		}
 	    }
-	  if(value==LOW)
+	  else
 	    {
-	      wLog1(0,"digitalWrite LOW",pin);
-	      strcpy(temp,textDigitalWriteLow[pin]);
-	      if(!strstr(temp,"void"))
-		wLog1(1,temp,pin);
-	      else
-	      wLog1(1,"digitalWrite LOW",pin);
+	      errorLog("digitalWrite Wrong Pin Mode ",pin);
 	    }
-	  codeLog(F_DIGITALWRITE,pin,value,0,0,NULL);
 	}
-      else
+      else // MEGA
 	{
-	  errorLog("digitalWrite Wrong Pin Mode ",pin);
+	  if(digitalMode[pin] == OUTPUT)
+	    {
+	      if(value==HIGH)
+		{
+		  wLog1(0,"digitalWrite HIGH",pin);
+		  
+		  // Custom Logging
+		  strcpy(temp,textDigitalWriteHigh[pin]);
+		  if(!strstr(temp,"void"))
+		    wLog1(1,temp,pin);
+		  else
+		    wLog1(1,"digitalWrite HIGH",pin);
+		}
+	      if(value==LOW)
+		{
+		  wLog1(0,"digitalWrite LOW",pin);
+		  
+		  // Custom Logging
+		  strcpy(temp,textDigitalWriteLow[pin]);
+		  if(!strstr(temp,"void"))
+		    wLog1(1,temp,pin);
+		  else
+		    wLog1(1,"digitalWrite LOW",pin);
+		}
+	    }
+	  else
+	    {
+	      errorLog("digitalWrite Wrong Pin Mode ",pin);
+	    }
 	}
     }
   interruptNow();
@@ -146,31 +444,46 @@ void digitalWrite(int pin,int value)
 int digitalRead(int pin)
 //=====================================
 {
-  int value=0,x,ok=S_NOK;
+  int value=0,x,ok=S_NOK, pin_mode=0;
   char temp[120];
-
-  currentPin = pin;
 
   passTime();
   ok = checkRange(S_OK,"digpin",pin);
   if(ok == S_OK)
     {
-      if(digitalMode[pin] == INPUT )
+      if(g_boardType==UNO)
 	{
-	    value = getDigitalPinValue(pin,currentStep);  
-	    value = checkRange(HEAL,"digval",value);
+	  pin_mode = readRegister(1,R_DDR,pin);
+	  if(pin_mode == 0 )
+	    {
+	      value = getDigitalPinValue(pin,currentStep);  
+	      value = checkRange(HEAL,"digval",value);
+	      writeRegister(1,R_PIN,pin,value);
+	    }
+	  else
+	    errorLog("digitalRead: Pin Mode not IMPUT",pin);
 	}
-      else
-	errorLog("digitalRead: Wrong pin mode",pin);
+      else // MEGA
+	{
+	  if(digitalMode[pin] == INPUT )
+	    {
+	      value = getDigitalPinValue(pin,currentStep);  
+	      value = checkRange(HEAL,"digval",value);
+	    }
+	  else
+	    errorLog("digitalRead: Pin Mode not IMPUT",pin);
+	}
     }
   c_digitalPin[pin] = value;
   wLog2(0,"digitalRead",pin,value);
+
+  // Custom Logging
   strcpy(temp,textDigitalRead[pin]);
   if(!strstr(temp,"void"))
     wLog2(1,temp,pin,value);
   else
     wLog2(1,"digitalRead",pin,value);
-  codeLog(F_DIGITALREAD,pin,value,0,0,NULL);
+
   interruptNow();
   return(value);
 }
@@ -181,7 +494,6 @@ void analogReference(char type[])
 //=====================================
 {
   unimplemented("analogReference()");
-  codeLog(F_ANALOGREFERENCE,0,0,0,0,NULL);
   //DEFAULT, INTERNAL, INTERNAL1V1, INTERNAL2V56, or EXTERNAL
 }
 
@@ -192,7 +504,6 @@ int analogRead(int pin)  // Values 0 to 1023
   char temp[80];
   int ok=S_NOK;
 
-  currentPin = pin;
   passTime();
   ok = checkRange(S_OK,"anapin",pin);
   if(ok == S_OK)
@@ -202,12 +513,14 @@ int analogRead(int pin)  // Values 0 to 1023
     }
   c_analogPin[pin] = value;
   wLog2(0,"analogRead",pin,value);
+
+  // Custom Logging
   strcpy(temp,textAnalogRead[pin]);
   if(!strstr(temp,"void"))
     wLog2(1,temp,pin,value);
   else
     wLog2(1,"analogRead",pin,value);
-  codeLog(F_ANALOGREAD,pin,value,0,0,NULL);
+
   interruptNow();
   return(value); 
 }
@@ -221,35 +534,35 @@ void analogWrite(int pin,int value)
   char temp[80];
   int ok=S_NOK;
 
-
   passTime();
-  currentPin = pin;
   c_digitalPin[pin] = value;
   ok = checkRange(S_OK,"digpin",pin);
   if(ok == S_OK)
     {
       value = checkRange(HEAL,"pwmval",value);
       
-      if(boardType == UNO)
+      if(g_boardType == UNO)
 	{
 	  if(pin!=3 && pin!=5 && pin!=6 && pin!=9 && pin!=10 && pin!=11)
 	    errorLog("analogWrite: UNO Pin is not of PWM type",pin);
 	}
       
-      if(boardType == MEGA)
+      if(g_boardType == MEGA)
 	{
 	  if(pin < 2 || pin > 13)
-	      errorLog("analogWrite: MEGA Pin is not of PWM type",pin);
+	    errorLog("analogWrite: MEGA Pin is not of PWM type",pin);
 	}
-      
     }
+  //writeRegister(1,R_PORT,pin,1);
   wLog2(0,"analogWrite",pin,value);
+
+  // Custom Logging
   strcpy(temp,textAnalogWrite[pin]);
   if(!strstr(temp,"void"))
     wLog2(1,temp,pin,value);
   else
     wLog2(1,"analogWrite",pin,value);
-  codeLog(F_ANALOGWRITE,pin,value,0,0,NULL);
+
   interruptNow();
   return;
 }
@@ -257,50 +570,38 @@ void analogWrite(int pin,int value)
 //------ Advanced I/O ----------------------
 void tone(int pin, unsigned int freq)
 {
-  currentPin = pin;
-  codeLog(F_TONE_int_int,pin,freq,0,0,NULL);
   unimplemented("tone()");
 }
 
 void tone(int pin, unsigned int freq, unsigned long duration)
 {
-  currentPin = pin;
-  codeLog(F_TONE_int_int_long,pin,freq,duration,0,NULL);
   unimplemented("tone()");
 }
 
 void noTone(int pin)
 {
-  currentPin = pin;
-  codeLog(F_NOTONE,pin,0,0,0,NULL);
   unimplemented("noTone()");
 }
 
 void shiftOut(int dataPin, int clockPin, int bitOrder, int value)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
-  codeLog(F_SHIFTOUT,dataPin,clockPin,bitOrder,value,NULL);
   unimplemented("shiftOut()");
 }
 
 int shiftIn(int dataPin, int clockPin, int bitOrder)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
-  codeLog(F_SHIFTIN,dataPin,clockPin,bitOrder,0,NULL);
   unimplemented("shiftIn()");
 }
 
 unsigned long pulseIn(int pin, int value)
 {
-  currentPin = pin;
-  codeLog(F_PULSEIN_int_int,pin,value,0,0,NULL);
   unimplemented("pulseIn()");
 }
 
 unsigned long pulseIn(int pin, int value, unsigned long timeout)
 {
-  currentPin = pin;
-  codeLog(F_PULSEIN_int_int_long,pin,value,timeout,0,NULL);
   unimplemented("pulseIn()");
 }
 
@@ -322,14 +623,12 @@ void delay(int ms)
   wLog1(0,"delay()",ms);
   wLog1(1,"delay()",ms);
   fprintf(t_log,"+ %d %d\n",currentStep,ms*1000);
-  codeLog(F_DELAY,ms,0,0,0,NULL);
   interruptNow();
 }
 
 void delayMicroseconds(int us)
 {
   passTime();
-  codeLog(F_DELAYMICROSECONDS,us,0,0,0,NULL);
   wLog1(0,"delayMicroseconds()",us);
   wLog1(1,"delayMicroseconds()",us);
   fprintf(t_log,"+ %d %d\n",currentStep,us);
@@ -418,41 +717,42 @@ unsigned char highByte(word x)
   return(y);
 }
 
-unsigned char bitRead(int x, int n)
+int bitRead(int x, int n)
 {
   int bit;
-
+  //printf("bitRead: x=%d n=%d PORTB=%d\n",x,n,PORTB);
   bit = x >> n;
   bit = bit&0x0001;
+  //printf("bitRead: x=%d n=%d PORTB=%d bit=%d\n",x,n,PORTB,bit);
   return(bit);
 }
 
-int  bitSet(int x, int n)
+void  bitSet(unsigned int *x, int n)
 {
   int res,mask;
 
   mask = 1 << n;
-  res = x | mask;
+  *x  = *x | mask;
 
-  return(res);
+  return     ;
 }
 
-int  bitClear(int x, int n)
+void bitClear(unsigned int *x, int n)
 {
   int res,mask;
 
   mask = 1 << n;
-  res = x & ~mask;
+  *x  = *x & ~mask;
 
-  return(res);
+  return;
 }
 
-int bitWrite(int x, int n, int b)
+void bitWrite(unsigned int *x, int n, int b)
 {
-  int res;
-  if(b==0)res = bitClear(x,n);
-  if(b==1)res = bitSet(x,n);
-  return(res);
+  //printf("bitWrite: %d %d %d PORTB=%d\n",*x,n,b,PORTB);
+  if(b==0)bitClear(x,n);
+  if(b==1)bitSet(x,n);
+  return;
 }
 
 int bit(int n)
@@ -491,7 +791,6 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       if(mode==RISING) wLog2(1,"attachInterruptRISING",ir,mode);
       if(mode==FALLING)wLog2(1,"attachInterruptFALLING",ir,mode);
       if(mode==CHANGE) wLog2(1,"attachInterruptCHANGE",ir,mode);
-      codeLog(F_ATTACHINTERRUPT,pin,ir,mode,0,NULL);
     }
   else
     {
@@ -511,13 +810,11 @@ void detachInterrupt(int ir)
   ok = checkRange(S_OK,"interrupt",ir);
   if(ok == S_OK)
     {
-
       interrupt[ir] = NULL;
       pin = inrpt[ir];
       digitalMode[pin] == FREE;
       wLog1(0,"detachInterrupt",ir);
       wLog1(1,"detachInterrupt",ir);
-      codeLog(F_DETACHINTERRUPT,pin,ir,0,0,NULL);
     }
   
   interruptNow();
@@ -561,7 +858,6 @@ void serial::begin(int baudRate)
   baud = baudRate;
   wLog1(0,"Serial:begin",baud);
   wLog1(1,"Serial:begin",baud);
-  codeLog(F_SERIAL_BEGIN,baudRate,0,0,0,NULL);
   digitalMode[0] = RX;
   digitalMode[1] = TX;
   serialMode = ON;
@@ -573,7 +869,6 @@ void serial::end()
   passTime();
   wLog0(0,"Serial:end");
   wLog0(1,"Serial:end");
-  codeLog(F_SERIAL_END,0,0,0,0,NULL);
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
   serialMode = OFF;
@@ -583,29 +878,24 @@ void serial::end()
 int serial::available()  // returns the number of bytes available to read
 {
   unimplemented("Serial.available()");
-  codeLog(F_SERIAL_AVAILABLE,0,0,0,0,NULL);
   return(1);
 }
-
-
 
 char serial::read() // the first byte of incoming serial data available (or -1 if no data is available)
 {
   unimplemented("Serial.read()");
-  codeLog(F_SERIAL_READ,0,0,0,0,NULL);
   return(-1);
 }
 
 int serial::peek() 
 {
-  codeLog(F_SERIAL_PEEK,0,0,0,0,NULL);
+  unimplemented("Serial.peek()");
   return(-1);
 }
 
 void serial::flush() 
 {
-  codeLog(F_SERIAL_FLUSH,0,0,0,0,NULL);
-  showSerial("flush",1);
+  unimplemented("Serial.flush()");
 }
 
 void serial::print(int x) 
@@ -614,7 +904,8 @@ void serial::print(int x)
   wLog1(0,"Serial:print(int)",x);
   wLog1(1,"Serial:print(int)",x);
   fprintf(x_log,"%d SL [%d]\n",currentStep,x);
-  codeLog(F_SERIAL_PRINT_int,x,0,0,0,NULL);
+  if(serialMode != ON) 
+    errorLog("Serial print without serial.begin",currentStep);
   interruptNow();
 }
 
@@ -624,16 +915,18 @@ void serial::print(int x,int base)
   wLog1(0,"Serial:print(int,int)",x);
   wLog1(1,"Serial:print(int,int)",x);
   fprintf(x_log,"%d SL [%d]\n",currentStep,x);
-  codeLog(F_SERIAL_PRINT_int_int,x,base,0,0,NULL);
+  if(serialMode != ON) 
+    errorLog("Serial print without serial.begin",currentStep);
   interruptNow();
 }
 
 void serial::print(const char *p) 
 {
   passTime();
-  codeLog(F_SERIAL_PRINT_char,0,0,0,0,p);
   wLogChar1(0,"Serial:print(char)",p);
   wLogChar1(1,"Serial:print(char)",p);
+  if(serialMode != ON) 
+    errorLog("Serial print without serial.begin",currentStep);
   fprintf(x_log,"%d SL [%s]\n",currentStep,p);
   interruptNow();
 }
@@ -641,9 +934,10 @@ void serial::print(const char *p)
 void serial::println(int x) 
 {
   passTime();
-  codeLog(F_SERIAL_PRINTLN_int,x,0,0,0,NULL);
   wLog1(0,"Serial:println(int)",x);
   wLog1(1,"Serial:println(int)",x);
+  if(serialMode != ON) 
+    errorLog("Serial println without serial.begin",currentStep);
   fprintf(x_log,"%d NL [%d]\n",currentStep,x);
   interruptNow();
 }
@@ -651,9 +945,10 @@ void serial::println(int x)
 void serial::println(const char *p) 
 {
   passTime();
-  codeLog(F_SERIAL_PRINTLN_char,0,0,0,0,p);
   wLogChar1(0,"Serial:println(char)",p);
   wLogChar1(1,"Serial:println(char)",p);
+  if(serialMode != ON) 
+    errorLog("Serial println without serial.begin",currentStep);
   fprintf(x_log,"%d NL [%s]\n",currentStep,p);
   interruptNow();
 }
@@ -661,12 +956,12 @@ void serial::println(const char *p)
 void serial::println(string s) 
 {
   passTime();
-  //string l="Pranav";
   const char *p;
   p=s.c_str();
-  codeLog(F_SERIAL_PRINTLN_char,0,0,0,0,p);
   wLogChar1(0,"Serial:println(string)",p);
   wLogChar1(1,"Serial:println(string)",p);
+  if(serialMode != ON) 
+    errorLog("Serial println without serial.begin",currentStep);
   fprintf(x_log,"%d NL [%s]\n",currentStep,p);
   interruptNow();
 }
@@ -676,10 +971,10 @@ void serial::println(String s)
   passTime();
   const char *p;
   p= s.getPointer();
-  //p=(char *)(s.c_str());  
-  codeLog(F_SERIAL_PRINTLN_String,0,0,0,0,NULL);
   wLogChar2(0,"Serial:println(String)",p,-1);
   wLogChar2(1,"Serial:println(String)",p,-1);
+  if(serialMode != ON) 
+    errorLog("Serial println without serial.begin",currentStep);
   fprintf(x_log,"%d NL [%s]\n",currentStep,p);
   interruptNow();
 }
@@ -687,9 +982,10 @@ void serial::println(String s)
 void serial::println() 
 {
   passTime();
-  codeLog(F_SERIAL_PRINTLN_void,0,0,0,0,NULL);
   wLog0(0,"Serial:println()");
   wLog0(1,"Serial:println()");
+  if(serialMode != ON) 
+    errorLog("Serial println without serial.begin",currentStep);
   fprintf(x_log,"%d NL []\n",currentStep);
   interruptNow();
 }
@@ -697,9 +993,10 @@ void serial::println()
 void serial::write(char *p) 
 {
   passTime();
-  codeLog(F_SERIAL_WRITE,0,0,0,0,p);
   wLogChar1(0,"Serial:write(char)",p);
   wLogChar1(1,"Serial:write(char)",p);
+  if(serialMode != ON) 
+    errorLog("Serial write without serial.begin",currentStep);
   fprintf(x_log,"%d SL [%s]\n",currentStep,p);
   interruptNow();
 }

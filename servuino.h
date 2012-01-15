@@ -1,6 +1,23 @@
 void passTime();
 void digitalWrite(int pin,int value);
 int  digitalRead(int pin);
+
+unsigned int PORTA=0,PORTB=0,PORTC=0,PORTD=0,PORTE=0,PORTF=0,PORTG=0,PORTH=0,PORTJ=0,PORTK=0,PORTL=0;
+unsigned int DDRA=0,DDRB=0,DDRC=0,DDRD=0;
+unsigned int PINA=0,PINB=0,PINC=0,PIND=0;
+
+#define R_PORT 1
+#define R_DDR  2
+#define R_PIN  3
+
+void  bitWrite(unsigned int *x, int n,int b);
+int   bitRead(int x, int n);
+int   readRegister(int digital, int reg, int port);
+void  writeRegister(int digital, int reg, int port, int value);
+void  registerLog();
+void  setPINRegister(int step); 
+
+
 //=====================================
 // String
 //=====================================
@@ -119,4 +136,5 @@ private:
 
 
 }; // end class String
+
 

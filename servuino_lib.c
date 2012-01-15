@@ -15,18 +15,102 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
 */
 
+
 //====================================
-void codeLog(int fn,int a,int b, int c, int d,const char *p)
+void writeRegister(int digital, int reg, int port, int value)
 //====================================
 {
-  fprintf(c_log,"+ %d %d %d %d %d %d '%s'\n",currentStep,fn,a,b,c,d,p);
+  //printf("digital=%d reg=%d pin=%d value=%d\n",digital,reg,port,value);
+
+  if(g_boardType == UNO)
+    {
+      //-------------------------------------------------------
+      if(reg == R_PORT && digital == 1) // 0=LOW 1=HIGH
+	{
+	  if(port <= 7 && port >=  0)bitWrite(&PORTD,port,value);
+	  if(port >= 8 && port <= 13)bitWrite(&PORTB,port-8,value);
+	}
+      if(reg == R_PORT && digital == 0)
+	{
+	  if(port <= 5 && port >=  0)bitWrite(&PORTC,port,value);
+	}
+      //-------------------------------------------------------
+      if(reg == R_DDR && digital == 1)  // 0=INPUT 1=OUTPUT
+	{
+	  if(port <= 7 && port >=  0)bitWrite(&DDRD,port,value);
+	  if(port >= 8 && port <= 13)bitWrite(&DDRB,port-8,value);
+	}
+      if(reg == R_DDR && digital == 0)
+	{
+	  if(port <= 5 && port >=  0)bitWrite(&DDRC,port,value);
+	}
+      //-------------------------------------------------------
+      if(reg == R_PIN && digital == 1)  // 0=INPUT 1=OUTPUT
+	{
+	  if(port <= 7 && port >=  0)bitWrite(&PIND,port,value);
+	  if(port >= 8 && port <= 13)bitWrite(&PINB,port-8,value);
+	}
+      if(reg == R_PIN && digital == 0)
+	{
+	  if(port <= 5 && port >=  0)bitWrite(&PINC,port,value);
+	}
+      //-------------------------------------------------------
+    }
+  else
+    errorLog("writeRegister: Not UNO board",currentStep);
+}
+
+//====================================
+int readRegister(int digital, int reg, int port)
+//====================================
+{
+  int value = 99;
+
+  if(g_boardType == UNO)
+    {
+      //-------------------------------------------------------
+      if(reg == R_PORT && digital == 1) // 0=LOW 1=HIGH
+	{
+	  if(port <= 7 && port >=  0)value=bitRead(PORTD,port);
+	  if(port >= 8 && port <= 13)value=bitRead(PORTB,port-8);
+	}
+      if(reg == R_PORT && digital == 0)
+	{
+	  if(port <= 5 && port >=  0)value=bitRead(PORTC,port);
+	}
+      //-------------------------------------------------------
+      if(reg == R_DDR && digital == 1)  // 0=INPUT 1=OUTPUT
+	{
+	  if(port <= 7 && port >=  0)value=bitRead(DDRD,port);
+	  if(port >= 8 && port <= 13)value=bitRead(DDRB,port-8);
+	}
+      if(reg == R_DDR && digital == 0)
+	{
+	  if(port <= 5 && port >=  0)value=bitRead(DDRC,port);
+	}
+      //-------------------------------------------------------
+      if(reg == R_PIN && digital == 1)  // 0=INPUT 1=OUTPUT
+	{
+	  if(port <= 7 && port >=  0)value=bitRead(PIND,port);
+	  if(port >= 8 && port <= 13)value=bitRead(PINB,port-8);
+	}
+      if(reg == R_PIN && digital == 0)
+	{
+	  if(port <= 5 && port >=  0)value=bitRead(PINC,port);
+	}
+      //-------------------------------------------------------
+    }
+  else
+    errorLog("readRegister: Not UNO board",currentStep);
+  
+  return(value);
 }
 
 //====================================
 void statusLog()
 //====================================
 {
-  int x,n,i;
+  int x,n,i,in_out;
   char z[200];
   int tempA[MAX_PIN_ANALOG_MEGA];
   int tempD[MAX_PIN_DIGITAL_MEGA];
@@ -70,7 +154,8 @@ void statusLog()
   n = 0;
   for(i=0;i<=max_digPin;i++)
     {      
-      x = c_digitalPin[i];
+      if(g_boardType==MEGA)x = c_digitalPin[i];
+      if(g_boardType==UNO)x = readRegister(1,R_PORT,i);
       if(x > 0)
 	{
 	  n++;
@@ -84,17 +169,50 @@ void statusLog()
   // Mode status of digital pins
   for(i=0;i<=max_digPin;i++)
     {      
+      if(g_boardType==UNO)
+	{
+	  in_out = readRegister(1,R_DDR,i);
+	  if(in_out == 0)z[i]   ='I';
+	  if(in_out == 1)z[i]   ='o';
+	}
+      else // MEGA
+	{
+	  if(digitalMode[i]==INPUT)
+	    {
+	      in_out = 0;
+	      z[i]   ='I';
+	    }
+	  if(digitalMode[i]==OUTPUT)
+	    {
+	      in_out = 1;
+	      z[i]   ='o';
+	    }
+	}
+
+
       x = digitalMode[i];
-      if(x == FREE)z[i]          ='-';
-      else if(x == INPUT)z[i]    ='I';
-      else if(x == OUTPUT)z[i]   ='O';
-      else if(x == CHANGE)z[i]   ='C';
-      else if(x == RISING)z[i]   ='R';
-      else if(x == FALLING)z[i]  ='F';
-      else if(x == LOW)z[i]      ='L';
-      else if(x == RX)z[i]       ='X';
-      else if(x == TX)z[i]       ='Y';
-      else z[i] = 'Q';
+      if(in_out == 0)  // INPUT
+	{
+	  if(x == FREE)z[i]          ='-';
+	  else if(x == CHANGE)z[i]   ='C';
+	  else if(x == RISING)z[i]   ='R';
+	  else if(x == FALLING)z[i]  ='F';
+	  else if(x == LOW)z[i]      ='L';
+	  else if(x == RX)z[i]       ='X';
+	  else if(x == TX)z[i]       ='Y';
+	  //else z[i] = 'Q';
+	}
+      else  // OUTPUT
+	{
+	  if(x == FREE)z[i]          ='-';
+	  else if(x == CHANGE)z[i]   ='c';
+	  else if(x == RISING)z[i]   ='r';
+	  else if(x == FALLING)z[i]  ='f';
+	  else if(x == LOW)z[i]      ='l';
+	  else if(x == RX)z[i]       ='x';
+	  else if(x == TX)z[i]       ='y';
+	  //else z[i] = 'q';
+	}
     }
   z[i]='\0';
   
@@ -108,6 +226,22 @@ void statusLog()
       for(i=1;i<=tempD[0];i++)fprintf(s_log,",%d,%d",pinD[i],tempD[i]);
     }
   fprintf(s_log,"\n");
+
+  registerLog();
+}
+
+//====================================
+void registerLog()
+//====================================
+{
+  if(g_boardType==UNO)
+    {
+      setPINRegister(currentStep);
+      fprintf(r_log,"# %d,DDRB=%s,DDRC=%s,DDRD=%s,",currentStep,int2bin(DDRB,8),int2bin(DDRC,8),int2bin(DDRD,8));
+      fprintf(r_log,"PORTB=%s,PORTC=%s,PORTD=%s,",int2bin(PORTB,8),int2bin(PORTC,8),int2bin(PORTD,8));
+      fprintf(r_log,"PINB=%s,PINC=%s,PIND=%s\n",int2bin(PINB,8),int2bin(PINC,8),int2bin(PIND,8));
+      fprintf(r_log,"%d,%d,%d,%d,%d,%d,%d,%d,%d,%d\n",currentStep,DDRB,DDRC,DDRD,PORTB,PORTC,PORTD,PINB,PINC,PIND);
+    }
 }
 
 //====================================
@@ -187,14 +321,6 @@ void openFiles()
     }
   fprintf(s_log,"# Servuino Status Simulation Data Version: %s\n",g_version);
 
-  // Coded logging
-  c_log = fopen("data.code","w");
-  if(c_log == NULL)
-    {
-      errorLog("Unable to open data.code",0);
-    }
-  fprintf(c_log,"# Servuino Code Simulation Data Version: %s\n",g_version);
-
   // Serial logging
   x_log = fopen("data.serial","w");
   if(x_log == NULL)
@@ -211,6 +337,13 @@ void openFiles()
     }
   fprintf(t_log,"# Servuino Time Delay (microseconds) Version: %s\n",g_version);
 
+  // Register logging
+  r_log = fopen("data.register","w");
+  if(r_log == NULL)
+    {
+      errorLog("Unable to open data.register",0);
+    }
+  fprintf(r_log,"# Servuino Register Data Version: %s\n",g_version);
 
 }
 
@@ -220,18 +353,18 @@ void closeFiles()
 {
   fclose(s_log);
   fclose(e_log);
-  fclose(c_log);
   fclose(u_log);
   fclose(a_log);
   fclose(x_log);
   fclose(t_log);
+  fclose(r_log);
 }
 
 //====================================
 void errorLog(const char msg[], int x)
 //====================================
 {
-  printf("ServuinoERROR: %s %d\n",msg,x);
+  //printf("ServuinoERROR: %s %d\n",msg,x);
   fprintf(e_log,"ServuinoERROR: %s %d\n",msg,x);
   return;
 }
@@ -659,6 +792,25 @@ void saveScenarioExpanded() // Servuino input/output
   return;
 }
 
+//====================================
+void setPINRegister(int step) 
+//====================================
+{
+  int i,temp;
+
+  for(i=0;i<=max_digPin;i++)
+    {
+      temp = getDigitalPinValue(i,step);
+      writeRegister(1,R_PIN,i,temp);
+    }
+/*   for(i=0;i<=max_anaPin;i++) */
+/*     { */
+/*       temp = getAnalogPinValue(i,step); */
+/*       writeRegister(0,R_PIN,i,temp); */
+/*     } */
+  return;
+}
+
 
 //====================================
 void iLog1(const char *p, int value1)
@@ -755,26 +907,6 @@ void wLogChar2(int au,const char *p, const char *value1, int value2)
 }
 
 //====================================
-void showSerial(const char *m, int newLine)
-//====================================
-{
-  int i;
-  char stemp[120];
-
-  if(serialMode == ON)
-    {
-      strcpy(stemp,"Serial");
-      sprintf(stemp,"%s",m);
-      //printf("%s\n",m);
-      wLog0(0,m);
-    }
-  else
-    {
-      mLog1("Serial output without Serial.begin",currentStep);
-    }
-}
-
-//====================================
 int wCustomLog(char *in, char *out)
 //====================================
 {
@@ -822,8 +954,8 @@ void readSketchInfo()
 	      if(p=strstr(row,"BOARD_TYPE"))
 		{
 		  fprintf(a_log,"#%s",row);
-		  if(strstr(row,"UNO") != NULL) boardType = UNO;
-		  if(strstr(row,"MEGA")!= NULL) boardType = MEGA;
+		  if(strstr(row,"UNO") != NULL) g_boardType = UNO;
+		  if(strstr(row,"MEGA")!= NULL) g_boardType = MEGA;
 		}
 	    }
 	}
@@ -957,10 +1089,10 @@ void readScenario()
     {
       while (fgets(row,120,in)!=NULL)
 	{
-	  if(p=strstr(row,"SCENLENGTH"))
-	    {
-	      sscanf(p,"%s%d",junk,&g_simulationLength);
-	    }
+/* 	  if(p=strstr(row,"SCENLENGTH")) */
+/* 	    { */
+/* 	      sscanf(p,"%s%d",junk,&g_simulationLength); */
+/* 	    } */
 	  if(p=strstr(row,"SCENDIGPIN"))
 	    {
 	      sscanf(p,"%s%d%d%d",junk,&pin,&step,&value);
