@@ -23,6 +23,15 @@
 using namespace std;
 #include "common.h"
 
+//===================================
+// Simulator status
+int x_pinMode[MAX_PIN_DIGITAL_MEGA];
+int x_pinScenario[MAX_PIN_DIGITAL_MEGA];
+int x_pinValue[MAX_PIN_DIGITAL_MEGA];
+int x_pinRW[MAX_PIN_DIGITAL_MEGA];
+
+//===================================
+
 char  sketch[120],g_temp[120];
 int   currentStep = 0;
 int   g_simulationLength = 111;
