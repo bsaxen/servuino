@@ -31,6 +31,8 @@ int x_pinDigValue[MAX_TOTAL_PINS];
 int x_pinAnaValue[MAX_TOTAL_PINS];
 int x_pinRW[MAX_TOTAL_PINS];
 
+int g_attachedPin[MAX_TOTAL_PINS];
+
 int g_curStep  =  0;
 int g_curLoop  =  0;
 int g_nDigPins = 14;
@@ -121,7 +123,8 @@ int nCodeString = 0;
 
 
 FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log,*r_log;
-FILE *f_event,*f_cust;
+FILE *f_event,*f_cust,*f_serial,*f_time;
+FILE *f_pinmod,*f_digval,*f_anaval,*f_pinrw;
 
 #include "code.h"
 #include "common_lib.c"
@@ -135,6 +138,8 @@ void runEncoding(int n)
 //====================================
 {
   int i;
+
+  saveScenarioExpanded();
 
   g_curStep = 0;
   servuinoFunc(S_SETUP,0,0,NULL);
