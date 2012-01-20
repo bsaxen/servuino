@@ -82,8 +82,8 @@
 #define LOW    0
 #define HIGH   1
 
-#define INPUT  1
-#define OUTPUT 2
+#define INPUT  0
+#define OUTPUT 1
 #define INTERRUPT 3
 
 #define BYTE   1

@@ -1,6 +1,8 @@
-void passTime();
+
 void interruptNow();
+void writeStatus();
 void stopEncoding();
+void updateFromRegister();
 void digitalWrite(int pin,int value);
 int  digitalRead(int pin);
 
