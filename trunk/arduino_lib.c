@@ -293,346 +293,358 @@ unsigned int B11111111=0b11111111; // 255
 //=====================================
 // Functions
 //=====================================
-//====================================
-void unimplemented(const char *f)
-//====================================
-{
-  char temp[200];
-  passTime();
-  sprintf(temp,"unimplemented: %s\n",f);
-  wLog0(0,temp);
-  wLog0(1,temp);
-  interruptNow();
-}
 
 
-//------ Digital I/O -----------------------
-//=====================================
 void pinMode(int pin,int mode)
-//=====================================
 {
-  char temp[120];
-  int  ok=S_NOK;
-
-  passTime();
-
-  ok = checkRange(S_OK,"digpin",pin);
-  if(ok == S_OK)
-    {
-      if(mode == INPUT || mode == OUTPUT)
-	{
-	  
-	  digitalMode[pin] = mode;
-
-	  if(mode==INPUT)
-	    {
-	      if(g_boardType==UNO)writeRegister(1,R_DDR,pin,0);
-	      wLog1(0,"pinMode IN",pin);
-
-	      // Custom Logging
-	      strcpy(temp,textPinModeIn[pin]);
-	      if(!strstr(temp,"void"))
-		wLog1(1,temp,pin);
-	      else
-	      wLog1(1,"pinMode IN",pin);
-	    }
-	  
-	  if(mode==OUTPUT)
-	    {
-	      if(g_boardType==UNO)writeRegister(1,R_DDR,pin,1);
-	      wLog1(0,"pinMode OUT",pin);
-
-	      // Custom Logging
-	      strcpy(temp,textPinModeOut[pin]);
-	      if(!strstr(temp,"void"))
-		wLog1(1,temp,pin);
-	      else
-		wLog1(1,"pinMode OUT",pin);
-	    }
-	}
-      else
-	errorLog("pinMode:Unknown Pin Mode",pin);
-    }
-  
-  interruptNow();
-}
-//=====================================
-void digitalWrite(int pin,int value)
-//=====================================
-{
-  char temp[120],pin_mode=0;
-  int  ok=S_NOK;
-
-  passTime();
-
-  ok = checkRange(S_OK,"digpin",pin);
-  value = checkRange(HEAL,"digval",value);
-  c_digitalPin[pin] = value;
-  if(ok == S_OK)
-    {
-      if(g_boardType==UNO)
-	{
-	  pin_mode = readRegister(1,R_DDR,pin);
-	  if(pin_mode == 1)
-	    {
-	      if(value==HIGH)
-		{
-		  writeRegister(1,R_PORT,pin,1);
-		  wLog1(0,"digitalWrite HIGH",pin);
-		  
-		  // Custom Logging
-		  strcpy(temp,textDigitalWriteHigh[pin]);
-		  if(!strstr(temp,"void"))
-		    wLog1(1,temp,pin);
-		  else
-		    wLog1(1,"digitalWrite HIGH",pin);
-		}
-	      if(value==LOW)
-		{
-		  writeRegister(1,R_PORT,pin,0);
-		  wLog1(0,"digitalWrite LOW",pin);
-		  
-		  // Custom Logging
-		  strcpy(temp,textDigitalWriteLow[pin]);
-		  if(!strstr(temp,"void"))
-		    wLog1(1,temp,pin);
-		  else
-		    wLog1(1,"digitalWrite LOW",pin);
-		}
-	    }
-	  else
-	    {
-	      errorLog("digitalWrite Wrong Pin Mode ",pin);
-	    }
-	}
-      else // MEGA
-	{
-	  if(digitalMode[pin] == OUTPUT)
-	    {
-	      if(value==HIGH)
-		{
-		  wLog1(0,"digitalWrite HIGH",pin);
-		  
-		  // Custom Logging
-		  strcpy(temp,textDigitalWriteHigh[pin]);
-		  if(!strstr(temp,"void"))
-		    wLog1(1,temp,pin);
-		  else
-		    wLog1(1,"digitalWrite HIGH",pin);
-		}
-	      if(value==LOW)
-		{
-		  wLog1(0,"digitalWrite LOW",pin);
-		  
-		  // Custom Logging
-		  strcpy(temp,textDigitalWriteLow[pin]);
-		  if(!strstr(temp,"void"))
-		    wLog1(1,temp,pin);
-		  else
-		    wLog1(1,"digitalWrite LOW",pin);
-		}
-	    }
-	  else
-	    {
-	      errorLog("digitalWrite Wrong Pin Mode ",pin);
-	    }
-	}
-    }
-  interruptNow();
-}
-//=====================================
-int digitalRead(int pin)
-//=====================================
-{
-  int value=0,x,ok=S_NOK, pin_mode=0;
-  char temp[120];
-
-  passTime();
-  ok = checkRange(S_OK,"digpin",pin);
-  if(ok == S_OK)
-    {
-      if(g_boardType==UNO)
-	{
-	  pin_mode = readRegister(1,R_DDR,pin);
-	  if(pin_mode == 0 )
-	    {
-	      value = getDigitalPinValue(pin,currentStep);  
-	      value = checkRange(HEAL,"digval",value);
-	      writeRegister(1,R_PIN,pin,value);
-	    }
-	  else
-	    errorLog("digitalRead: Pin Mode not IMPUT",pin);
-	}
-      else // MEGA
-	{
-	  if(digitalMode[pin] == INPUT )
-	    {
-	      value = getDigitalPinValue(pin,currentStep);  
-	      value = checkRange(HEAL,"digval",value);
-	    }
-	  else
-	    errorLog("digitalRead: Pin Mode not IMPUT",pin);
-	}
-    }
-  c_digitalPin[pin] = value;
-  wLog2(0,"digitalRead",pin,value);
-
-  // Custom Logging
-  strcpy(temp,textDigitalRead[pin]);
-  if(!strstr(temp,"void"))
-    wLog2(1,temp,pin,value);
-  else
-    wLog2(1,"digitalRead",pin,value);
-
-  interruptNow();
-  return(value);
-}
-
-//------ Analog I/O ------------------------
-//=====================================
-void analogReference(char type[])
-//=====================================
-{
-  unimplemented("analogReference()");
-  //DEFAULT, INTERNAL, INTERNAL1V1, INTERNAL2V56, or EXTERNAL
-}
-
-int analogRead(int pin)  // Values 0 to 1023
-{
-
-  int value,x;
-  char temp[80];
-  int ok=S_NOK;
-
-  passTime();
-  ok = checkRange(S_OK,"anapin",pin);
-  if(ok == S_OK)
-    {
-      value = getAnalogPinValue(pin,currentStep);
-      value = checkRange(HEAL,"anaval",value);
-    }
-  c_analogPin[pin] = value;
-  wLog2(0,"analogRead",pin,value);
-
-  // Custom Logging
-  strcpy(temp,textAnalogRead[pin]);
-  if(!strstr(temp,"void"))
-    wLog2(1,temp,pin,value);
-  else
-    wLog2(1,"analogRead",pin,value);
-
-  interruptNow();
-  return(value); 
-}
-//=====================================
-void analogWrite(int pin,int value) 
-//=====================================
-// Values 0 to 255   
-// PWM: only pin 3,5,6,9,10,11  UNO
-// PWM: only pin 2 - 13 MEGA
-{
-  char temp[80];
-  int ok=S_NOK;
-
-  passTime();
-  c_digitalPin[pin] = value;
-  ok = checkRange(S_OK,"digpin",pin);
-  if(ok == S_OK)
-    {
-      value = checkRange(HEAL,"pwmval",value);
-      
-      if(g_boardType == UNO)
-	{
-	  if(pin!=3 && pin!=5 && pin!=6 && pin!=9 && pin!=10 && pin!=11)
-	    errorLog("analogWrite: UNO Pin is not of PWM type",pin);
-	}
-      
-      if(g_boardType == MEGA)
-	{
-	  if(pin < 2 || pin > 13)
-	    errorLog("analogWrite: MEGA Pin is not of PWM type",pin);
-	}
-    }
-  //writeRegister(1,R_PORT,pin,1);
-  wLog2(0,"analogWrite",pin,value);
-
-  // Custom Logging
-  strcpy(temp,textAnalogWrite[pin]);
-  if(!strstr(temp,"void"))
-    wLog2(1,temp,pin,value);
-  else
-    wLog2(1,"analogWrite",pin,value);
-
-  interruptNow();
+  if(mode == INPUT)
+    servuinoFunc(S_PIN_MODE_INPUT,pin,mode,NULL);
+  if(mode == OUTPUT)
+    servuinoFunc(S_PIN_MODE_OUTPUT,pin,mode,NULL);
   return;
 }
+void digitalWrite(int pin,int value)
+{
+  if(value == 0)
+    servuinoFunc(S_DIGITAL_WRITE_LOW,pin,value,NULL);
+  if(value == 1)
+    servuinoFunc(S_DIGITAL_WRITE_HIGH,pin,value,NULL);
+  return;
+}
+int digitalRead(int pin)
+{
+  return(servuinoFunc(S_DIGITAL_READ,pin,0,NULL));
+}
+
+void analogWrite(int pin,int value) //PWM
+{
+  servuinoFunc(S_ANALOG_WRITE,pin,value,NULL);
+  return;
+}
+
+int analogRead(int pin)
+{
+  pin = g_nDigPins + pin;
+  return(servuinoFunc(S_ANALOG_READ,pin,0,NULL));
+}
+//------ Digital I/O -----------------------
+/* //===================================== */
+/* void xpinMode(int pin,int mode) */
+/* //===================================== */
+/* { */
+/*   char temp[120]; */
+/*   int  ok=S_NOK; */
+
+/*   passTime(); */
+
+/*   ok = checkRange(S_OK,"digpin",pin); */
+/*   if(ok == S_OK) */
+/*     { */
+/*       if(mode == INPUT || mode == OUTPUT) */
+/* 	{ */
+	  
+/* 	  digitalMode[pin] = mode; */
+
+/* 	  if(mode==INPUT) */
+/* 	    { */
+/* 	      if(g_boardType==UNO)writeRegister(1,R_DDR,pin,0); */
+/* 	      wLog1(0,"pinMode IN",pin); */
+
+/* 	      // Custom Logging */
+/* 	      strcpy(temp,textPinModeIn[pin]); */
+/* 	      if(!strstr(temp,"void")) */
+/* 		wLog1(1,temp,pin); */
+/* 	      else */
+/* 	      wLog1(1,"pinMode IN",pin); */
+/* 	    } */
+	  
+/* 	  if(mode==OUTPUT) */
+/* 	    { */
+/* 	      if(g_boardType==UNO)writeRegister(1,R_DDR,pin,1); */
+/* 	      wLog1(0,"pinMode OUT",pin); */
+
+/* 	      // Custom Logging */
+/* 	      strcpy(temp,textPinModeOut[pin]); */
+/* 	      if(!strstr(temp,"void")) */
+/* 		wLog1(1,temp,pin); */
+/* 	      else */
+/* 		wLog1(1,"pinMode OUT",pin); */
+/* 	    } */
+/* 	} */
+/*       else */
+/* 	errorLog("pinMode:Unknown Pin Mode",pin); */
+/*     } */
+  
+/*   interruptNow(); */
+/* } */
+
+
+
+/* //===================================== */
+/* void xdigitalWrite(int pin,int value) */
+/* //===================================== */
+/* { */
+/*   char temp[120],pin_mode=0; */
+/*   int  ok=S_NOK; */
+
+/*   passTime(); */
+
+/*   ok = checkRange(S_OK,"digpin",pin); */
+/*   value = checkRange(HEAL,"digval",value); */
+/*   c_digitalPin[pin] = value; */
+/*   if(ok == S_OK) */
+/*     { */
+/*       if(g_boardType==UNO) */
+/* 	{ */
+/* 	  pin_mode = readRegister(1,R_DDR,pin); */
+/* 	  if(pin_mode == 1) */
+/* 	    { */
+/* 	      if(value==HIGH) */
+/* 		{ */
+/* 		  writeRegister(1,R_PORT,pin,1); */
+/* 		  wLog1(0,"digitalWrite HIGH",pin); */
+		  
+/* 		  // Custom Logging */
+/* 		  strcpy(temp,textDigitalWriteHigh[pin]); */
+/* 		  if(!strstr(temp,"void")) */
+/* 		    wLog1(1,temp,pin); */
+/* 		  else */
+/* 		    wLog1(1,"digitalWrite HIGH",pin); */
+/* 		} */
+/* 	      if(value==LOW) */
+/* 		{ */
+/* 		  writeRegister(1,R_PORT,pin,0); */
+/* 		  wLog1(0,"digitalWrite LOW",pin); */
+		  
+/* 		  // Custom Logging */
+/* 		  strcpy(temp,textDigitalWriteLow[pin]); */
+/* 		  if(!strstr(temp,"void")) */
+/* 		    wLog1(1,temp,pin); */
+/* 		  else */
+/* 		    wLog1(1,"digitalWrite LOW",pin); */
+/* 		} */
+/* 	    } */
+/* 	  else */
+/* 	    { */
+/* 	      errorLog("digitalWrite Wrong Pin Mode ",pin); */
+/* 	    } */
+/* 	} */
+/*       else // MEGA */
+/* 	{ */
+/* 	  if(digitalMode[pin] == OUTPUT) */
+/* 	    { */
+/* 	      if(value==HIGH) */
+/* 		{ */
+/* 		  wLog1(0,"digitalWrite HIGH",pin); */
+		  
+/* 		  // Custom Logging */
+/* 		  strcpy(temp,textDigitalWriteHigh[pin]); */
+/* 		  if(!strstr(temp,"void")) */
+/* 		    wLog1(1,temp,pin); */
+/* 		  else */
+/* 		    wLog1(1,"digitalWrite HIGH",pin); */
+/* 		} */
+/* 	      if(value==LOW) */
+/* 		{ */
+/* 		  wLog1(0,"digitalWrite LOW",pin); */
+		  
+/* 		  // Custom Logging */
+/* 		  strcpy(temp,textDigitalWriteLow[pin]); */
+/* 		  if(!strstr(temp,"void")) */
+/* 		    wLog1(1,temp,pin); */
+/* 		  else */
+/* 		    wLog1(1,"digitalWrite LOW",pin); */
+/* 		} */
+/* 	    } */
+/* 	  else */
+/* 	    { */
+/* 	      errorLog("digitalWrite Wrong Pin Mode ",pin); */
+/* 	    } */
+/* 	} */
+/*     } */
+/*   interruptNow(); */
+/* } */
+/* //===================================== */
+/* int xdigitalRead(int pin) */
+/* //===================================== */
+/* { */
+/*   int value=0,x,ok=S_NOK, pin_mode=0; */
+/*   char temp[120]; */
+
+/*   passTime(); */
+/*   ok = checkRange(S_OK,"digpin",pin); */
+/*   if(ok == S_OK) */
+/*     { */
+/*       if(g_boardType==UNO) */
+/* 	{ */
+/* 	  pin_mode = readRegister(1,R_DDR,pin); */
+/* 	  if(pin_mode == 0 ) */
+/* 	    { */
+/* 	      value = getDigitalPinValue(pin,currentStep);   */
+/* 	      value = checkRange(HEAL,"digval",value); */
+/* 	      writeRegister(1,R_PIN,pin,value); */
+/* 	    } */
+/* 	  else */
+/* 	    errorLog("digitalRead: Pin Mode not IMPUT",pin); */
+/* 	} */
+/*       else // MEGA */
+/* 	{ */
+/* 	  if(digitalMode[pin] == INPUT ) */
+/* 	    { */
+/* 	      value = getDigitalPinValue(pin,currentStep);   */
+/* 	      value = checkRange(HEAL,"digval",value); */
+/* 	    } */
+/* 	  else */
+/* 	    errorLog("digitalRead: Pin Mode not IMPUT",pin); */
+/* 	} */
+/*     } */
+/*   c_digitalPin[pin] = value; */
+/*   wLog2(0,"digitalRead",pin,value); */
+
+/*   // Custom Logging */
+/*   strcpy(temp,textDigitalRead[pin]); */
+/*   if(!strstr(temp,"void")) */
+/*     wLog2(1,temp,pin,value); */
+/*   else */
+/*     wLog2(1,"digitalRead",pin,value); */
+
+/*   interruptNow(); */
+/*   return(value); */
+/* } */
+
+//------ Analog I/O ------------------------
+
+
+/* int xanalogRead(int pin)  // Values 0 to 1023 */
+/* { */
+
+/*   int value,x; */
+/*   char temp[80]; */
+/*   int ok=S_NOK; */
+
+/*   passTime(); */
+/*   ok = checkRange(S_OK,"anapin",pin); */
+/*   if(ok == S_OK) */
+/*     { */
+/*       value = getAnalogPinValue(pin,currentStep); */
+/*       value = checkRange(HEAL,"anaval",value); */
+/*     } */
+/*   c_analogPin[pin] = value; */
+/*   wLog2(0,"analogRead",pin,value); */
+
+/*   // Custom Logging */
+/*   strcpy(temp,textAnalogRead[pin]); */
+/*   if(!strstr(temp,"void")) */
+/*     wLog2(1,temp,pin,value); */
+/*   else */
+/*     wLog2(1,"analogRead",pin,value); */
+
+/*   interruptNow(); */
+/*   return(value);  */
+/* } */
+/* //===================================== */
+/* void xanalogWrite(int pin,int value)  */
+/* //===================================== */
+/* // Values 0 to 255    */
+/* // PWM: only pin 3,5,6,9,10,11  UNO */
+/* // PWM: only pin 2 - 13 MEGA */
+/* { */
+/*   char temp[80]; */
+/*   int ok=S_NOK; */
+
+/*   passTime(); */
+/*   c_digitalPin[pin] = value; */
+/*   ok = checkRange(S_OK,"digpin",pin); */
+/*   if(ok == S_OK) */
+/*     { */
+/*       value = checkRange(HEAL,"pwmval",value); */
+      
+/*       if(g_boardType == UNO) */
+/* 	{ */
+/* 	  if(pin!=3 && pin!=5 && pin!=6 && pin!=9 && pin!=10 && pin!=11) */
+/* 	    errorLog("analogWrite: UNO Pin is not of PWM type",pin); */
+/* 	} */
+      
+/*       if(g_boardType == MEGA) */
+/* 	{ */
+/* 	  if(pin < 2 || pin > 13) */
+/* 	    errorLog("analogWrite: MEGA Pin is not of PWM type",pin); */
+/* 	} */
+/*     } */
+/*   //writeRegister(1,R_PORT,pin,1); */
+/*   wLog2(0,"analogWrite",pin,value); */
+
+/*   // Custom Logging */
+/*   strcpy(temp,textAnalogWrite[pin]); */
+/*   if(!strstr(temp,"void")) */
+/*     wLog2(1,temp,pin,value); */
+/*   else */
+/*     wLog2(1,"analogWrite",pin,value); */
+
+/*   //interruptNow(); */
+/*   return; */
+/* } */
 
 //------ Advanced I/O ----------------------
 void tone(int pin, unsigned int freq)
 {
-  unimplemented("tone()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"tone()");
 }
 
 void tone(int pin, unsigned int freq, unsigned long duration)
 {
-  unimplemented("tone()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"tone()");
 }
 
 void noTone(int pin)
 {
-  unimplemented("noTone()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"noTone()");
 }
 
 void shiftOut(int dataPin, int clockPin, int bitOrder, int value)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
-  unimplemented("shiftOut()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"shiftOut()");
 }
 
 int shiftIn(int dataPin, int clockPin, int bitOrder)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
-  unimplemented("shiftIn()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"shiftIn()");
 }
 
 unsigned long pulseIn(int pin, int value)
 {
-  unimplemented("pulseIn()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"pulseIn()");
 }
 
 unsigned long pulseIn(int pin, int value, unsigned long timeout)
 {
-  unimplemented("pulseIn()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"pulseIn()");
 }
 
 //------ Time ------------------------------
 
 unsigned long millis()
 {
-  return(currentStep*100);
+  return(g_curStep*100);
 }
 
 unsigned long micros()
 {
-  return(currentStep*100000);
+  return(g_curStep*100000);
 }
 
 void delay(int ms)
 {
-  passTime(); 
-  wLog1(0,"delay()",ms);
-  wLog1(1,"delay()",ms);
-  fprintf(t_log,"+ %d %d\n",currentStep,ms*1000);
-  interruptNow();
+  servuinoFunc(S_DELAY,ms,0,NULL);
+  return;
 }
 
 void delayMicroseconds(int us)
 {
-  passTime();
-  wLog1(0,"delayMicroseconds()",us);
-  wLog1(1,"delayMicroseconds()",us);
-  fprintf(t_log,"+ %d %d\n",currentStep,us);
-  interruptNow();
+  servuinoFunc(S_DELAY_MS,us,0,NULL);
+  return;
 }
 
 //------ Math ------------------------------
@@ -771,8 +783,6 @@ void attachInterrupt(int ir,void(*func)(),int mode)
 {
   int pin,ok=S_NOK;
 
-  passTime();
-
   ok = checkRange(S_OK,"interrupt",ir);
   if(ok == S_OK)
     {
@@ -782,30 +792,37 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       pin = inrpt[ir];
       digitalMode[pin] = mode;
 
-      if(mode==LOW)    wLog2(0,"attachInterruptLOW",ir,mode);
-      if(mode==RISING) wLog2(0,"attachInterruptRISING",ir,mode);
-      if(mode==FALLING)wLog2(0,"attachInterruptFALLING",ir,mode);
-      if(mode==CHANGE) wLog2(0,"attachInterruptCHANGE",ir,mode);
+/*       if(mode==LOW)    wLog2(0,"attachInterruptLOW",ir,mode); */
+/*       if(mode==RISING) wLog2(0,"attachInterruptRISING",ir,mode); */
+/*       if(mode==FALLING)wLog2(0,"attachInterruptFALLING",ir,mode); */
+/*       if(mode==CHANGE) wLog2(0,"attachInterruptCHANGE",ir,mode); */
 
-      if(mode==LOW)    wLog2(1,"attachInterruptLOW",ir,mode);
-      if(mode==RISING) wLog2(1,"attachInterruptRISING",ir,mode);
-      if(mode==FALLING)wLog2(1,"attachInterruptFALLING",ir,mode);
-      if(mode==CHANGE) wLog2(1,"attachInterruptCHANGE",ir,mode);
+/*       if(mode==LOW)    wLog2(1,"attachInterruptLOW",ir,mode); */
+/*       if(mode==RISING) wLog2(1,"attachInterruptRISING",ir,mode); */
+/*       if(mode==FALLING)wLog2(1,"attachInterruptFALLING",ir,mode); */
+/*       if(mode==CHANGE) wLog2(1,"attachInterruptCHANGE",ir,mode); */
     }
   else
     {
-      wLog2(0,"attachInterruptERROR",ir,mode);
-      wLog2(1,"attachInterruptERROR",ir,mode);
+      errorLog("attachInterruptERROR",ir);
     }
 
-  interruptNow();
+  if(mode==LOW)
+    servuinoFunc(S_ATTACH_INTERRUPT_LOW,pin,mode,NULL);
+  if(mode==RISING)
+    servuinoFunc(S_ATTACH_INTERRUPT_RISING,pin,mode,NULL);
+  if(mode==FALLING)
+    servuinoFunc(S_ATTACH_INTERRUPT_FALLING,pin,mode,NULL);
+  if(mode==CHANGE)
+    servuinoFunc(S_ATTACH_INTERRUPT_CHANGE,pin,mode,NULL);
+  return;
 }
 
 //---------------------------------------------------
 void detachInterrupt(int ir)
 {
   int ok=S_NOK,pin;
-  passTime();
+
   
   ok = checkRange(S_OK,"interrupt",ir);
   if(ok == S_OK)
@@ -813,21 +830,20 @@ void detachInterrupt(int ir)
       interrupt[ir] = NULL;
       pin = inrpt[ir];
       digitalMode[pin] == FREE;
-      wLog1(0,"detachInterrupt",ir);
-      wLog1(1,"detachInterrupt",ir);
     }
   
-  interruptNow();
+  servuinoFunc(S_DETACH_INTERRUPT,pin,0,NULL);
+  return;
 }
 
 //------ Interrupts ------------------------
 void interrupts()
 {
-  unimplemented("interrupts()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"interrupts()");
 }
 void noInterrupts()
 {
-  unimplemented("noInterrupts()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"noInterrupts()");
 }
 //------ Communication ---------------------
 class serial {
@@ -836,7 +852,7 @@ class serial {
   void begin(int baudRate);
   void end();
   int  available();
-  char  read();
+  char read();
   int  peek();
   void flush();
   void print(int x);
@@ -854,151 +870,103 @@ serial Serial,Serial1,Serial2,Serial3;
 
 void serial::begin(int baudRate) 
 {
-  passTime();
-  baud = baudRate;
-  wLog1(0,"Serial:begin",baud);
-  wLog1(1,"Serial:begin",baud);
+
   digitalMode[0] = RX;
   digitalMode[1] = TX;
-  serialMode = ON;
-  interruptNow();
+
+  servuinoFunc(S_SERIAL_BEGIN,baudRate,0,NULL);
+  return;
 }
 
 void serial::end() 
 {
-  passTime();
-  wLog0(0,"Serial:end");
-  wLog0(1,"Serial:end");
+
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
-  serialMode = OFF;
-  interruptNow();
+
+  servuinoFunc(S_SERIAL_END,0,0,NULL);
+  return;
 }
 
 int serial::available()  // returns the number of bytes available to read
 {
-  unimplemented("Serial.available()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.available()");
   return(1);
 }
 
 char serial::read() // the first byte of incoming serial data available (or -1 if no data is available)
 {
-  unimplemented("Serial.read()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.read()");
   return(-1);
 }
 
 int serial::peek() 
 {
-  unimplemented("Serial.peek()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.peek()");
   return(-1);
 }
 
 void serial::flush() 
 {
-  unimplemented("Serial.flush()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.flush()");
 }
 
 void serial::print(int x) 
 {
-  passTime();
-  wLog1(0,"Serial:print(int)",x);
-  wLog1(1,"Serial:print(int)",x);
-  fprintf(x_log,"%d SL [%d]\n",currentStep,x);
-  if(serialMode != ON) 
-    errorLog("Serial print without serial.begin",currentStep);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINT_INT,x,0,NULL);
+  return;
 }
 
 void serial::print(int x,int base) 
 {
-  passTime();
-  wLog1(0,"Serial:print(int,int)",x);
-  wLog1(1,"Serial:print(int,int)",x);
-  fprintf(x_log,"%d SL [%d]\n",currentStep,x);
-  if(serialMode != ON) 
-    errorLog("Serial print without serial.begin",currentStep);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINT_INT_BASE,x,base,NULL);
+  return;
 }
 
 void serial::print(const char *p) 
 {
-  passTime();
-  wLogChar1(0,"Serial:print(char)",p);
-  wLogChar1(1,"Serial:print(char)",p);
-  if(serialMode != ON) 
-    errorLog("Serial print without serial.begin",currentStep);
-  fprintf(x_log,"%d SL [%s]\n",currentStep,p);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINT_CHAR,0,0,p);
+  return;
 }
 
 void serial::println(int x) 
 {
-  passTime();
-  wLog1(0,"Serial:println(int)",x);
-  wLog1(1,"Serial:println(int)",x);
-  if(serialMode != ON) 
-    errorLog("Serial println without serial.begin",currentStep);
-  fprintf(x_log,"%d NL [%d]\n",currentStep,x);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINTLN_INT,x,0,NULL);
+  return;
 }
 
 void serial::println(const char *p) 
 {
-  passTime();
-  wLogChar1(0,"Serial:println(char)",p);
-  wLogChar1(1,"Serial:println(char)",p);
-  if(serialMode != ON) 
-    errorLog("Serial println without serial.begin",currentStep);
-  fprintf(x_log,"%d NL [%s]\n",currentStep,p);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINTLN_CHAR,0,0,p);
+  return;
 }
 
 void serial::println(string s) 
 {
-  passTime();
   const char *p;
   p=s.c_str();
-  wLogChar1(0,"Serial:println(string)",p);
-  wLogChar1(1,"Serial:println(string)",p);
-  if(serialMode != ON) 
-    errorLog("Serial println without serial.begin",currentStep);
-  fprintf(x_log,"%d NL [%s]\n",currentStep,p);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINTLN_STRING,0,0,p);
+  return;
 }
 
 void serial::println(String s) 
 {
-  passTime();
   const char *p;
   p= s.getPointer();
-  wLogChar2(0,"Serial:println(String)",p,-1);
-  wLogChar2(1,"Serial:println(String)",p,-1);
-  if(serialMode != ON) 
-    errorLog("Serial println without serial.begin",currentStep);
-  fprintf(x_log,"%d NL [%s]\n",currentStep,p);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINTLN_SSTRING,0,0,p);
+  return;
 }
 
 void serial::println() 
 {
-  passTime();
-  wLog0(0,"Serial:println()");
-  wLog0(1,"Serial:println()");
-  if(serialMode != ON) 
-    errorLog("Serial println without serial.begin",currentStep);
-  fprintf(x_log,"%d NL []\n",currentStep);
-  interruptNow();
+  servuinoFunc(S_SERIAL_PRINTLN_VOID,0,0,NULL);
+  return;
 }
 
 void serial::write(char *p) 
 {
-  passTime();
-  wLogChar1(0,"Serial:write(char)",p);
-  wLogChar1(1,"Serial:write(char)",p);
-  if(serialMode != ON) 
-    errorLog("Serial write without serial.begin",currentStep);
-  fprintf(x_log,"%d SL [%s]\n",currentStep,p);
-  interruptNow();
+  servuinoFunc(S_SERIAL_WRITE,0,0,p);
+  return;
 }
 
 //==========================================

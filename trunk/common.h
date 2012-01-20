@@ -33,7 +33,7 @@
 #define MAX_PIN_ANALOG_MEGA 16
 #define MAX_PIN_DIGITAL_MEGA 54
 
-//#define TOTAL_PINS 20
+#define MAX_TOTAL_PINS 70
 
 #define D00  0
 #define D01  1
@@ -64,12 +64,6 @@
 #define IR4 19
 #define IR5 18
 
-#define A0 0
-#define A1 1
-#define A2 2
-#define A3 3
-#define A4 4
-#define A5 5
 
 // Logical ===================
 #define ON     1
@@ -79,6 +73,7 @@
 #define NO     0
 
 #define HEAL  101
+#define FAIL  102
 
 #define S_OK    0
 #define S_NOK   1
@@ -141,6 +136,9 @@
 #define OCT    3
 #define DEC    4
 #define HEX    5
+
+#define T_READ  1
+#define T_WRITE 2
 
 #define WRONG  99
 

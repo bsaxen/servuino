@@ -25,15 +25,25 @@ using namespace std;
 
 //===================================
 // Simulator status
-int x_pinMode[MAX_PIN_DIGITAL_MEGA];
-int x_pinScenario[MAX_PIN_DIGITAL_MEGA];
-int x_pinValue[MAX_PIN_DIGITAL_MEGA];
-int x_pinRW[MAX_PIN_DIGITAL_MEGA];
+int x_pinMode[MAX_TOTAL_PINS];
+int x_pinScenario[MAX_TOTAL_PINS][SCEN_MAX];
+int x_pinDigValue[MAX_TOTAL_PINS];
+int x_pinAnaValue[MAX_TOTAL_PINS];
+int x_pinRW[MAX_TOTAL_PINS];
 
+int g_curStep  =  0;
+int g_curLoop  =  0;
+int g_nDigPins = 14;
+int g_nAnaPins =  6;
+int g_nTotPins = 20;
+
+int g_serialMode = OFF;
+
+char g_custText[120][120][100];
 //===================================
 
+
 char  sketch[120],g_temp[120];
-int   currentStep = 0;
 int   g_simulationLength = 111;
 char  g_version[40];
 
@@ -46,6 +56,8 @@ int   row,col;
 int   graph_x = 10,graph_y = 10;
 
 char  appName[120];
+
+
 
 
 int   anaPinPos[MAX_PIN_ANALOG_MEGA];
@@ -109,6 +121,7 @@ int nCodeString = 0;
 
 
 FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log,*r_log;
+FILE *f_event,*f_cust;
 
 #include "code.h"
 #include "common_lib.c"
@@ -122,22 +135,15 @@ void runEncoding(int n)
 //====================================
 {
   int i;
-  strcpy(interruptType[LOW],"interruptLOW");
-  strcpy(interruptType[FALLING],"interruptFALLING");
-  strcpy(interruptType[RISING],"interruptRISING");
-  strcpy(interruptType[CHANGE],"interruptCHANGE");
 
-  passTime();
-  wLog0(0,"Setup");
-  wLog0(1,"Setup");
+  g_curStep = 0;
+  servuinoFunc(S_SETUP,0,0,NULL);
   setup();
 
   for(i=0;i<MAX_LOOPS;i++)  
     {
-      g_nloop++;
-      passTime();
-      wLog1(0,"servuinoLoop",g_nloop);
-      wLog1(1,"Loop",g_nloop);
+      g_curLoop++;
+      servuinoFunc(S_LOOP,g_curLoop,0,NULL);
       loop();  
     }
   stopEncoding();
@@ -149,9 +155,9 @@ void runEncoding(int n)
 int main(int argc, char *argv[])
 //====================================
 {
-  int x;
+  int x,i;
 
-  strcpy(g_version,"0.0.5");
+  strcpy(g_version,"0.1.0");
 
   openFiles();
   readSketchInfo();
@@ -159,7 +165,7 @@ int main(int argc, char *argv[])
  
   boardInit();
   readScenario();
-  readCustomLog();
+  readCustom(); // Get customized log text from sketch
 
   if(argc == 1)
     {
