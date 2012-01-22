@@ -34,7 +34,7 @@ void interruptPinValues()
       if(g_attachedPin[i] == YES)
 	{
 	  x_pinDigValue[i] = x_pinScenario[i][g_curStep];
-	  x_pinMode[i] = 3;
+	  x_pinMode[i]     = g_interruptType[i];
 	}
     }
 }
@@ -42,7 +42,7 @@ void interruptPinValues()
 void logEvent(char ev[])
 //====================================
 {
-  fprintf(f_event,"+%d: %s\n",g_curStep,ev);
+  fprintf(f_event,"+ %d ? %s\n",g_curStep,ev);
 }
 
 //====================================
@@ -75,6 +75,11 @@ int servuinoFunc(int event, int pin, int value, const char *p)
   updateFromRegister();
   clearRW();
   interruptPinValues();
+  if(g_serialMode == ON)
+    {
+      x_pinMode[0] = RX;
+      x_pinMode[1] = TX;
+    }
   
   sprintf(eventText,"%d Unknown event: %d pin=%d value=%d",g_curStep,event,pin,value);
   
@@ -88,7 +93,7 @@ int servuinoFunc(int event, int pin, int value, const char *p)
     }
   if(event == S_LOOP)
     {
-      sprintf(eventText,"loop %d",g_curLoop);
+      sprintf(eventText,"servuinoLoop %d",g_curLoop);
     }
   if(event == S_PIN_MODE_INPUT)
     {
@@ -133,6 +138,8 @@ int servuinoFunc(int event, int pin, int value, const char *p)
 	  sprintf(custText,"%s %d",g_custText[event][pin],value);
 	}
       res = 0;
+      if(x_pinMode[pin] != OUTPUT) 
+	errorLog("DigitalWrite when pin Mode is INPUT",pin);
     }
   if(event == S_DIGITAL_READ)
     {
@@ -141,7 +148,9 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       x_pinDigValue[pin] = res;
       sprintf(eventText,"digitalRead pin=%d value=%d",pin,res);
       sprintf(custText,"%s %d",g_custText[event][pin],res);
-      //value = getDigitalPinValue(pin,currentStep);  
+      //value = getDigitalPinValue(pin,currentStep); 
+      if(x_pinMode[pin] != INPUT) 
+	errorLog("DigitalRead when pin Mode is OUPUT",pin); 
     }
   if(event == S_ANALOG_WRITE)//PWM
     {
@@ -197,6 +206,7 @@ int servuinoFunc(int event, int pin, int value, const char *p)
     }
   if(event == S_DETACH_INTERRUPT)
     {
+      g_interruptType[pin] = 0;
       sprintf(eventText,"detached interrupt %d",pin);
     }
   if(event == S_SERIAL_BEGIN)
@@ -421,28 +431,28 @@ void writeStatus()
 {
   int i;
   
-  fprintf(f_pinmod,"+%d:",g_curStep);
+  fprintf(f_pinmod,"+ %d ? ",g_curStep);
   for(i=0;i<g_nTotPins;i++)
     {
       fprintf(f_pinmod,"%d,",x_pinMode[i]);
     }
   fprintf(f_pinmod,"\n");
   
-  fprintf(f_digval,"+%d:",g_curStep);
+  fprintf(f_digval,"+ %d ? ",g_curStep);
   for(i=0;i<g_nTotPins;i++)
     {
       fprintf(f_digval,"%d,",x_pinDigValue[i]);
     }
   fprintf(f_digval,"\n");
   
-  fprintf(f_anaval,"+%d:",g_curStep);
+  fprintf(f_anaval,"+ %d ? ",g_curStep);
   for(i=0;i<g_nTotPins;i++)
     {
       fprintf(f_anaval,"%d,",x_pinAnaValue[i]);
     }
   fprintf(f_anaval,"\n");
   
-  fprintf(f_pinrw,"+%d:",g_curStep);
+  fprintf(f_pinrw,"+ %d ? ",g_curStep);
   for(i=0;i<g_nTotPins;i++)
     {
       fprintf(f_pinrw,"%d,",x_pinRW[i]);
@@ -771,7 +781,7 @@ void errorLog(const char msg[], int x)
 //====================================
 {
   //printf("ServuinoERROR: %s %d\n",msg,x);
-  fprintf(e_log,"ServuinoERROR: %s %d\n",msg,x);
+  fprintf(e_log,"ServuinoERROR[step %d]: %s %d\n",g_curStep,msg,x);
   return;
 }
 
