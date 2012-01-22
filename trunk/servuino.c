@@ -32,6 +32,7 @@ int x_pinAnaValue[MAX_TOTAL_PINS];
 int x_pinRW[MAX_TOTAL_PINS];
 
 int g_attachedPin[MAX_TOTAL_PINS];
+int g_interruptType[MAX_TOTAL_PINS];
 
 int g_curStep  =  0;
 int g_curLoop  =  0;

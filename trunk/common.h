@@ -151,6 +151,7 @@ int max_digVal,min_digVal,max_anaVal,min_anaVal;
 int max_digPin,min_digPin,max_anaPin,min_anaPin;
 int max_irPin,min_irPin;
 int max_pwm,min_pwm;
+int max_totPin;
 
 int max_steps;
 int max_loops;

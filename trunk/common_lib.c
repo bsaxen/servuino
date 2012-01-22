@@ -59,24 +59,28 @@ int setRange(int board)
 
   if(board == UNO)
     {
-      max_digPin = MAX_PIN_DIGITAL_UNO - 1;
+      max_totPin = MAX_PIN_DIGITAL_UNO + MAX_PIN_ANALOG_UNO;
+
+      max_digPin = MAX_PIN_DIGITAL_UNO;
       min_digPin = 0;
 
-      max_anaPin = MAX_PIN_ANALOG_UNO - 1;
+      max_anaPin = MAX_PIN_ANALOG_UNO;
       min_anaPin = 0;
 
-      max_irPin = MAX_PIN_IR_UNO - 1;
+      max_irPin = MAX_PIN_IR_UNO;
       min_irPin = 0;
     }
   if(board == MEGA)
     {
-      max_digPin = MAX_PIN_DIGITAL_MEGA - 1;
+      max_totPin = MAX_PIN_DIGITAL_MEGA + MAX_PIN_ANALOG_MEGA;
+
+      max_digPin = MAX_PIN_DIGITAL_MEGA;
       min_digPin = 0;
 
-      max_anaPin = MAX_PIN_ANALOG_MEGA - 1;
+      max_anaPin = MAX_PIN_ANALOG_MEGA;
       min_anaPin = 0;
 
-      max_irPin = MAX_PIN_IR_MEGA - 1;
+      max_irPin = MAX_PIN_IR_MEGA;
       min_irPin = 0;
     }
 

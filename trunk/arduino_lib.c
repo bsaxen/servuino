@@ -533,8 +533,11 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       interruptMode[ir] = mode;
       attached[ir]      = YES;
       interrupt[ir]     = func;
-      pin               = inrpt[ir];
-      g_attachedPin[pin]= YES;
+
+      pin                 = inrpt[ir];
+      g_attachedPin[pin]  = YES;
+      g_interruptType[pin]= mode;
+
       digitalMode[pin]  = mode;
     }
   else
@@ -564,7 +567,7 @@ void detachInterrupt(int ir)
     {
       interrupt[ir]     = NULL;
       pin               = inrpt[ir];
-      g_attachedPin[pin]= YES;
+      g_attachedPin[pin]= NO;
       digitalMode[pin]  = FREE;
     }
   
