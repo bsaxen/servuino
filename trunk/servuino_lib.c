@@ -37,7 +37,7 @@ void interruptPinValues()
 	{
 	  x_pinDigValue[i] = x_pinScenario[i][g_curStep];
 	  x_pinMode[i]     = g_interruptType[i];
-	  g_doInterrupt = YES;
+	  g_doInterrupt    = YES;
 	}
     }
 }
@@ -433,8 +433,8 @@ void updateFromRegister()
       x_pinMode[i] = readRegister(R_DDR,i);
 
       // Pin Value Output
-      if(x_pinMode[i] != OUTPUT)
-      x_pinDigValue[i] = readRegister(R_PORT,i);
+      if(x_pinMode[i] == OUTPUT)
+	x_pinDigValue[i] = readRegister(R_PORT,i);
 
       // Pin Value Input
       if(x_pinMode[i] != OUTPUT)
