@@ -103,6 +103,21 @@ int checkRange(int mode,const char check[],int value)
   else
     res = S_OK;
 
+
+  // PWM pins
+  if(strstr(check,"pwmpin") != NULL)
+    {
+      strcpy(message,"Allowed PWM Pins: 3,5,6,9,10,11");
+      if(value != 3 && value != 5 && value != 6 && value != 9 && value != 10 && value != 11) 
+	{
+	  sprintf(temp,"%s -",message,value);
+	  errorLog(temp,value);
+	  return(S_NOK);
+	}
+      else
+	return(S_OK);
+    }
+
   // set ranges
   if(strstr(check,"digval") != NULL)
     {

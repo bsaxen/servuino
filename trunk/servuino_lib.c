@@ -29,12 +29,15 @@ void interruptPinValues()
 //====================================
 {
   int i;
+
+  g_doInterrupt = NO;
   for(i=0;i<g_nTotPins;i++)
     {
       if(g_attachedPin[i] == YES)
 	{
 	  x_pinDigValue[i] = x_pinScenario[i][g_curStep];
 	  x_pinMode[i]     = g_interruptType[i];
+	  g_doInterrupt = YES;
 	}
     }
 }
@@ -75,6 +78,7 @@ int servuinoFunc(int event, int pin, int value, const char *p)
   updateFromRegister();
   clearRW();
   interruptPinValues();
+
   if(g_serialMode == ON)
     {
       x_pinMode[0] = RX;
@@ -103,6 +107,11 @@ int servuinoFunc(int event, int pin, int value, const char *p)
 	  x_pinMode[pin] = value;
 	  if(value==INPUT)
 	    {
+	      // Set pin status according to scenario when mode is INPUT
+	      res = x_pinScenario[pin][g_curStep];
+	      x_pinDigValue[pin] = res;
+	      writeRegister(1,R_PIN,pin,value);
+
 	      writeRegister(1,R_DDR,pin,0);
 	      sprintf(eventText,"pinMode pin=%d INPUT",pin);
 	      sprintf(custText,"%s %d",g_custText[event][pin],pin);
@@ -118,6 +127,9 @@ int servuinoFunc(int event, int pin, int value, const char *p)
 	  x_pinMode[pin] = value;
 	  if(value==OUTPUT)
 	    {
+	      // Set pin status according to PORT register when mode is OUTPUT
+	      x_pinDigValue[pin] = readRegister(R_PORT,pin);
+
 	      writeRegister(1,R_DDR,pin,1);
 	      sprintf(eventText,"pinMode pin=%d OUTPUT",pin);
 	      sprintf(custText,"%s %d",g_custText[event][pin],pin);
@@ -146,13 +158,14 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       x_pinRW[pin] = T_READ;
       res = x_pinScenario[pin][g_curStep];
       x_pinDigValue[pin] = res;
+      writeRegister(1,R_PIN,pin,value);
       sprintf(eventText,"digitalRead pin=%d value=%d",pin,res);
       sprintf(custText,"%s %d",g_custText[event][pin],res);
       //value = getDigitalPinValue(pin,currentStep); 
       if(x_pinMode[pin] != INPUT) 
 	errorLog("DigitalRead when pin Mode is OUPUT",pin); 
     }
-  if(event == S_ANALOG_WRITE)//PWM
+  if(event == S_ANALOG_WRITE)//PWM pinMode OUTPUT not necessary (see arduino.com)
     {
       x_pinRW[pin] = T_WRITE;
       fail = checkRange(FAIL,"pwmpin",pin);
@@ -219,7 +232,7 @@ int servuinoFunc(int event, int pin, int value, const char *p)
   if(event == S_SERIAL_END)
     {
       sprintf(eventText,"Serial.end");
-      if(g_serialMode == ON) 
+      if(g_serialMode != ON) 
 	errorLog("Serial end without serial.begin",g_curStep);
       g_serialMode = OFF;
     }
@@ -310,21 +323,21 @@ int servuinoFunc(int event, int pin, int value, const char *p)
   logEvent(eventText);
   logCust(custText);
   writeStatus();
-  registerLog();
 
   if(g_curStep == g_simulationLength) stopEncoding();
 
-  interruptNow();
+  if(g_doInterrupt == YES)interruptNow();
+
   return(res);
 }
 //====================================
 void writeRegister(int digital, int reg, int port, int value)
 //====================================
 {
-  //printf("digital=%d reg=%d pin=%d value=%d\n",digital,reg,port,value);
 
   if(g_boardType == UNO)
     {
+
       //-------------------------------------------------------
       if(reg == R_PORT && digital == 1) // 0=LOW 1=HIGH
 	{
@@ -366,6 +379,7 @@ int readRegister(int reg, int port)
 //====================================
 {
   int value = 99;
+
 
   if(g_boardType == UNO)
     {
@@ -417,10 +431,14 @@ void updateFromRegister()
     {      
       // Pin Mode
       x_pinMode[i] = readRegister(R_DDR,i);
+
       // Pin Value Output
+      if(x_pinMode[i] != OUTPUT)
       x_pinDigValue[i] = readRegister(R_PORT,i);
 
-      // Pin Value Input - do not update from register !!
+      // Pin Value Input
+      if(x_pinMode[i] != OUTPUT)
+	x_pinDigValue[i] = readRegister(R_PIN,i);
     }
 
 
@@ -430,7 +448,7 @@ void writeStatus()
 //====================================
 {
   int i;
-  
+
   fprintf(f_pinmod,"+ %d ? ",g_curStep);
   for(i=0;i<g_nTotPins;i++)
     {
@@ -458,7 +476,7 @@ void writeStatus()
       fprintf(f_pinrw,"%d,",x_pinRW[i]);
     }
   fprintf(f_pinrw,"\n");
-  
+
 }
 
 //====================================
@@ -1364,18 +1382,17 @@ void savePinStatus()
 void doInterrupt(int pin,int ir, int irType,int value)
 //====================================
 {
+
   if(g_allowInterrupt == NO)
     {
       errorLog("Try to interrupt within an interrupt",g_curStep);
       return;
     }
 
-  //mLog1(interruptType[irType],ir);
-  //mLineText("interrupt in");
   g_allowInterrupt = NO;
   interrupt[ir]();  
   g_allowInterrupt = YES;
-  //mLineText("interrupt out");
+
 }
 
 //====================================
@@ -1386,12 +1403,14 @@ void interruptNow()
 
   for(ir=0;ir<=max_irPin;ir++)
     {
+
       if(attached[ir] == YES)
 	{
 	  pin = inrpt[ir];
 
 	  ir_1 = getDigitalPinValue(pin,g_curStep);
 	  ir_2 = getDigitalPinValue(pin,g_curStep-1);
+
 	  
 	  if(interruptMode[ir] == RISING && ir_1 == 1 && ir_2 == 0)
 	    {
@@ -1410,7 +1429,9 @@ void interruptNow()
 	      doInterrupt(pin,ir,LOW,ir_1);
 	    }
 	}
+
     } 
+
 }
 //====================================
 void readScenario()
@@ -1453,10 +1474,7 @@ void readScenario()
     {
       while (fgets(row,120,in)!=NULL)
 	{
-/* 	  if(p=strstr(row,"SCENLENGTH")) */
-/* 	    { */
-/* 	      sscanf(p,"%s%d",junk,&g_simulationLength); */
-/* 	    } */
+
 	  if(p=strstr(row,"SCENDIGPIN"))
 	    {
 	      sscanf(p,"%s%d%d%d",junk,&pin,&step,&value);

@@ -40,6 +40,7 @@ int g_nDigPins = 14;
 int g_nAnaPins =  6;
 int g_nTotPins = 20;
 
+int g_doInterrupt = NO;
 int g_serialMode = OFF;
 
 char g_custText[120][120][100];
@@ -50,8 +51,7 @@ char  sketch[120],g_temp[120];
 int   g_simulationLength = 111;
 char  g_version[40];
 
-char  interruptType[50][80];
-void  (*interrupt[6])();
+
 
 void  stepCommand();
 

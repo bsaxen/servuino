@@ -534,6 +534,8 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       attached[ir]      = YES;
       interrupt[ir]     = func;
 
+      interrupt[ir]();
+
       pin                 = inrpt[ir];
       g_attachedPin[pin]  = YES;
       g_interruptType[pin]= mode;
@@ -565,10 +567,11 @@ void detachInterrupt(int ir)
   ok = checkRange(S_OK,"interrupt",ir);
   if(ok == S_OK)
     {
-      interrupt[ir]     = NULL;
+      //interrupt[ir]     = NULL;
+      attached[ir]      = NO;
       pin               = inrpt[ir];
       g_attachedPin[pin]= NO;
-      digitalMode[pin]  = FREE;
+      digitalMode[pin]  = INPUT;
     }
   
   servuinoFunc(S_DETACH_INTERRUPT,pin,0,NULL);

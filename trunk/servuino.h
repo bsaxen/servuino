@@ -6,6 +6,9 @@ void updateFromRegister();
 void digitalWrite(int pin,int value);
 int  digitalRead(int pin);
 
+char  interruptType[50][80];
+void  (*interrupt[9])();
+
 #define S_UNIMPLEMENTED            0
 #define S_SETUP                    1
 #define S_LOOP                     2
@@ -68,7 +71,7 @@ unsigned int PINA=0,PINB=0,PINC=0,PIND=0;
 
 void  bitWrite(unsigned int *x, int n,int b);
 int   bitRead(int x, int n);
-int   readRegister(int digital, int reg, int port);
+int   readRegister(int reg, int port);
 void  writeRegister(int digital, int reg, int port, int value);
 void  registerLog();
 void  setPINRegister(int step); 

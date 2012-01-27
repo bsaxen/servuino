@@ -121,9 +121,9 @@
 
 // Dimension
 #define SCEN_MAX  2000
-#define MAX_LOOPS 1000
+#define MAX_LOOPS 2000
 #define LOG_MAX   200
-#define LOG_TEXT_SIZE 120
+#define LOG_TEXT_SIZE 220
 #define MAX_READ 900
 #define MAX_STEP 2000
 #define MAX_LOOP 2000
