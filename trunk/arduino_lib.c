@@ -294,6 +294,7 @@ unsigned int B11111111=0b11111111; // 255
 // Functions
 //=====================================
 
+
 //------ Digital I/O -----------------------
 
 void pinMode(int pin,int mode)
@@ -592,6 +593,7 @@ class serial {
 
  public:
   void begin(int baudRate);
+  void beginX(int x,int baudRate);
   void end();
   int  available();
   char read();
@@ -617,6 +619,12 @@ void serial::begin(int baudRate)
   digitalMode[1] = TX;
 
   servuinoFunc(S_SERIAL_BEGIN,baudRate,0,NULL);
+  return;
+}
+void serial::beginX(int x,int baudRate) 
+{
+  ino(x);
+  begin(baudRate);
   return;
 }
 
@@ -1147,4 +1155,47 @@ char* String::getPointer()
   return(sPtr);
 } 
 
+//=====================================
+// Functions Wrappers
+//=====================================
+void pinModeX(int x,int pin,int mode)
+{
+  ino(x);
+  pinMode(pin,mode);
+}
+void digitalWriteX(int x,int pin,int value)
+{
+  ino(x);
+  digitalWrite(pin,value);
+}
+int digitalReadX(int x,int pin)
+{
+  ino(x);
+  return(digitalRead(pin));
+}
+void analogWriteX(int x,int pin,int value)
+{
+  ino(x);
+  analogWrite(pin,value);
+}
+int analogReadX(int x,int pin)
+{
+  ino(x);
+  return(analogRead(pin));
+}
+
+
+void delayX(int x,int ms)
+{
+  ino(x);
+  delay(ms);
+  return;
+}
+
+void delayMicrosecondsX(int x,int us)
+{
+  ino(x);
+  delayMicroseconds(us);
+  return;
+}
 // End of file
