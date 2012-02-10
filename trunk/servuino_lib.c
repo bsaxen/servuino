@@ -20,7 +20,7 @@
 void ino(int x)
 //====================================
 {
-  fprintf(f_ino,"%d %d\n",g_curStep,x);
+  fprintf(f_ino,"%d %d\n",g_curStep+1,x);
 }
 
 //====================================
