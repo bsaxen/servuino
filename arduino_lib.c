@@ -559,6 +559,14 @@ void attachInterrupt(int ir,void(*func)(),int mode)
   return;
 }
 
+void attachInterruptX(int x,int ir,void(*func)(),int mode)
+{
+  ino(x);
+  attachInterrupt(ir,func,mode);
+
+  return;
+}
+
 //---------------------------------------------------
 void detachInterrupt(int ir)
 {
@@ -578,7 +586,13 @@ void detachInterrupt(int ir)
   servuinoFunc(S_DETACH_INTERRUPT,pin,0,NULL);
   return;
 }
+void detachInterruptX(int x,int ir)
+{
+  ino(x);
+  detachInterrupt(ir);
 
+  return;
+}
 //------ Interrupts ------------------------
 void interrupts()
 {
@@ -593,7 +607,6 @@ class serial {
 
  public:
   void begin(int baudRate);
-  void beginX(int x,int baudRate);
   void end();
   int  available();
   char read();
@@ -608,33 +621,54 @@ class serial {
   void println(String p);
   void println();
   void write(char *p);
+
+  // Wrappers
+  void beginX(int z,int baudRate);
+  void endX(int z);
+  int  availableX(int z);
+  char readX(int z);
+  int  peekX(int z);
+  void flushX(int z);
+  void printX(int z,int x);
+  void printX(int z,int x,int base);
+  void printX(int z,const char *p);
+  void printlnX(int z,int x);
+  void printlnX(int z,const char *p);
+  void printlnX(int z,string p);
+  void printlnX(int z,String p);
+  void printlnX(int z);
+  void writeX(int z,char *p);
 };
 
 serial Serial,Serial1,Serial2,Serial3;
 
 void serial::begin(int baudRate) 
 {
-
   digitalMode[0] = RX;
   digitalMode[1] = TX;
 
   servuinoFunc(S_SERIAL_BEGIN,baudRate,0,NULL);
   return;
 }
-void serial::beginX(int x,int baudRate) 
+void serial::beginX(int z,int baudRate) 
 {
-  ino(x);
+  ino(z);
   begin(baudRate);
   return;
 }
 
 void serial::end() 
 {
-
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
 
   servuinoFunc(S_SERIAL_END,0,0,NULL);
+  return;
+}
+void serial::endX(int z) 
+{
+  ino(z);
+  end();
   return;
 }
 
@@ -642,6 +676,11 @@ int serial::available()  // returns the number of bytes available to read
 {
   servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.available()");
   return(1);
+}
+int serial::availableX(int z) 
+{
+  ino(z);
+  return(available());
 }
 
 char serial::read() // the first byte of incoming serial data available (or -1 if no data is available)
@@ -655,15 +694,31 @@ int serial::peek()
   servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.peek()");
   return(-1);
 }
+int serial::peekX(int z) 
+{
+  ino(z);
+  return(peek());
+}
 
 void serial::flush() 
 {
   servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.flush()");
 }
+void serial::flushX(int z) 
+{
+  ino(z);
+  flush();
+}
 
 void serial::print(int x) 
 {
   servuinoFunc(S_SERIAL_PRINT_INT,x,0,NULL);
+  return;
+}
+void serial::printX(int z,int x) 
+{
+  ino(z);
+  print(x);
   return;
 }
 
@@ -672,10 +727,22 @@ void serial::print(int x,int base)
   servuinoFunc(S_SERIAL_PRINT_INT_BASE,x,base,NULL);
   return;
 }
+void serial::printX(int z,int x, int base) 
+{
+  ino(z);
+  print(x,base);
+  return;
+}
 
 void serial::print(const char *p) 
 {
   servuinoFunc(S_SERIAL_PRINT_CHAR,0,0,p);
+  return;
+}
+void serial::printX(int z,const char *p) 
+{
+  ino(z);
+  print(p);
   return;
 }
 
@@ -684,10 +751,22 @@ void serial::println(int x)
   servuinoFunc(S_SERIAL_PRINTLN_INT,x,0,NULL);
   return;
 }
+void serial::printlnX(int z,int x) 
+{
+  ino(z);
+  println(x);
+  return;
+}
 
 void serial::println(const char *p) 
 {
   servuinoFunc(S_SERIAL_PRINTLN_CHAR,0,0,p);
+  return;
+}
+void serial::printlnX(int z,const char *p) 
+{
+  ino(z);
+  println(p);
   return;
 }
 
@@ -698,6 +777,12 @@ void serial::println(string s)
   servuinoFunc(S_SERIAL_PRINTLN_STRING,0,0,p);
   return;
 }
+void serial::printlnX(int z,string s) 
+{
+  ino(z);
+  println(s);
+  return;
+}
 
 void serial::println(String s) 
 {
@@ -706,16 +791,34 @@ void serial::println(String s)
   servuinoFunc(S_SERIAL_PRINTLN_SSTRING,0,0,p);
   return;
 }
+void serial::printlnX(int z, String s) 
+{
+  ino(z);
+  println(s);
+  return;
+}
 
 void serial::println() 
 {
   servuinoFunc(S_SERIAL_PRINTLN_VOID,0,0,NULL);
   return;
 }
+void serial::printlnX(int z) 
+{
+  ino(z);
+  println();
+  return;
+}
 
 void serial::write(char *p) 
 {
   servuinoFunc(S_SERIAL_WRITE,0,0,p);
+  return;
+}
+void serial::writeX(int z,char *p) 
+{
+  ino(z);
+  println(p);
   return;
 }
 
@@ -1156,32 +1259,38 @@ char* String::getPointer()
 } 
 
 //=====================================
-// Functions Wrappers
+// Function Wrappers
 //=====================================
+
 void pinModeX(int x,int pin,int mode)
 {
   ino(x);
   pinMode(pin,mode);
+
 }
 void digitalWriteX(int x,int pin,int value)
 {
   ino(x);
   digitalWrite(pin,value);
+
 }
 int digitalReadX(int x,int pin)
 {
   ino(x);
   return(digitalRead(pin));
+
 }
 void analogWriteX(int x,int pin,int value)
 {
   ino(x);
   analogWrite(pin,value);
+
 }
 int analogReadX(int x,int pin)
 {
   ino(x);
   return(analogRead(pin));
+
 }
 
 
@@ -1189,6 +1298,7 @@ void delayX(int x,int ms)
 {
   ino(x);
   delay(ms);
+
   return;
 }
 
@@ -1196,6 +1306,7 @@ void delayMicrosecondsX(int x,int us)
 {
   ino(x);
   delayMicroseconds(us);
+
   return;
 }
 // End of file
