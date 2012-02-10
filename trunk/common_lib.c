@@ -16,6 +16,7 @@
 */
 
 
+
 //====================================
 char *int2bin(int num, int pad)
 // Example: printf("%s\n", int2bin(i, 8));

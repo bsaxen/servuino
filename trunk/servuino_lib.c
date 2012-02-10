@@ -14,6 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>. 
 */
+
+
+//====================================
+void ino(int x)
+//====================================
+{
+  fprintf(f_ino,"%d %d\n",g_curStep,x);
+}
+
 //====================================
 void clearRW()
 //====================================
@@ -695,13 +704,13 @@ void openFiles()
 /*     } */
 /*   fprintf(u_log,"# Servuino Custom Simulation Data Version: %s\n",g_version); */
 
-/*   // Arduino logging */
-/*   a_log = fopen("data.arduino","w"); */
-/*   if(a_log == NULL) */
-/*     { */
-/*       errorLog("Unable to open data.arduino",0); */
-/*     } */
-/*   fprintf(a_log,"# Servuino Arduino Simulation Data Version: %s\n",g_version); */
+  // Debug logging INO
+  f_ino = fopen("ino.debug","w");
+  if(f_ino == NULL)
+    {
+      errorLog("Unable to open ino.debug",0);
+    }
+  fprintf(f_ino,"# Servuino Debug Information Version: %s\n",g_version);
 
   // Status of pins
   f_pinmod = fopen("serv.pinmod","w");
@@ -784,6 +793,7 @@ void closeFiles()
   fclose(f_pinmod);
   fclose(f_digval);
   fclose(f_anaval);
+  fclose(f_ino);
   fclose(f_pinrw);
   fclose(e_log);
   fclose(r_log);

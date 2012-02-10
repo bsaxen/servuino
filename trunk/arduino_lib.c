@@ -1024,7 +1024,7 @@ void String::getBytes( int buf[],int *len )
   p = sPtr;
   for(i=0;i<lngth;i++)
     {
-      buf[i] = (int)p;
+      buf[i] = (int)*p;// Issue 14
       p++;
     }
   *len = lngth;
