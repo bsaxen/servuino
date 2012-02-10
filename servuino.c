@@ -124,7 +124,7 @@ int nCodeString = 0;
 
 
 FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log,*r_log;
-FILE *f_event,*f_cust,*f_serial,*f_time;
+FILE *f_event,*f_cust,*f_serial,*f_time,*f_ino;
 FILE *f_pinmod,*f_digval,*f_anaval,*f_pinrw;
 
 #include "code.h"
@@ -132,7 +132,8 @@ FILE *f_pinmod,*f_digval,*f_anaval,*f_pinrw;
 #include "servuino.h"
 #include "servuino_lib.c"
 #include "arduino_lib.c"
-#include "sketch.pde"
+#include "sketch.ino"
+
 
 //====================================
 void runEncoding(int n)
