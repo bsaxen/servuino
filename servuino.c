@@ -146,15 +146,15 @@ void runEncoding(int n)
   saveScenarioExpanded();
 
   g_curStep = 0;
-  servuinoFunc(S_SETUP,0,0,NULL);
   ino(g_row_setup);
+  servuinoFunc(S_SETUP,0,0,NULL);
   setup();
 
   for(i=0;i<MAX_LOOPS;i++)  
     {
       g_curLoop++;
-      servuinoFunc(S_LOOP,g_curLoop,0,NULL);
       ino(g_row_loop);
+      servuinoFunc(S_LOOP,g_curLoop,0,NULL);
       loop();  
     }
   stopEncoding();
