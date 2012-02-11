@@ -23,12 +23,15 @@
 #ifndef min
 #define min( a, b ) ( ((a) < (b)) ? (a) : (b) )
 #endif
+
+#define _BV(bit) (1 << (bit))
   
 char  stemp[80];
 
 typedef int byte;
 typedef int word;
 typedef bool boolean;
+typedef int uint8_t;
 
 
 
