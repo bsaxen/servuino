@@ -118,6 +118,8 @@ int g_action     = 0;
 int g_allowInterrupt = YES;
 int g_interpolation  = NO;
 
+int g_row_setup = 0;
+int g_row_loop = 0;
 
 int g_boardType   = UNO;
 int nCodeString = 0;
@@ -145,12 +147,14 @@ void runEncoding(int n)
 
   g_curStep = 0;
   servuinoFunc(S_SETUP,0,0,NULL);
+  ino(g_row_setup);
   setup();
 
   for(i=0;i<MAX_LOOPS;i++)  
     {
       g_curLoop++;
       servuinoFunc(S_LOOP,g_curLoop,0,NULL);
+      ino(g_row_loop);
       loop();  
     }
   stopEncoding();
@@ -164,7 +168,7 @@ int main(int argc, char *argv[])
 {
   int x,i;
 
-  strcpy(g_version,"0.1.0");
+  strcpy(g_version,"0.1.1");
 
   openFiles();
   readSketchInfo();

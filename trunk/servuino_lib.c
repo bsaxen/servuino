@@ -20,7 +20,12 @@
 void ino(int x)
 //====================================
 {
-  fprintf(f_ino,"%d %d\n",g_curStep+1,x);
+  if(x<1)
+    {
+      errorLog("Source Ino rownumber zero",x);
+    }
+  else
+    fprintf(f_ino,"%d %d\n",g_curStep+1,x);
 }
 
 //====================================
@@ -1334,9 +1339,9 @@ void readSketchInfo()
 {
   FILE *in;
   char row[120],res[40],*p,*q,value[5];
-  int pin;
+  int pin,rows=0;
 
-  in = fopen("sketch.pde","r");
+  in = fopen("sketch.ino","r");
   if(in == NULL)
     {
       errorLog("Error: Unable to open sketch",g_curStep);
@@ -1345,8 +1350,11 @@ void readSketchInfo()
     {
       while (fgets(row,120,in)!=NULL)
 	{
-	  if(row[0] == '/')
-	    {
+	  rows++;
+	  //if(row[0] == '/')
+	  //  {
+	      if(p=strstr(row,"setup("))g_row_setup = rows;
+	      if(p=strstr(row,"loop("))g_row_loop = rows;
 	      if(p=strstr(row,"SKETCH_NAME:"))
 		{
 		  fprintf(f_event,"#%s",row);
@@ -1359,7 +1367,7 @@ void readSketchInfo()
 		  if(strstr(row,"UNO") != NULL) g_boardType = UNO;
 		  if(strstr(row,"MEGA")!= NULL) g_boardType = MEGA;
 		}
-	    }
+	      //  }
 	}
     }
   fclose(in);  
@@ -1452,7 +1460,7 @@ void readScenario()
   int pin,step,value,i,j;
   int tmp=0,dCount[MAX_PIN_DIGITAL_MEGA],aCount[MAX_PIN_ANALOG_MEGA];
 
-  if(g_scenSource == 0)in = fopen("sketch.pde","r");
+  if(g_scenSource == 0)in = fopen("sketch.ino","r");
   if(g_scenSource == 1)in = fopen("data.scen","r");
 
   for(i=0;i<=max_anaPin;i++)
@@ -1525,10 +1533,10 @@ void readCustom()
   char row[80],res[40],*p,*q,value[5];
   int pin;
 
-  in = fopen("sketch.pde","r");
+  in = fopen("sketch.ino","r");
   if(in == NULL)
     {
-      errorLog("No sketch.pde",0);
+      errorLog("No sketch.ino",0);
     }
   else
     {
