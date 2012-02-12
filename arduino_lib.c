@@ -31,8 +31,11 @@ char  stemp[80];
 typedef int byte;
 typedef int word;
 typedef bool boolean;
-typedef int uint8_t;
 
+typedef unsigned int uint8_t;
+typedef unsigned int uint16_t;
+typedef unsigned int uint32_t;
+typedef unsigned int uint64_t;
 
 
 unsigned int B00000000=0b00000000; // 0
