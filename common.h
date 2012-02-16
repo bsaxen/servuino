@@ -33,7 +33,9 @@
 #define MAX_PIN_ANALOG_MEGA 16
 #define MAX_PIN_DIGITAL_MEGA 54
 
-#define MAX_TOTAL_PINS 70
+#define MAX_TOTAL_PINS 100
+
+#define MAX_SOURCE_LINES 1000
 
 #define D00  0
 #define D01  1
@@ -66,11 +68,11 @@
 
 
 // Logical ===================
-#define ON     1
-#define OFF    0
+#define S_ON     1
+#define S_OFF    0
 
-#define YES    1
-#define NO     0
+#define S_YES    1
+#define S_NO     0
 
 #define HEAL  101
 #define FAIL  102
@@ -79,11 +81,7 @@
 #define S_NOK   1
 
 // Values ====================
-#define LOW    0
-#define HIGH   1
 
-#define INPUT  0
-#define OUTPUT 1
 #define INTERRUPT 3
 
 #define BYTE   1
@@ -93,13 +91,11 @@
 #define HEX    5
 
 
-#define ADD 10
-#define DELETE 20
+#define S_ADD 10
+#define S_DELETE 20
 
 // Interrupt =================
-#define CHANGE  11
-#define RISING  12
-#define FALLING 13
+
 
 #define I_CHANGE  21
 #define I_RISING  22
@@ -110,13 +106,13 @@
 #define RX     4
 #define TX     5
 
-#define RUN    1
-#define ADMIN  2
-#define STOP   1
+#define S_RUN    1
+#define S_ADMIN  2
+#define S_STOP   1
 
 
-#define FORWARD  1
-#define BACKWARD 2
+#define S_FORWARD  1
+#define S_BACKWARD 2
 
 
 // Dimension
@@ -128,7 +124,7 @@
 #define MAX_STEP 2000
 #define MAX_LOOP 2000
 #define MAX_SERIAL_BUFFER 900
-#define SIZE_ROW 180
+#define SIZE_ROW 280
 
 // Misc =======================
 #define BYTE   1
@@ -140,10 +136,10 @@
 #define T_READ  1
 #define T_WRITE 2
 
-#define WRONG  99
+#define S_WRONG  99
 
 
-
+int g_boardType   = UNO;
 void errorLog(const char msg[], int x);
 int checkRange(int mode,const char check[],int value);
 

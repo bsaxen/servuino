@@ -43,9 +43,6 @@ char *int2bin(int num, int pad)
 int setRange(int board)
 //====================================
 {
-  int i,j,minx,maxx;
-  char temp[120],message[180];
-
   max_steps = SCEN_MAX;
   max_loops = MAX_LOOPS;
 
@@ -91,6 +88,8 @@ int setRange(int board)
   inrpt[3] = IR3;
   inrpt[4] = IR4;
   inrpt[5] = IR5;
+
+  return(max_totPin);
 }
 //====================================
 int checkRange(int mode,const char check[],int value)
@@ -109,14 +108,29 @@ int checkRange(int mode,const char check[],int value)
   if(strstr(check,"pwmpin") != NULL)
     {
       strcpy(message,"Allowed PWM Pins: 3,5,6,9,10,11");
-      if(value != 3 && value != 5 && value != 6 && value != 9 && value != 10 && value != 11) 
+      if(g_boardType == UNO)
 	{
-	  sprintf(temp,"%s -",message,value);
-	  errorLog(temp,value);
-	  return(S_NOK);
+	  if(value != 3 && value != 5 && value != 6 && value != 9 && value != 10 && value != 11) 
+	    {
+	      sprintf(temp,"%s -",message,value);
+	      errorLog(temp,value);
+	      return(S_NOK);
+	    }
+	  else
+	    return(S_OK);
 	}
-      else
-	return(S_OK);
+      if(g_boardType == MEGA)
+	{
+	  if(value < 0 || value > 13) 
+	    {
+	      sprintf(temp,"%s -",message,value);
+	      errorLog(temp,value);
+	      return(S_NOK);
+	    }
+	  else
+	    return(S_OK);
+	}
+
     }
 
   // set ranges
