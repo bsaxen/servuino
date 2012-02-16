@@ -38,10 +38,10 @@ int g_curStep  =  0;
 int g_curLoop  =  0;
 int g_nDigPins = 14;
 int g_nAnaPins =  6;
-int g_nTotPins = 20;
+int g_nTotPins = MAX_TOTAL_PINS;
 
-int g_doInterrupt = NO;
-int g_serialMode = OFF;
+int g_doInterrupt = S_NO;
+int g_serialMode = S_OFF;
 
 char g_custText[120][120][100];
 //===================================
@@ -96,9 +96,9 @@ int   pinAtReadA[MAX_READ];
 int   paceMaker = 0;
 int   baud = 0;
 int   error = 0;
-int   logging = YES;
+int   logging = S_YES;
 int   serialSize = 1;
-int   serialMode = OFF;
+int   serialMode = S_OFF;
 int   scenAnalog    = 0;
 int   scenDigital   = 0;
 int   scenInterrupt = 0;
@@ -115,13 +115,14 @@ int g_pinValue   = 0;
 int g_pinStep    = 0;
 int g_action     = 0;
 
-int g_allowInterrupt = YES;
-int g_interpolation  = NO;
+int g_allowInterrupt   = S_YES;
+int g_ongoingInterrupt = S_NO;
+int g_interpolation    = S_NO;
 
 int g_row_setup = 0;
 int g_row_loop = 0;
 
-int g_boardType   = UNO;
+
 int nCodeString = 0;
 
 
@@ -129,13 +130,15 @@ FILE *s_log,*e_log,*c_log,*a_log,*u_log,*x_log,*t_log,*r_log;
 FILE *f_event,*f_cust,*f_serial,*f_time,*f_ino;
 FILE *f_pinmod,*f_digval,*f_anaval,*f_pinrw;
 
+#include "arduino.h"
 #include "code.h"
 #include "common_lib.c"
 #include "servuino.h"
 #include "servuino_lib.c"
 #include "arduino_lib.c"
 #include "sketch.ino"
-
+void setup();
+void loop();
 
 //====================================
 void runEncoding(int n)
@@ -168,11 +171,13 @@ int main(int argc, char *argv[])
 {
   int x,i;
 
-  strcpy(g_version,"0.1.1");
+  strcpy(g_version,"0.1.2");
 
   openFiles();
   readSketchInfo();
-  setRange(g_boardType);
+  g_nTotPins = setRange(g_boardType);
+  if(g_boardType == UNO)g_nDigPins = MAX_PIN_DIGITAL_UNO;
+  if(g_boardType == MEGA)g_nDigPins = MAX_PIN_DIGITAL_MEGA;
  
   boardInit();
   readScenario();
@@ -209,13 +214,13 @@ int main(int argc, char *argv[])
 
       if(g_pinType == DIG)
 	{ 
-	  if(g_action == ADD)   x = insDigitalPinValue(g_pinNo,g_pinStep,g_pinValue);
-	  if(g_action == DELETE)x = delDigitalPinValue(g_pinNo,g_pinStep);
+	  if(g_action == S_ADD)   x = insDigitalPinValue(g_pinNo,g_pinStep,g_pinValue);
+	  if(g_action == S_DELETE)x = delDigitalPinValue(g_pinNo,g_pinStep);
 	}
       if(g_pinType == ANA)
 	{ 
-	  if(g_action == ADD)   x = insAnalogPinValue(g_pinNo,g_pinStep,g_pinValue);
-	  if(g_action == DELETE)x = delAnalogPinValue(g_pinNo,g_pinStep);
+	  if(g_action == S_ADD)   x = insAnalogPinValue(g_pinNo,g_pinStep,g_pinValue);
+	  if(g_action == S_DELETE)x = delAnalogPinValue(g_pinNo,g_pinStep);
 	}
       runEncoding(g_simulationLength);
     }
