@@ -482,5 +482,3 @@ class serial {
   void writeX(int z,char *p);
 };
 serial Serial,Serial1,Serial2,Serial3;
-
-char  stemp[80];
