@@ -22,6 +22,7 @@
 //=====================================
 
 
+
 //------ Digital I/O -----------------------
 
 void pinMode(int pin,int mode)
@@ -442,6 +443,19 @@ void serial::printX(int z,const char *p)
   return;
 }
 
+void serial::print(char c) 
+{
+  servuinoFunc(S_SERIAL_PRINT_CCHAR,0,0,&c);
+  return;
+}
+void serial::printX(int z,char c) 
+{
+  ino(z);
+  print(c);
+  return;
+}
+
+
 void serial::println(int x) 
 {
   servuinoFunc(S_SERIAL_PRINTLN_INT,x,0,NULL);
@@ -503,6 +517,18 @@ void serial::printlnX(int z)
 {
   ino(z);
   println();
+  return;
+}
+
+void serial::println(char c) 
+{
+  servuinoFunc(S_SERIAL_PRINTLN_CCHAR,0,0,c);
+  return;
+}
+void serial::printlnX(int z,char c) 
+{
+  ino(z);
+  println(c);
   return;
 }
 
@@ -1005,4 +1031,7 @@ void delayMicrosecondsX(int x,int us)
 
   return;
 }
+
+
+
 // End of file

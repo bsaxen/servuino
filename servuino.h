@@ -43,7 +43,11 @@ void  (*interrupt[9])();
 #define S_SERIAL_PRINTLN_VOID     30
 #define S_SERIAL_WRITE            31
 
+#define S_EEPROM_READ             32
+#define S_EEPROM_WRITE            33
 
+#define S_SERIAL_PRINT_CCHAR      34
+#define S_SERIAL_PRINTLN_CCHAR    35
 
 
 
