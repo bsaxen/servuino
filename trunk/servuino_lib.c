@@ -273,6 +273,13 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
+  if(event == S_SERIAL_PRINT_CCHAR)
+    {
+      sprintf(eventText,"Serial.print(char) %c",p);
+      fprintf(f_serial,"%d SL [%c]\n",g_curStep,p);
+      if(g_serialMode != S_ON) 
+	errorLog("Serial print without serial.begin",g_curStep);
+    }
   if(event == S_SERIAL_PRINT_STRING)
     {
       sprintf(eventText,"Serial.print(string) %s",p); 
@@ -308,6 +315,13 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
+  if(event == S_SERIAL_PRINTLN_CCHAR)
+    { 
+      sprintf(eventText,"Serial.println(cchar) %c",p);
+      fprintf(f_serial,"%d NL [%c]\n",g_curStep,p);
+      if(g_serialMode != S_ON) 
+	errorLog("Serial print without serial.begin",g_curStep);
+    }
   if(event == S_SERIAL_PRINTLN_STRING)
     {
       sprintf(eventText,"Serial.println(string) %s",p); 
@@ -335,6 +349,16 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
+    
+  if(event == S_EEPROM_WRITE)
+    {
+      sprintf(eventText,"EEPROM.write address=%d value=%s",pin,p);
+    }
+  if(event == S_EEPROM_READ)
+    {
+      sprintf(eventText,"EEPROM.read address=%d value=%s",pin,p);
+    }
+
 
   logEvent(eventText);
   logCust(custText);

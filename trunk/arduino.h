@@ -445,6 +445,8 @@ private:
 
 }; // end class String
 
+
+
 class serial {
 
  public:
@@ -457,11 +459,13 @@ class serial {
   void print(int x);
   void print(int x,int base);
   void print(const char *p);
+  void print(char c);
   void println(int x);
   void println(const char *p);
   void println(string p);
   void println(String p);
   void println();
+  void println(char c);
   void write(char *p);
 
   // Wrappers
@@ -474,11 +478,13 @@ class serial {
   void printX(int z,int x);
   void printX(int z,int x,int base);
   void printX(int z,const char *p);
+  void printX(int z,char c);
   void printlnX(int z,int x);
   void printlnX(int z,const char *p);
   void printlnX(int z,string p);
   void printlnX(int z,String p);
   void printlnX(int z);
+  void printlnX(int z,char c);
   void writeX(int z,char *p);
 };
 serial Serial,Serial1,Serial2,Serial3;
