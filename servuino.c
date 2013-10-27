@@ -150,14 +150,14 @@ void runEncoding(int n)
 
   g_curStep = 0;
   ino(g_row_setup);
-  servuinoFunc(S_SETUP,0,0,NULL);
+  servuinoFunc(S_SETUP,0,0,NULL,0);
   setup();
 
   for(i=0;i<MAX_LOOPS;i++)  
     {
       g_curLoop++;
       ino(g_row_loop);
-      servuinoFunc(S_LOOP,g_curLoop,0,NULL);
+      servuinoFunc(S_LOOP,g_curLoop,0,NULL,0);
       loop();  
     }
   stopEncoding();
