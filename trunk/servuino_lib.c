@@ -80,7 +80,7 @@ void logStatus()
 }
 
 //====================================
-int servuinoFunc(int event, int pin, int value, const char *p)
+int servuinoFunc(int event, int pin, int value, const char *p, unsigned char uc)
 //====================================
 {
   int res=999,fail=0;
@@ -273,10 +273,10 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
-  if(event == S_SERIAL_PRINT_CCHAR)
+  if(event == S_SERIAL_PRINT_UCHAR)
     {
-      sprintf(eventText,"Serial.print(char) %c",p);
-      fprintf(f_serial,"%d SL [%c]\n",g_curStep,p);
+      sprintf(eventText,"Serial.print(uchar) %c",uc);
+      fprintf(f_serial,"%d SL [%c]\n",g_curStep,uc);
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
@@ -315,10 +315,10 @@ int servuinoFunc(int event, int pin, int value, const char *p)
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
-  if(event == S_SERIAL_PRINTLN_CCHAR)
+  if(event == S_SERIAL_PRINTLN_UCHAR)
     { 
-      sprintf(eventText,"Serial.println(cchar) %c",p);
-      fprintf(f_serial,"%d NL [%c]\n",g_curStep,p);
+      sprintf(eventText,"Serial.println(uchar) %c",uc);
+      fprintf(f_serial,"%d NL [%c]\n",g_curStep,*p);
       if(g_serialMode != S_ON) 
 	errorLog("Serial print without serial.begin",g_curStep);
     }
@@ -352,11 +352,29 @@ int servuinoFunc(int event, int pin, int value, const char *p)
     
   if(event == S_EEPROM_WRITE)
     {
-      sprintf(eventText,"EEPROM.write address=%d value=%s",pin,p);
+      sprintf(eventText,"EEPROM.write address=%d value=%d",pin,value);
+      if(pin > 512) 
+	   errorLog("EEPROM write: address > 512: ",pin);
+	  if(pin < 0) 
+	   errorLog("EEPROM write: address < 0: ",pin);
+	  if(value > 255) 
+	   errorLog("EEPROM write: value > 255: ",value);
+	  if(value < 0) 
+	   errorLog("EEPROM write: value < 0: ",value);
+	  res = 0;
     }
   if(event == S_EEPROM_READ)
     {
-      sprintf(eventText,"EEPROM.read address=%d value=%s",pin,p);
+      sprintf(eventText,"EEPROM.read address=%d value=%d",pin,value);
+      if(pin > 512) 
+	   errorLog("EEPROM read: address > 512: ",pin);
+	  if(pin < 0) 
+	   errorLog("EEPROM read: address < 0: ",pin);
+	  if(value > 255) 
+	   errorLog("EEPROM read: value > 255: ",value);
+	  if(value < 0) 
+	   errorLog("EEPROM read: value < 0: ",value);
+	  res = 0;
     }
 
 

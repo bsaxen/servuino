@@ -28,72 +28,72 @@
 void pinMode(int pin,int mode)
 {
   if(mode == INPUT)
-    servuinoFunc(S_PIN_MODE_INPUT,pin,mode,NULL);
+    servuinoFunc(S_PIN_MODE_INPUT,pin,mode,NULL,0);
   if(mode == OUTPUT)
-    servuinoFunc(S_PIN_MODE_OUTPUT,pin,mode,NULL);
+    servuinoFunc(S_PIN_MODE_OUTPUT,pin,mode,NULL,0);
   return;
 }
 void digitalWrite(int pin,int value)
 {
   if(value == 0)
-    servuinoFunc(S_DIGITAL_WRITE_LOW,pin,value,NULL);
+    servuinoFunc(S_DIGITAL_WRITE_LOW,pin,value,NULL,0);
   if(value == 1)
-    servuinoFunc(S_DIGITAL_WRITE_HIGH,pin,value,NULL);
+    servuinoFunc(S_DIGITAL_WRITE_HIGH,pin,value,NULL,0);
   return;
 }
 int digitalRead(int pin)
 {
-  return(servuinoFunc(S_DIGITAL_READ,pin,0,NULL));
+  return(servuinoFunc(S_DIGITAL_READ,pin,0,NULL,0));
 }
 
 void analogWrite(int pin,int value) //PWM
 {
-  servuinoFunc(S_ANALOG_WRITE,pin,value,NULL);
+  servuinoFunc(S_ANALOG_WRITE,pin,value,NULL,0);
   return;
 }
 
 int analogRead(int pin)
 {
   pin = g_nDigPins + pin;
-  return(servuinoFunc(S_ANALOG_READ,pin,0,NULL));
+  return(servuinoFunc(S_ANALOG_READ,pin,0,NULL,0));
 }
 
 //------ Advanced I/O ----------------------
 void tone(int pin, unsigned int freq)
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"tone()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"tone()",0);
 }
 
 void tone(int pin, unsigned int freq, unsigned long duration)
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"tone()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"tone()",0);
 }
 
 void noTone(int pin)
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"noTone()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"noTone()",0);
 }
 
 void shiftOut(int dataPin, int clockPin, int bitOrder, int value)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"shiftOut()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"shiftOut()",0);
 }
 
 int shiftIn(int dataPin, int clockPin, int bitOrder)
 {
   //bitOrder: which order to shift out the bits; either MSBFIRST or LSBFIRST.
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"shiftIn()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"shiftIn()",0);
 }
 
 unsigned long pulseIn(int pin, int value)
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"pulseIn()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"pulseIn()",0);
 }
 
 unsigned long pulseIn(int pin, int value, unsigned long timeout)
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"pulseIn()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"pulseIn()",0);
 }
 
 //------ Time ------------------------------
@@ -110,13 +110,13 @@ unsigned long micros()
 
 void delay(int ms)
 {
-  servuinoFunc(S_DELAY,ms,0,NULL);
+  servuinoFunc(S_DELAY,ms,0,NULL,0);
   return;
 }
 
 void delayMicroseconds(int us)
 {
-  servuinoFunc(S_DELAY_MS,us,0,NULL);
+  servuinoFunc(S_DELAY_MS,us,0,NULL,0);
   return;
 }
 
@@ -264,13 +264,13 @@ void attachInterrupt(int ir,void(*func)(),int mode)
       pin                 = inrpt[ir];
 
       if(mode==LOW)
-	servuinoFunc(S_ATTACH_INTERRUPT_LOW,pin,mode,NULL);
+	servuinoFunc(S_ATTACH_INTERRUPT_LOW,pin,mode,NULL,0);
       if(mode==RISING)
-	servuinoFunc(S_ATTACH_INTERRUPT_RISING,pin,mode,NULL);
+	servuinoFunc(S_ATTACH_INTERRUPT_RISING,pin,mode,NULL,0);
       if(mode==FALLING)
-	servuinoFunc(S_ATTACH_INTERRUPT_FALLING,pin,mode,NULL);
+	servuinoFunc(S_ATTACH_INTERRUPT_FALLING,pin,mode,NULL,0);
       if(mode==CHANGE)
-	servuinoFunc(S_ATTACH_INTERRUPT_CHANGE,pin,mode,NULL);
+	servuinoFunc(S_ATTACH_INTERRUPT_CHANGE,pin,mode,NULL,0);
       
       interruptMode[ir] = mode;
       attached[ir]      = S_YES;
@@ -315,7 +315,7 @@ void detachInterrupt(int ir)
       digitalMode[pin]  = INPUT;
     }
   
-  servuinoFunc(S_DETACH_INTERRUPT,pin,0,NULL);
+  servuinoFunc(S_DETACH_INTERRUPT,pin,0,NULL,0);
   return;
 }
 void detachInterruptX(int x,int ir)
@@ -328,11 +328,11 @@ void detachInterruptX(int x,int ir)
 //------ Interrupts ------------------------
 void interrupts()
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"interrupts()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"interrupts()",0);
 }
 void noInterrupts()
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"noInterrupts()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"noInterrupts()",0);
 }
 //------ Communication ---------------------
 
@@ -344,7 +344,7 @@ void serial::begin(int baudRate)
   digitalMode[0] = RX;
   digitalMode[1] = TX;
 
-  servuinoFunc(S_SERIAL_BEGIN,baudRate,0,NULL);
+  servuinoFunc(S_SERIAL_BEGIN,baudRate,0,NULL,0);
   return;
 }
 void serial::beginX(int z,int baudRate) 
@@ -359,7 +359,7 @@ void serial::end()
   digitalMode[0] = FREE;
   digitalMode[1] = FREE;
 
-  servuinoFunc(S_SERIAL_END,0,0,NULL);
+  servuinoFunc(S_SERIAL_END,0,0,NULL,0);
   return;
 }
 void serial::endX(int z) 
@@ -371,7 +371,7 @@ void serial::endX(int z)
 
 int serial::available()  // returns the number of bytes available to read
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.available()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.available()",0);
   return(1);
 }
 int serial::availableX(int z) 
@@ -382,13 +382,13 @@ int serial::availableX(int z)
 
 char serial::read() // the first byte of incoming serial data available (or -1 if no data is available)
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.read()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.read()",0);
   return(-1);
 }
 
 int serial::peek() 
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.peek()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.peek()",0);
   return(-1);
 }
 int serial::peekX(int z) 
@@ -399,7 +399,7 @@ int serial::peekX(int z)
 
 void serial::flush() 
 {
-  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.flush()");
+  servuinoFunc(S_UNIMPLEMENTED,0,0,"Serial.flush()",0);
 }
 void serial::flushX(int z) 
 {
@@ -409,7 +409,7 @@ void serial::flushX(int z)
 
 void serial::print(int x) 
 {
-  servuinoFunc(S_SERIAL_PRINT_INT,x,0,NULL);
+  servuinoFunc(S_SERIAL_PRINT_INT,x,0,NULL,0);
   return;
 }
 void serial::printX(int z,int x) 
@@ -421,7 +421,7 @@ void serial::printX(int z,int x)
 
 void serial::print(int x,int base) 
 {
-  servuinoFunc(S_SERIAL_PRINT_INT_BASE,x,base,NULL);
+  servuinoFunc(S_SERIAL_PRINT_INT_BASE,x,base,NULL,0);
   return;
 }
 void serial::printX(int z,int x, int base) 
@@ -433,7 +433,7 @@ void serial::printX(int z,int x, int base)
 
 void serial::print(const char *p) 
 {
-  servuinoFunc(S_SERIAL_PRINT_CHAR,0,0,p);
+  servuinoFunc(S_SERIAL_PRINT_CHAR,0,0,p,0);
   return;
 }
 void serial::printX(int z,const char *p) 
@@ -443,22 +443,22 @@ void serial::printX(int z,const char *p)
   return;
 }
 
-void serial::print(char c) 
+void serial::print(unsigned char uc) 
 {
-  servuinoFunc(S_SERIAL_PRINT_CCHAR,0,0,&c);
+  servuinoFunc(S_SERIAL_PRINT_UCHAR,0,0,NULL,uc);
   return;
 }
-void serial::printX(int z,char c) 
+void serial::printX(int z,unsigned char uc) 
 {
   ino(z);
-  print(c);
+  print(uc);
   return;
 }
 
 
 void serial::println(int x) 
 {
-  servuinoFunc(S_SERIAL_PRINTLN_INT,x,0,NULL);
+  servuinoFunc(S_SERIAL_PRINTLN_INT,x,0,NULL,0);
   return;
 }
 void serial::printlnX(int z,int x) 
@@ -470,7 +470,7 @@ void serial::printlnX(int z,int x)
 
 void serial::println(const char *p) 
 {
-  servuinoFunc(S_SERIAL_PRINTLN_CHAR,0,0,p);
+  servuinoFunc(S_SERIAL_PRINTLN_CHAR,0,0,p,0);
   return;
 }
 void serial::printlnX(int z,const char *p) 
@@ -484,7 +484,7 @@ void serial::println(string s)
 {
   const char *p;
   p=s.c_str();
-  servuinoFunc(S_SERIAL_PRINTLN_STRING,0,0,p);
+  servuinoFunc(S_SERIAL_PRINTLN_STRING,0,0,p,0);
   return;
 }
 void serial::printlnX(int z,string s) 
@@ -498,7 +498,7 @@ void serial::println(String s)
 {
   const char *p;
   p= s.getPointer();
-  servuinoFunc(S_SERIAL_PRINTLN_SSTRING,0,0,p);
+  servuinoFunc(S_SERIAL_PRINTLN_SSTRING,0,0,p,0);
   return;
 }
 void serial::printlnX(int z, String s) 
@@ -510,7 +510,7 @@ void serial::printlnX(int z, String s)
 
 void serial::println() 
 {
-  servuinoFunc(S_SERIAL_PRINTLN_VOID,0,0,NULL);
+  servuinoFunc(S_SERIAL_PRINTLN_VOID,0,0,NULL,0);
   return;
 }
 void serial::printlnX(int z) 
@@ -520,21 +520,21 @@ void serial::printlnX(int z)
   return;
 }
 
-void serial::println(char c) 
+void serial::println(unsigned char uc) 
 {
-  servuinoFunc(S_SERIAL_PRINTLN_CCHAR,0,0,c);
+  servuinoFunc(S_SERIAL_PRINTLN_UCHAR,0,0,NULL,uc);
   return;
 }
-void serial::printlnX(int z,char c) 
+void serial::printlnX(int z,unsigned char uc) 
 {
   ino(z);
-  println(c);
+  println(uc);
   return;
 }
 
 void serial::write(char *p) 
 {
-  servuinoFunc(S_SERIAL_WRITE,0,0,p);
+  servuinoFunc(S_SERIAL_WRITE,0,0,p,0);
   return;
 }
 void serial::writeX(int z,char *p) 
