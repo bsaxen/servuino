@@ -11,7 +11,7 @@ class eeprom {
 };
 eeprom EEPROM;
 
-int eepromStorage[512]; // 0 - 511 allowed
+int eepromStorage[1000]; // 0 - 511 allowed
 int value = 998;
 
 int eeprom::read(int address) 
