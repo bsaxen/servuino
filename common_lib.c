@@ -112,7 +112,7 @@ int checkRange(int mode,const char check[],int value)
 	{
 	  if(value != 3 && value != 5 && value != 6 && value != 9 && value != 10 && value != 11) 
 	    {
-	      sprintf(temp,"%s -",message,value);
+	      sprintf(temp,"%s - %d",message,value);
 	      errorLog(temp,value);
 	      return(S_NOK);
 	    }
@@ -123,7 +123,7 @@ int checkRange(int mode,const char check[],int value)
 	{
 	  if(value < 0 || value > 13) 
 	    {
-	      sprintf(temp,"%s -",message,value);
+	      sprintf(temp,"%s - %d",message,value);
 	      errorLog(temp,value);
 	      return(S_NOK);
 	    }
